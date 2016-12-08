@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>{{listTitle}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list >
+    <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
+      <h1>{{item.Title}}</h1>
+      <div class="description" >
+       <div class="descriptontext">Когда создано:</div><span class="creator" >{{item.Created}}</span>
+       <br>
+       <div class="descriptontext">Когда изменено: </div><span class="creator" >{{item.Modified}}</span>
+     </div>
+    </button>
+
+  </ion-list>
+</ion-content>
