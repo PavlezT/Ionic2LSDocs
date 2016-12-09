@@ -10,3 +10,9 @@ cordova requirements
 //check android sdk installed properly
 
 ionic state reset
+
+# Pratices
+use Allow-Control-Allow-Origin: *  - chrome extention to awoid CORS restritions and make possible to use REST api in browser
+
+(Device.device.uuid) ? (consts.MSOnlineSts) : ('/api' + consts.MSOnlineSts);
+//cheking diveci or browser is this
