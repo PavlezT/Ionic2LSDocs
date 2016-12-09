@@ -9,13 +9,23 @@ import { Documents } from './Tabs/Documents'
    templateUrl: 'Item.html'
 })
 export class Item {
-  infoTab :any;
-  documents:any;
+  title : string;
+  id : number;
+  ContentTypeId : string;
+  listGUID: string;
+
+  infoTab : any ;
+  documents: any;
   selectedItem: any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
+    this.title = navParams.data.item.Title;
+    this.id = navParams.data.item.Id;
+    this.listGUID = navParams.data.listGUID;
+    this.ContentTypeId = navParams.data.item.ContentTypeId;
+
     this.infoTab = InfoTab;
     this.documents = Documents;
-    this.selectedItem = navParams.get('item');
   }
+
 }

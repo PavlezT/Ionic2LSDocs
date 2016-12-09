@@ -10,13 +10,14 @@
 <ion-content>
   <ion-list >
     <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
-      <h1>{{item.Title}}</h1>
+      <h3>{{item.Id}} {{item.Title}}</h3>
       <div class="description" >
        <div class="descriptontext">Когда создано:</div><span class="creator" >{{item.Created}}</span>
        <br>
        <div class="descriptontext">Когда изменено: </div><span class="creator" >{{item.Modified}}</span>
      </div>
     </button>
+    <h1 *ngIf="items.length == 0">Здесь пусто</h1>
 
   </ion-list>
 </ion-content>

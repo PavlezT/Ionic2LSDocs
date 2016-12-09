@@ -29,4 +29,5 @@
     <param name="ios-package" onload="true" value="CDVStatusBar"/>
   </feature>
   <allow-navigation href="http://192.168.137.1:8000"/>
+  <preference name="loadUrlTimeoutValue" value="700000"/>
 </widget>

@@ -6,7 +6,8 @@ import { Contracts } from '../pages/Contracts/Contracts';
 import { Item } from '../pages/Contracts/Item/Item';
 import { InfoTab } from '../pages/Contracts/Item/Tabs/InfoTab';
 import { Documents } from '../pages/Contracts/Item/Tabs/Documents';
-import { Auth } from './auth';
+import { Auth } from '../utils/auth';
+import { SelectedItem } from '../utils/selecteditem';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { Auth } from './auth';
     Documents
   ],
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},
-      Auth
+      {provide: Auth , useClass: Auth},
+      {provide: SelectedItem , useClass: SelectedItem}
    ]
 })
 export class AppModule {}

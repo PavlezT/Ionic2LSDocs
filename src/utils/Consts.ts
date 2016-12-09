@@ -5,7 +5,7 @@ export const MSOnlineSts = 'https://login.microsoftonline.com/extSTS.srf';
 export const FormsPath = '_forms/default.aspx?wa=wsignin1.0';
 export const Online_saml = 'online_saml.tmpl';
 export const Online_saml_path = 'www/assets/templates/';
-export const siteUrl = 'https://lizardsoftdev.sharepoint.com/sites/LaxaContracts';
+export const siteUrl = 'https://lsdocs30.sharepoint.com/sites/LSDocs';
 
 export const RtFa = 'rtFa';
 export const FedAuth = 'FedAuth';

@@ -1,19 +1,4 @@
 
-// var url = "https://lizardsoftdev.sharepoint.com/sites/LaxaContracts/Contracts/Forms/AllContracts.aspx";
-// var urlForREST = "https://lizardsoftdev.sharepoint.com/sites/LaxaContracts/_api/Web/Lists?$select=title"
-
-// getAuth(url,{username:'vladislav.pavlenko@dev.lizard.net.ua',password:'FordBoss302'})
-//          .then(function(response){
-//              console.dir(response);
-//              return sendGET(urlForREST);
-//            })
-//         //   sendGET(urlForREST)
-//         .then(function(data){
-//               // console.dir(data);
-//                    $('body > div.app')[0].innerHTML = data.d.results.reduce(function(sum,item,count){
-//                        return sum+'<br><span>'+item.Title+'</span>';
-//                    },'')
-// })
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 import { Injectable, Inject } from '@angular/core';
@@ -79,9 +64,12 @@ export class Auth {
                    };
                }
             })
-            .then( tokenResponse => self.postToken(tokenResponse))
+            .then( tokenResponse => {
+              return self.postToken(tokenResponse)
+            })
             .then( response => {
                console.dir(response);
+
                return true;
                //console.log(response.text());
                // var diffSeconds = data[0];
@@ -117,7 +105,7 @@ export class Auth {
         return self.readFile(consts.Online_saml_path ,consts.Online_saml)
                .then( (text:string) => {
                   let samlBody = text.replace('<%= username %>',self.options.username).replace('<%= password %>',self.options.password).replace('<%= endpoint %>',spFormsEndPoint);
-                  let url = (Device.device.uuid) ? (consts.MSOnlineSts) : ('/api?'+consts.MSOnlineSts);
+                  let url = consts.MSOnlineSts;//(Device.device.uuid) ? (consts.MSOnlineSts) : (consts.MSOnlineSts);
 
                   let headers = new Headers({'Content-Type': 'application/soap+xml; charset=utf-8'});
                   let options = new RequestOptions({ headers: headers });
@@ -170,10 +158,10 @@ export class Auth {
       }
     }
 
-    public postToken(tokenResponse):Promise <any>{
+    public postToken(tokenResponse){//:Promise <any>
        let self = this;
        let host = self.url.substring(0,self.url.indexOf('/sites/'));
-       let spFormsEndPoint = (Device.device.uuid) ? ( host + "/" + consts.FormsPath) : ('/api?'+ host + "/" + consts.FormsPath);
+       let spFormsEndPoint =  host + "/" + consts.FormsPath;//(Device.device.uuid) ? ( host + "/" + consts.FormsPath) : ('/api?'+ "/" + consts.FormsPath);
        let now = new Date().getTime();
        let expires = new Date(tokenResponse.expires).getTime();
        let diff = (expires - now) / 1000;
@@ -182,8 +170,8 @@ export class Auth {
        let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded'});
        let options = new RequestOptions({ headers: headers });
 
-       return self.http.post(spFormsEndPoint,tokenResponse.token,options)
-          .toPromise();
+       return  self.http.post(spFormsEndPoint,tokenResponse.token,options)
+        .toPromise()
    }
 
 }

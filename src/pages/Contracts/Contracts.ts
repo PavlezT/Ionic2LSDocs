@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component , Inject} from '@angular/core';
 import { Item } from './Item/Item';
 import { NavController, NavParams } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 
-import * as consts from '../../app/Consts';
+import * as consts from '../../utils/Consts';
+import { Auth } from '../../utils/auth';
+import { SelectedItem } from '../../utils/selecteditem';
 
 @Component({
   selector: 'contracts',
@@ -15,7 +17,7 @@ export class Contracts {
   listTitle: string;
   guid: string;
 
-  constructor(public navCtrl: NavController , public navParams: NavParams , public http: Http ) {
+  constructor(public navCtrl: NavController , public navParams: NavParams , public http: Http , @Inject(SelectedItem) public selectItem  ) {
     this.items = [];
     this.listTitle = navParams.data.title;
     this.guid = navParams.data.guid;
@@ -23,21 +25,21 @@ export class Contracts {
     this.getItems()
       .then( res => {
          this.items = res.json().d.results;
-         // res.json().d.results.map((item,i,mass) => {
-         //    if(item.ListTitle)
-         //       this.items.push({ id:title: item.ListTitle , icon:"folder", component: Contracts , listGUID : item.ListGUID})
-         // })
+      })
+      .catch( error => {
+        console.error(`Error in getItems from ${this.listTitle}`,error);
       })
   }
 
   itemTapped(event, item) {
     this.navCtrl.push(Item, {
-      item: item
+      item: item,
+      listGUID : this.guid
     });
   }
 
   getItems(): Promise <any> {
-     let listGet = `${consts.siteUrl}/_api/Web/Lists('${this.guid}')/Items?$select=Id,Title,ContentTypeId,Created,Modified`;
+     let listGet = `${consts.siteUrl}/_api/Web/Lists('${this.guid}')/Items?$select=Id,Title,ContentTypeId,Created,Modified&$top=25&$orderby=Id desc`;
 
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
      let options = new RequestOptions({ headers: headers });
