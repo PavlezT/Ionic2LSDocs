@@ -4,20 +4,27 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title>{{listTitle}}</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only color="royal">
+        <ion-icon name="ios-add-circle-outline"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
+
 </ion-header>
 
 <ion-content>
+   <ion-searchbar (ionInput)="searchItem($event)"></ion-searchbar>
   <ion-list >
     <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
-      <h3>{{item.Id}} {{item.Title}}</h3>
+      <h2>#{{item.Id}}  {{item.Title}}</h2>
       <div class="description" >
        <div class="descriptontext">Когда создано:</div><span class="creator" >{{item.Created}}</span>
        <br>
        <div class="descriptontext">Когда изменено: </div><span class="creator" >{{item.Modified}}</span>
      </div>
     </button>
-    <h1 *ngIf="items.length == 0">Здесь пусто</h1>
-
+    <h1 ion-item *ngIf="items && items.length == 0">Здесь пусто</h1>
+    <h1 ion-item *ngIf="!items">Загрузка...</h1>
   </ion-list>
 </ion-content>

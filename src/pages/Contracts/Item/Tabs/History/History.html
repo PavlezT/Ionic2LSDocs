@@ -1,0 +1,15 @@
+<ion-content>
+    <ion-list  no-lines>
+        <ion-item *ngFor="let document of Docs" >
+            <div item-left><ion-icon margin-right name="create" ></ion-icon></div>
+            <h2>{{document.Name}}</h2>
+            <p>Created: {{document.TimeCreated}}</p>
+        </ion-item>
+        <ion-item *ngIf="Docs && Docs.length == 0">
+           <h2> Здесь пусто</h2>
+        </ion-item>
+        <ion-item *ngIf="!Docs">
+           <h2> Загрузка...</h2>
+        </ion-item>
+    </ion-list>
+</ion-content>

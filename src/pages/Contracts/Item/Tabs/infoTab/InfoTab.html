@@ -1,0 +1,16 @@
+<ion-content margin-bottom style="z-index: -1">
+    <ion-list  no-lines margin-bottom style="z-index: -1">
+        <ion-item *ngFor="let key of itemKeys" >
+            <div margin-right>
+               <h2>{{key}}</h2>
+               <h3>{{itemProps[key]}}</h3>
+            </div>
+        </ion-item>
+        <ion-item *ngIf="itemKeys && itemKeys.length == 0">
+           <h2> Здесь пусто</h2>
+        </ion-item>
+        <ion-item *ngIf="!itemKeys">
+           <h2> Загрузка...</h2>
+        </ion-item>
+    </ion-list>
+</ion-content>

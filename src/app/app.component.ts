@@ -37,12 +37,15 @@ export class MyApp {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       StatusBar.styleDefault();
-      
+
       this.auth.init(consts.siteUrl,{username:'oleg.dub@lsdocs30.onmicrosoft.com',password:'Ljrevtyn0'});
       this.auth.getAuth()
-         .then(()=> {
+         .then((result)=> {
+            if(!result)
+               throw Error('Auth fault!');
+               
             let listGet = `${consts.siteUrl}/_api/Web/Lists/getByTitle('LSListInLSDocs')/Items?$select=ListTitle,ListURL,ListGUID`;
-            
+
             let headers = new Headers({'Accept': 'application/json;odata=verbose'});
             let options = new RequestOptions({ headers: headers ,withCredentials: true});
 
@@ -50,30 +53,29 @@ export class MyApp {
          })
          .then( res => {
                res.json().d.results.map((item,i,mass) => {
-                  if(item.ListTitle)
+                  if(item.ListTitle && item.ListGUID)
                      this.pages.push({ title: item.ListTitle , icon:"folder", component: Contracts , listGUID : item.ListGUID})
               })
          })
          .then( () => {
             let listGet = `${consts.siteUrl}/_api/Web/CurrentUser?$select=Id,Title,LoginName`;
-            
+
             let headers = new Headers({'Accept': 'application/json;odata=verbose'});
             let options = new RequestOptions({ headers: headers});
 
             return this.http.get(listGet,options).toPromise()
          })
          .then( res =>{
-           console.log('after geting user')
            this.zone.run(() => {
              res = res.json();
              this.userName = res.d.Title;
              this.userId = res.d.Id;
              this.userLoginName = res.d.LoginName;
            })
-           .then( () => {
+          // .then( () => {
              console.log('hiddin splash screen')
              Splashscreen.hide();
-           })
+          // })
          })
          .catch( error => {
            console.error(`Error in makein Burger Menu`,error);

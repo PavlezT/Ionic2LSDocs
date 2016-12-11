@@ -1,4 +1,3 @@
-
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 import { Injectable, Inject } from '@angular/core';
@@ -10,7 +9,7 @@ declare var cordova:any;
 @Injectable()
 export class Auth {
    url:string;
-   options: {username:string,password:string};
+   options: { username : string, password : string};
    http: Http;
 
    constructor(@Inject(Http) http: Http){
@@ -33,19 +32,28 @@ export class Auth {
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
    }
-   checkAuthAlready(){
-      return false;
+
+   checkAuthAlready(host :string){
+      let now = new Date();
+      let expiredOn = new Date(window.localStorage.getItem(host));
+
+      if (!expiredOn || now > expiredOn) {
+            window.localStorage.removeItem(host);
+            return false;
+        }
+      return true;
+   }
+
+   setCookieExpiry(host : string,expiry : Date){
+      window.localStorage.setItem(host , expiry.toString());
    }
 
    getAuth(): any{
       let self = this;
+      let host = self.url.substring(0,self.url.indexOf('/sites/'));
 
-      if(self.checkAuthAlready()){
-         return Promise.resolve({
-            header:{
-               'cokkie':'asdasd'
-            }
-         })
+      if(self.checkAuthAlready(host)){
+         return Promise.resolve(true);
       }
 
       return self.getTokenWithOnline()
@@ -68,29 +76,12 @@ export class Auth {
               return self.postToken(tokenResponse)
             })
             .then( response => {
-               console.dir(response);
+               let diffSeconds = response[0];
+               let now = new Date();
+               now.setSeconds(now.getSeconds() + diffSeconds);
 
+               self.setCookieExpiry(host, now);
                return true;
-               //console.log(response.text());
-               // var diffSeconds = data[0];
-               // var fedAuth, rtFa;
-               // for (var i = 0; i < response.headers['set-cookie'].length; i++) {
-               //     var headerCookie = response.headers['set-cookie'][i];
-               //     if (headerCookie.indexOf(consts.FedAuth) !== -1) {
-               //         fedAuth = cookie.parse(headerCookie)[consts.FedAuth];
-               //     }
-               //     if (headerCookie.indexOf(consts.RtFa) !== -1) {
-               //         rtFa = cookie.parse(headerCookie)[consts.RtFa];
-               //     }
-               // }
-               // debugger;
-               // var authCookie = 'FedAuth=' + fedAuth + '; rtFa=' + rtFa;
-               // OnlineUserCredentials.CookieCache.set(cacheKey, authCookie, diffSeconds);
-               // return {
-               //     headers: {
-               //         'Cookie': authCookie
-               //     }
-               // };
             })
             .catch(error => {
                console.dir(error);
@@ -170,8 +161,8 @@ export class Auth {
        let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded'});
        let options = new RequestOptions({ headers: headers });
 
-       return  self.http.post(spFormsEndPoint,tokenResponse.token,options)
-        .toPromise()
+       return  Promise.all([diffSeconds,self.http.post(spFormsEndPoint,tokenResponse.token,options)
+        .toPromise()])
    }
 
 }

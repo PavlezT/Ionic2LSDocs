@@ -4,10 +4,14 @@ import { MyApp } from './app.component';
 import { MyTasks } from '../pages/MyTasks/MyTasks';
 import { Contracts } from '../pages/Contracts/Contracts';
 import { Item } from '../pages/Contracts/Item/Item';
-import { InfoTab } from '../pages/Contracts/Item/Tabs/InfoTab';
-import { Documents } from '../pages/Contracts/Item/Tabs/Documents';
+import { InfoTab } from '../pages/Contracts/Item/Tabs/InfoTab/InfoTab';
+import { Documents } from '../pages/Contracts/Item/Tabs/Documents/Documents';
 import { Auth } from '../utils/auth';
 import { SelectedItem } from '../utils/selecteditem';
+import { LSNew } from '../pages/MyTasks/Tabs/LSNew/LSNew';
+import { LSActive } from '../pages/MyTasks/Tabs/LSActive/LSActive';
+import { LSLate } from '../pages/MyTasks/Tabs/LSLate/LSLate';
+import { LSEnded } from '../pages/MyTasks/Tabs/LSEnded/LSEnded';
 
 @NgModule({
   declarations: [
@@ -16,7 +20,8 @@ import { SelectedItem } from '../utils/selecteditem';
     Contracts,
     Item,
     InfoTab,
-    Documents
+    Documents,
+    LSNew , LSActive ,LSLate , LSEnded
   ],
   imports: [
     IonicModule.forRoot(MyApp)
@@ -28,7 +33,8 @@ import { SelectedItem } from '../utils/selecteditem';
     Contracts,
     Item,
     InfoTab,
-    Documents
+    Documents,
+    LSNew , LSActive ,LSLate , LSEnded
   ],
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},
       {provide: Auth , useClass: Auth},

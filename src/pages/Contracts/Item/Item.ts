@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component } from '@angular/core'; //, Inject
 import { NavController, NavParams } from 'ionic-angular';
 
-import { InfoTab } from './Tabs/InfoTab'
-import { Documents } from './Tabs/Documents'
+import { InfoTab } from './Tabs/InfoTab/InfoTab'
+import { Documents } from './Tabs/Documents/Documents'
 
 @Component({
    selector: 'item',
@@ -16,7 +16,6 @@ export class Item {
 
   infoTab : any ;
   documents: any;
-  selectedItem: any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
     this.title = navParams.data.item.Title;
