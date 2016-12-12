@@ -1,29 +1,36 @@
 import { Component, Inject } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { SelectedItem } from '../../../../../utils/selecteditem';
+import { ArraySortPipe } from '../../../../../utils/arraySort';
 
 @Component({
    selector: 'history',
+   providers: [ArraySortPipe],
    templateUrl: 'History.html'
 })
 export class History {
 
-  Docs : Array<any>;
+  historyList : Array<any>;
+  taskHistory: Array<any>;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, @Inject(SelectedItem) public selectedItem : SelectedItem) {
-      //this.Docs = [];
-      selectedItem.getItemDocs();
-      //_api/Web/Lists/GetByTitle('LSHistory')/items?$filter=(ItemId eq '6') and (Title eq 'da50a3c2-3138-4a85-9b2d-7c0c813c3a6c') and (ItemName eq 'Task')
-       //.then( docs => this.getDocuments(docs) )
+
+      selectedItem.getItemHistory()
+       .then( history => this.getHistory(history) )
   }
 
-  getDocuments(docs) : void {
-     this.Docs = docs.map( (item, i , arr) => {
-        item.TimeCreted = new Date(item.TimeCreated);
-        console.log(new Date(item.TimeCreated));
-        item.icon = item.Name.substring(item.Name.lastIndexOf('.')+1,item.Name.length);
+  getHistory(history) : void {
+     this.historyList = history.map( (item, i , arr) => {
+        this.taskHistory = JSON.parse(item.TaskHistory);
+
+        this.taskHistory.map( task => {
+          task.EvanteDate = task.EvanteDate.substring(0,10).split('.').reverse().join('-') + task.EvanteDate.substring(10,task.EvanteDate.length);
+
+          return task;
+        });
+        return item;
      });
-     console.log(this.Docs);
   }
 
 }
+

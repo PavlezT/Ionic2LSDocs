@@ -1,14 +1,20 @@
-<ion-content>
-    <ion-list  no-lines>
-        <ion-item *ngFor="let document of Docs" >
-            <div item-left><ion-icon margin-right name="create" ></ion-icon></div>
-            <h2>{{document.Name}}</h2>
-            <p>Created: {{document.TimeCreated}}</p>
+<ion-content style="z-index: -1"> 
+    <ion-list  no-lines style="z-index: -1">
+        <ion-item class="task" *ngFor="let task of taskHistory | arraySort:'-EvanteDate'" >
+            <!--<div item-left><div class="marker"></div></div>-->
+            <h3>
+                <div class="marker"></div>
+                <span>{{task.Event}}</span> <span>{{task.TaskTitle}}</span> для 
+                <span class="user">{{task.NameExecutor}}</span> от <span class="user">{{task.NameAuthore}}</span>
+                <span> со сроком до </span>
+                <span>{{task.DueDate}}</span>
+            </h3>
+            <p>{{task.EvanteDate}}</p>
         </ion-item>
-        <ion-item *ngIf="Docs && Docs.length == 0">
+        <ion-item *ngIf="historyList && historyList.length == 0">
            <h2> Здесь пусто</h2>
         </ion-item>
-        <ion-item *ngIf="!Docs">
+        <ion-item *ngIf="!historyList">
            <h2> Загрузка...</h2>
         </ion-item>
     </ion-list>

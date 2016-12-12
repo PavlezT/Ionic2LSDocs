@@ -4,11 +4,11 @@
         <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title><h2>{{id}} {{title}}</h2></ion-title>
-    <ion-buttons end>
+    <!--<ion-buttons end>
       <button ion-button icon-only color="royal">
         <ion-icon name="md-create"></ion-icon>
       </button>
-    </ion-buttons>
+    </ion-buttons>-->
   </ion-navbar>
 </ion-header>
 
@@ -17,7 +17,7 @@
     <!--itemid="{{id}}" listGUID="{{listGUID}}"-->
     <ion-tab tabIcon="alert" tabTitle="Свойства"  [root]="infoTab"></ion-tab>
     <ion-tab tabIcon="copy" tabTitle="Документи"  [root]="documents"></ion-tab>
-    <ion-tab tabIcon="clock" tabTitle="История" [root]="infoTab"></ion-tab>
+    <ion-tab tabIcon="clock" tabTitle="История" [root]="history"></ion-tab>
     <ion-tab tabIcon="list" tabTitle="Маршрут"  [root]="infoTab"></ion-tab>
   </ion-tabs>
 </ion-content>

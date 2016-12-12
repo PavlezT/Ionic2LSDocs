@@ -27,6 +27,7 @@ export class Contracts {
       })
       .catch( error => {
         console.error(`Error in getItems from ${this.listTitle}`,error);
+        this.items = [];
       })
   }
 

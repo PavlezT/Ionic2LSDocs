@@ -1,3 +1,27 @@
-documents {
+history {
+    .input-wrapper{
+         border-left: 1px solid #DEDEDE;
+         padding-left:10px;
+    }
+    div.marker{
+        display: block;
+        border: 1px solid #808080;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background-color: #CACACA;
+        position: absolute;
+        z-index: 1000;
+        margin-left: -14px;
+        margin-top: 5px;
+    }
+    ion-label{
+        white-space: normal;
+    }
 
+    h3 {
+        span.user {
+            color:blue;
+        }
+    }
 }
