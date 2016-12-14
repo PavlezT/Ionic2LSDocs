@@ -34,6 +34,7 @@ export class Auth {
    }
 
    checkAuthAlready(host :string){
+      host = host.substring(0,host.indexOf('/sites/'));
       let now = new Date();
       let expiredOn = new Date(window.localStorage.getItem(host));
 
@@ -44,7 +45,7 @@ export class Auth {
       return true;
    }
 
-   setCookieExpiry(host : string,expiry : Date){
+   setCookieExpiry(host : string, expiry : Date){
       window.localStorage.setItem(host , expiry.toString());
    }
 
@@ -52,9 +53,9 @@ export class Auth {
       let self = this;
       let host = self.url.substring(0,self.url.indexOf('/sites/'));
 
-      if(self.checkAuthAlready(host)){
-         return Promise.resolve(true);
-      }
+      //  if(self.checkAuthAlready(host)){
+      //     return Promise.resolve(true);
+      //  }
 
       return self.getTokenWithOnline()
             .then( (res : string) => {

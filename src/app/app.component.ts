@@ -1,5 +1,5 @@
 import { Component, ViewChild ,NgZone, Inject} from '@angular/core';
-import { Nav, Platform } from 'ionic-angular';
+import { Nav, Platform , AlertController , LoadingController } from 'ionic-angular';
 import { StatusBar, Splashscreen } from 'ionic-native';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 
@@ -19,8 +19,9 @@ export class MyApp {
   siteUrl = consts.siteUrl;
   rootPage: any = MyTasks;
   pages: Array<{title: string, icon:string, component: any , listGUID  : string }>;
+  loader : any;
 
-  constructor(public platform: Platform, public auth: Auth,@Inject(Http) public http: Http, private zone:NgZone, @Inject(User) public user : User) {
+  constructor(public platform: Platform, public alertCtrl: AlertController,public loadingCtrl: LoadingController, public auth: Auth,@Inject(Http) public http: Http, private zone:NgZone, @Inject(User) public user : User) {
     this.initializeApp();
     // used for an example of ngFor and navigation
     this.pages = [
@@ -34,30 +35,46 @@ export class MyApp {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       StatusBar.styleDefault();
+      Splashscreen.hide();
 
-      this.auth.init(consts.siteUrl,{username:'oleg.dub@lsdocs30.onmicrosoft.com',password:'Ljrevtyn0'});
-      this.auth.getAuth()
-         .then((result)=> {
-            if(!result)
-               throw Error('Auth fault!');
-
-            return Promise.all([this.user.init(),this.getLists()])
-         })
-         .then( res => {
-               res[1].json().d.results.map((item,i,mass) => {
-                  if(item.ListTitle && item.ListGUID)
-                     this.pages.push({ title: item.ListTitle , icon:"folder", component: Contracts , listGUID : item.ListGUID})
-               });
-         })
-         .then( () => {
-             console.log('hiddin splash screen')
-             Splashscreen.hide();
-         })
-         .catch( error => {
-           console.error(`Error in makein Burger Menu`,error);
-         })
+      if(!(this.auth.checkAuthAlready(consts.siteUrl))){
+         this.showPrompt();
+      } else {
+         this.presentLoading();
+         this.startApp();
+      }
     });
   }
+
+  getLogin(userName : string , userPassword : string) : void {
+     this.presentLoading();
+     this.auth.init(consts.siteUrl,{username : userName, password : userPassword});//'oleg.dub@lsdocs30.onmicrosoft.com'  'Ljrevtyn0'
+     this.auth.getAuth().then((result) => {
+        if(!result){
+           this.showPrompt();
+           this.stopLoading();
+           // throw Error('Auth fault!');
+        } else {
+           this.startApp();
+        }
+     })
+  }
+
+  startApp() : Promise<any>{
+      return Promise.all([this.user.init(),this.getLists()])
+        .then( res => {
+             res[1].json().d.results.map((item,i,mass) => {
+                 if(item.ListTitle && item.ListGUID)
+                    this.pages.push({ title: item.ListTitle , icon:"folder", component: Contracts , listGUID : item.ListGUID})
+             });
+        })
+        .then( () => {
+            this.stopLoading();
+        })
+        .catch( error => {
+            console.error(`Error in makein Burger Menu`,error);
+        });
+ }
 
   openPage(page) {
     // Reset the content nav to have just this page
@@ -73,4 +90,44 @@ export class MyApp {
 
     return this.http.get(listGet,options).toPromise();
   }
+
+  showPrompt() {
+     let prompt = this.alertCtrl.create({
+       title: 'LogIn',
+       message: "Введите свой email и пароль для входа",
+       enableBackdropDismiss: false,
+       inputs: [
+         {
+           name: 'Email',
+           placeholder: 'Email'
+         },
+         {
+           name: 'Password',
+           type: 'password',
+           placeholder: 'Password'
+         }
+       ],
+       buttons: [
+         {
+           text: 'Подтвердить',
+           handler: data => {
+             this.getLogin(data.Email,data.Password);
+             console.log('Saved clicked',data);
+           }
+         }
+       ]
+     });
+     prompt.present();
+   }
+
+   presentLoading() : void {
+      this.loader = this.loadingCtrl.create({
+        content: "Подождите...",
+      });
+      this.loader.present();
+    }
+
+    stopLoading() : void{
+      this.loader.dismiss();
+   }
 }

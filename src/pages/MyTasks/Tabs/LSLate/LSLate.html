@@ -1,4 +1,16 @@
 
 <ion-content >
-
+   <ion-list >
+   <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
+       <ion-avatar item-left>
+         <img src="{{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{item.TaskAuthore.EMail}}">
+       </ion-avatar>
+       <h2>{{item.Title}}</h2>
+       <div class="description" >
+        <div class="descriptontext">{{item.TaskDueDate}}</div>
+      </div>
+   </button>
+   <h1 ion-item *ngIf="items && items.length == 0">Здесь пусто</h1>
+   <h1 ion-item *ngIf="!items">Загрузка...</h1>
+   </ion-list>
 </ion-content>

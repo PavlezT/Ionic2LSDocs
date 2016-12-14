@@ -7,6 +7,7 @@ import { Item } from '../pages/Contracts/Item/Item';
 import { InfoTab } from '../pages/Contracts/Item/Tabs/InfoTab/InfoTab';
 import { Documents } from '../pages/Contracts/Item/Tabs/Documents/Documents';
 import { History  } from '../pages/Contracts/Item/Tabs/History/History';
+import { Route } from '../pages/Contracts/Item/Tabs/Route/Route';
 import { Auth } from '../utils/auth';
 import { SelectedItem } from '../utils/selecteditem';
 import { ArraySortPipe } from '../utils/arraySort';
@@ -22,7 +23,7 @@ import { LSEnded } from '../pages/MyTasks/Tabs/LSEnded/LSEnded';
     MyTasks,
     Contracts,
     Item,
-    InfoTab, Documents, History, ArraySortPipe,
+    InfoTab, Documents, History, Route, ArraySortPipe,
     LSNew , LSActive ,LSLate , LSEnded
   ],
   imports: [
@@ -34,7 +35,7 @@ import { LSEnded } from '../pages/MyTasks/Tabs/LSEnded/LSEnded';
     MyTasks,
     Contracts,
     Item,
-    InfoTab, Documents, History,
+    InfoTab, Documents, History, Route,
     LSNew , LSActive ,LSLate , LSEnded
   ],
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},

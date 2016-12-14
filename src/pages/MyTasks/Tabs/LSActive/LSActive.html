@@ -1,13 +1,14 @@
 
 <ion-content>
    <ion-list >
-    <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
-      <h2>#{{item.Id}}  {{item.Title}}</h2>
-      <div class="description" >
-       <div class="descriptontext">Когда создано:</div><span class="creator" >{{item.Created}}</span>
-       <br>
-       <div class="descriptontext">Когда изменено: </div><span class="creator" >{{item.Modified}}</span>
-     </div>
+      <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
+       <ion-avatar item-left>
+         <img src="{{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{item.TaskAuthore.EMail || 'undefined'}}">
+       </ion-avatar>
+       <h2>{{item.Title}}</h2>
+       <div class="description" >
+        <div class="descriptontext">{{item.TaskDueDate}}</div>
+      </div>
     </button>
     <h1 ion-item *ngIf="items && items.length == 0">Здесь пусто</h1>
     <h1 ion-item *ngIf="!items">Загрузка...</h1>

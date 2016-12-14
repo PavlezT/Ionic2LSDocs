@@ -12,6 +12,7 @@ export class SelectedItem {
    itemPropsLoaded : Promise<any>;
    itemDocsLoaded : Promise<any>;
    itemHistoryLoaded : Promise<any>;
+   itemRoutesLoaded : Promise<any>;
 
     constructor(@Inject(Http) public http: Http ){
       this.item = {title:'none',guid:'000'};
@@ -51,9 +52,9 @@ export class SelectedItem {
             console.error('<SelectedItem> Loading Docs error!',error);
             return [];
          })
-   }
+    }
 
-   private getHistory(): Promise<any>{
+    private getHistory() : Promise<any>{
       let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSHistory')/items?$filter=(ItemId eq '${this.item.Id}') and (Title eq '${this.listGUID}') and (ItemName eq 'Task')`;
 
       let headers = new Headers({'Accept': 'application/json;odata=verbose'});
@@ -68,8 +69,24 @@ export class SelectedItem {
             console.error('<SelectedItem> Loading History error!',error);
             return [];
          })
-     
-   }
+    }
+
+    private getRoutes() : Promise<any> {
+      let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('RoutesForCurentDoc')/items?$select=sysListId,sysIDItem,sysTypeId,ID,EditState,StateNumber,StateName,StateType,ExecutJobTitle,StateEstimate,StateExecutore,StateStatus,ExecutorType,StateExecutore/Title&$expand=StateExecutore/Title&$filter=ID eq ${this.item.Id}`;
+
+      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+      let options = new RequestOptions({ headers: headers });
+
+      return this.http.get(listGet,options)
+         .toPromise()
+         .then( res => {
+            return res.json().d.results;
+         })
+         .catch(error => {
+            console.error('<SelectedItem> Loading Routes error!',error);
+            return [];
+         })
+    }
 
     public set(item : Object , listGUID : string){
       this.item = item;
@@ -77,6 +94,7 @@ export class SelectedItem {
       this.itemPropsLoaded = this.getProps();
       this.itemDocsLoaded = this.getDocs();
       this.itemHistoryLoaded = this.getHistory();
+      this.itemRoutesLoaded = this.getRoutes();
     }
 
     public getItemProps() : Promise<any> {
@@ -89,6 +107,10 @@ export class SelectedItem {
 
    public getItemHistory() : Promise<any> {
       return this.itemHistoryLoaded;
+   }
+
+   public getItemRoutes() : Promise<any> {
+      return this.itemRoutesLoaded;
    }
 
    public getId(): number {

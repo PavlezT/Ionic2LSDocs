@@ -1,0 +1,21 @@
+<ion-content style="z-index: -1">
+    <ion-list  no-lines style="z-index: -1">
+        <ion-item class="task" *ngFor="let task of taskHistory | arraySort:'-EvanteDate'" >
+            <!--<div item-left><div class="marker"></div></div>-->
+            <h3>
+                <div class="marker"></div>
+                <span>{{task.Event}}</span> <span>{{task.TaskTitle}}</span> для
+                <span class="user">{{task.NameExecutor}}</span> от <span class="user">{{task.NameAuthore}}</span>
+                <span> со сроком до </span>
+                <span>{{task.DueDate}}</span>
+            </h3>
+            <p>{{task.EvanteDate}}</p>
+        </ion-item>
+        <ion-item *ngIf="routeList && routeList.length == 0">
+           <h2> Здесь пусто</h2>
+        </ion-item>
+        <ion-item *ngIf="!routeList">
+           <h2> Загрузка...</h2>
+        </ion-item>
+    </ion-list>
+</ion-content>
