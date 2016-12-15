@@ -29,6 +29,13 @@ $colors: (
   dark:       #222
 );
 
+ion-label{
+        white-space: normal !important;
+    }
+
+ion-content, ion-list {
+  z-index: -1;
+}
 
 // App iOS Variables
 // --------------------------------------------------

@@ -22,11 +22,13 @@ export class Contracts {
     this.getItems()
       .then( res => {
          this.items = res.json().d.results.filter( item => {
+            item.Created = item.Created? (new Date(item.Created).toLocaleString()) : null;
+            item.Modified = item.Modified? (new Date(item.Modified).toLocaleString()) : null;
             return item.Title ? item : null;
          });
       })
       .catch( error => {
-        console.error(`Error in getItems from ${this.listTitle}`,error);
+        console.error(`<Contracts> Error in getItems from ${this.listTitle}`,error);
         this.items = [];
       })
   }
@@ -40,7 +42,7 @@ export class Contracts {
   }
 
   getItems(): Promise <any> {
-     let listGet = `${consts.siteUrl}/_api/Web/Lists('${this.guid}')/Items?$select=Id,Title,ContentTypeId,Created,Modified&$top=25&$orderby=Id desc`;
+     let listGet = `${consts.siteUrl}/_api/Web/Lists('${this.guid}')/Items?$select=Id,Title,ContentTypeId,Created,Modified&$top=50&$orderby=Id desc`;
 
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
      let options = new RequestOptions({ headers: headers });

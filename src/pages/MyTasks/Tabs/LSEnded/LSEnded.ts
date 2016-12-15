@@ -1,11 +1,12 @@
 import { Component , Inject } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, ModalController } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
 import 'moment/locale/pt-br';
 
 import * as consts from '../../../../utils/Consts';
 import { User } from '../../../../utils/user';
+import { TaskItem } from '../../TaskItem/TaskItem';
 
 @Component({
   selector: 'LSEnded',
@@ -16,7 +17,7 @@ export class LSEnded {
    items : Array<any>;
    siteUrl : string;
 
-   constructor(public navCtrl: NavController,@Inject(Http) public http: Http, @Inject(User) public user : User) {
+   constructor(public navCtrl: NavController,public modalCtrl: ModalController,@Inject(Http) public http: Http, @Inject(User) public user : User) {
       this.siteUrl = consts.siteUrl;
       moment.locale('ru');
       this.user.getUserProps()
@@ -25,14 +26,15 @@ export class LSEnded {
          })
          .then( tasks => {
             this.items = JSON.parse( (JSON.parse(tasks._body)).d.results[0].UserHistory);
-            this.items = this.items.map((item,i,arr)=> {
+            this.items = this.items.filter((item,i,arr)=> {
+               item.StartDate = moment(item.StartDate).format("dd, DD MMMM");
                item.DueDate = moment(item.DueDate).format("dd, DD MMMM");
                if(item.EventType.includes('EventDoneTask'))
                   return item;
             });
          })
          .catch( error => {
-            console.error('<LSNew> Fail loading ',error);
+            console.error('<LSEnded> Fail loading ',error);
             this.items = [];
          })
    }
@@ -47,12 +49,10 @@ export class LSEnded {
    }
 
    itemTapped(event, item){
-      console.log('Item in My Tasks tapped',item)
-    //   this.selectedItem.set(item,this.guid);
-    //   this.navCtrl.push(Item, {
-    //    item: item,
-    //    listGUID : this.guid
-    //   });
+      let modal = this.modalCtrl.create(TaskItem,{
+        item : item
+      });
+      modal.present();
    }
 
 }

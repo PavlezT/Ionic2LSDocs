@@ -16,13 +16,14 @@ import { LSNew } from '../pages/MyTasks/Tabs/LSNew/LSNew';
 import { LSActive } from '../pages/MyTasks/Tabs/LSActive/LSActive';
 import { LSLate } from '../pages/MyTasks/Tabs/LSLate/LSLate';
 import { LSEnded } from '../pages/MyTasks/Tabs/LSEnded/LSEnded';
+import { TaskItem } from '../pages/MyTasks/TaskItem/TaskItem';
 
 @NgModule({
   declarations: [
     MyApp,
     MyTasks,
     Contracts,
-    Item,
+    Item, TaskItem,
     InfoTab, Documents, History, Route, ArraySortPipe,
     LSNew , LSActive ,LSLate , LSEnded
   ],
@@ -34,7 +35,7 @@ import { LSEnded } from '../pages/MyTasks/Tabs/LSEnded/LSEnded';
     MyApp,
     MyTasks,
     Contracts,
-    Item,
+    Item, TaskItem,
     InfoTab, Documents, History, Route,
     LSNew , LSActive ,LSLate , LSEnded
   ],

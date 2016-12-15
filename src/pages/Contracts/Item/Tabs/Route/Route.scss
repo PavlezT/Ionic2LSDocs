@@ -2,10 +2,35 @@ route {
     ion-label{
         white-space: normal;
     }
-
-    h3 {
-        span.user {
-            color:blue;
-        }
+    .route_item[started=true]{
+        border-left: 8px solid #444;
+    }
+    .route_item[started=false]{
+        border-left: 8px solid transparent;
+    }
+    .state_id{
+        display: inline-block;
+        width:5%;
+    }
+    .state_name{
+        font-weight: 700;   
+        // padding-left: 10px; 
+        width:80%;
+        display: inline-block;
+    }
+    .state_name[done=true]{
+        text-decoration: line-through;
+    }
+    ion-icon {
+        // padding-right: 10px;
+        width:5%;
+    }
+    .left{
+        display: inline-block;
+        width:30%;
+    }
+    .right{
+        display: inline-block;
+        width:50%;
     }
 }

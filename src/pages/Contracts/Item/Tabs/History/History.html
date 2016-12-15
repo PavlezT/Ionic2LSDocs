@@ -11,10 +11,10 @@
             </h3>
             <p>{{task.EvanteDate}}</p>
         </ion-item>
-        <ion-item *ngIf="historyList && historyList.length == 0">
+        <ion-item *ngIf="history && history.length == 0">
            <h2> Здесь пусто</h2>
         </ion-item>
-        <ion-item *ngIf="!historyList">
+        <ion-item *ngIf="!history">
            <h2> Загрузка...</h2>
         </ion-item>
     </ion-list>

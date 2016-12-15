@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      {{Title}}
+    </ion-title>
+    <ion-buttons start>
+      <button ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-label>
+    <div class="line" >
+       <ion-icon name="ios-return-left"></ion-icon>
+       <div class="left">Автор</div>
+       <div class="right">
+         <div class="user">
+           <ion-avatar item-left>
+             <img src="{{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{taskAuthore.Email}}">
+           </ion-avatar>
+           <span>{{taskAuthore.Title}}</span>
+         </div>
+       </div>
+    </div>
+    <div class="line">
+       <ion-icon name="ios-return-right"></ion-icon>
+       <div class="left">Назначено</div>
+       <div class="right">
+         <div class="user">
+           <ion-avatar item-left>
+             <img src="{{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{assignetTo.Email}}">
+           </ion-avatar>
+           <span>{{assignetTo.Title}}</span>
+         </div>
+       </div>
+    </div>
+    <div class="line">
+       <ion-icon name="ios-calendar-outline"></ion-icon>
+       <div class="left">Дата начала</div>
+       <div class="right">{{startDate}}</div>
+    </div>
+    <div class="line">
+       <ion-icon name="ios-timer-outline"></ion-icon>
+       <div class="left">Срок</div>
+       <div class="right">{{deadLine}}</div>
+    </div>
+  </ion-label>
+</ion-content>

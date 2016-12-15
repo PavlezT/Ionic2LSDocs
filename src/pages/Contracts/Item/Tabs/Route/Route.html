@@ -1,20 +1,35 @@
 <ion-content style="z-index: -1">
-    <ion-list  no-lines style="z-index: -1">
-        <ion-item class="task" *ngFor="let task of taskHistory | arraySort:'-EvanteDate'" >
-            <!--<div item-left><div class="marker"></div></div>-->
-            <h3>
-                <div class="marker"></div>
-                <span>{{task.Event}}</span> <span>{{task.TaskTitle}}</span> для
-                <span class="user">{{task.NameExecutor}}</span> от <span class="user">{{task.NameAuthore}}</span>
-                <span> со сроком до </span>
-                <span>{{task.DueDate}}</span>
-            </h3>
-            <p>{{task.EvanteDate}}</p>
+    <ion-list style="z-index: -1">
+        <ion-item *ngFor="let route of routesList" class="route_item" [attr.started]="route.StateStatus == 'InProgress' ? true : false" >
+            <div>
+                <div class="state_id">{{route.StateNumber}}</div>
+                <div class="state_name" [attr.done]="route.StateStatus == 'Completed' ? true : false" >{{route.StateName}}</div> 
+            </div>
+            <div>
+                <ion-icon name="ios-contacts-outline"></ion-icon>
+                <div class="left" >Назначено:</div>
+                <div class="right" >{{route.ExecutorType == 'DocAuthore'?'Автор документа': 'Нету еще перевода'}}</div>
+            </div>
+            <div>
+                <ion-icon name="ios-timer-outline"></ion-icon>
+                 <div class="left" >Срок:</div>
+                 <div class="right">{{route.StateEstimate}} {{route.StateEstimate == 1?'день': (route.StateEstimate > 4?'дней':'дня') }}</div>
+            </div>
+            <div *ngIf="route.StartDate">
+                <ion-icon name="play"></ion-icon>
+                <div class="left" >Начало:</div>
+                <div class="right" >{{route.StartDate}}</div>
+            </div>
+            <div *ngIf="route.EndDate">
+                <ion-icon name="square"></ion-icon>
+                <div class="left" >Завершено:</div>
+                <div class="right" >{{route.EndDate}}</div>
+            </div>
         </ion-item>
-        <ion-item *ngIf="routeList && routeList.length == 0">
+        <ion-item *ngIf="routesList && routesList.length == 0">
            <h2> Здесь пусто</h2>
         </ion-item>
-        <ion-item *ngIf="!routeList">
+        <ion-item *ngIf="!routesList">
            <h2> Загрузка...</h2>
         </ion-item>
     </ion-list>

@@ -1,35 +1,32 @@
 import { Component, Inject } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { SelectedItem } from '../../../../../utils/selecteditem';
-//import { ArraySortPipe } from '../../../../../utils/arraySort';
+import * as moment from 'moment';
+import 'moment/locale/pt-br';
 
 @Component({
    selector: 'route',
-   //providers: [ArraySortPipe],
    templateUrl: 'Route.html'
 })
 export class Route {
 
-  routeList : Array<any>;
-  taskHistory: Array<any>;
+  routesList : Array<any>;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, @Inject(SelectedItem) public selectedItem : SelectedItem) {
-
+      moment.locale('ru');
       selectedItem.getItemRoutes()
        .then( routes => this.getRoutes(routes) )
   }
 
-  getRoutes(history) : void {
-     console.log('routes',history);
-   //   this.historyList = history.map( (item, i , arr) => {
-   //      this.taskHistory = JSON.parse(item.TaskHistory);
-   //      this.taskHistory.map( task => {
-   //        task.EvanteDate = task.EvanteDate.substring(0,10).split('.').reverse().join('-') + task.EvanteDate.substring(10,task.EvanteDate.length);
-     //
-   //        return task;
-   //      });
-   //      return item;
-   //   });
+  getRoutes(routes) : void {
+     this.routesList = routes.map( item =>{
+       console.log('routes',item)
+       item.StartDate = item.StartDate? moment(item.StartDate).format('DD.MM.YYYY в HH:mm') : null;
+       item.EndDate = item.EndDate? moment(item.EndDate).format('DD.MM.YYYY в HH:mm') : null;
+       return item;
+     })
+     //StateStatus:Completed
+     //StateStatus:InProgress
   }
 
 }

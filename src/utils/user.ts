@@ -1,6 +1,9 @@
 
 import { Injectable , Inject } from '@angular/core';
 import { Http, Headers, RequestOptions  } from '@angular/http';
+import 'rxjs/add/operator/retry';
+import 'rxjs/add/operator/timeout';
+import 'rxjs/add/operator/delay';
 import * as consts from './Consts';
 
 @Injectable()
@@ -16,6 +19,7 @@ export class User{
       this.email = 'e@e';
       this.user = {};
       this.user.Title = 'Bob'; 
+      this.itemPropsLoaded = Promise.resolve('not inited');
     }
 
     private getProps() : Promise<any> {
@@ -25,6 +29,8 @@ export class User{
      let options = new RequestOptions({ headers: headers });
 
      return this.http.get(listGet,options)
+        // .retryWhen(error => error.delay(500))
+        // .timeout(200, new Error('delay exceeded'))
          .toPromise()
          .then( res => {
             this.user = res.json().d;
@@ -34,7 +40,7 @@ export class User{
          })
          .catch( error => {
            console.error('<User> Loading Props error!',error);
-           return this.getProps();
+           //return this.getProps();
          })
    }
 

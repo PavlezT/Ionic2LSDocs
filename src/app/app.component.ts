@@ -112,7 +112,6 @@ export class MyApp {
            text: 'Подтвердить',
            handler: data => {
              this.getLogin(data.Email,data.Password);
-             console.log('Saved clicked',data);
            }
          }
        ]

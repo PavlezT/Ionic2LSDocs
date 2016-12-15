@@ -1,0 +1,43 @@
+taskitem {
+   .toolbar-title{
+      //white-space: normal;
+      word-spacing: 10px;
+   }
+
+   ion-label{
+      padding-left:15px;
+      div.line{
+         margin-bottom:1%;
+      }
+      ion-icon {
+        width:7%;
+        font-size: 1.5em;
+      }
+   }
+
+   ion-avatar {
+      display: inline-block;
+      line-height: 1;
+      max-height: 30px;
+      max-width: 30px;
+      border-radius: 50%;
+      img {
+         border-radius: 50px;
+      }
+   }
+   .left{
+        display: inline-block;
+        width:30%;
+    }
+    .right{
+        display: inline-block;
+        width:50%;
+    }
+    .user{
+      //  width:100px;
+      //  height:30px;
+       display: inline-block;
+       border:2px solid #444;
+       border-radius: 20px;
+    }
+}
