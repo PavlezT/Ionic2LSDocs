@@ -19,8 +19,7 @@ export class Route {
   }
 
   getRoutes(routes) : void {
-     this.routesList = routes.map( item =>{
-       console.log('routes',item)
+     this.routesList = routes.map( item => {
        item.StartDate = item.StartDate? moment(item.StartDate).format('DD.MM.YYYY в HH:mm') : null;
        item.EndDate = item.EndDate? moment(item.EndDate).format('DD.MM.YYYY в HH:mm') : null;
        return item;

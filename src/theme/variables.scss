@@ -37,6 +37,9 @@ ion-content, ion-list {
   z-index: -1;
 }
 
+.scroll-content{
+   overflow-y: auto !important;
+}
 // App iOS Variables
 // --------------------------------------------------
 // iOS only Sass variables can go here

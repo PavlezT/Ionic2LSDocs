@@ -8,7 +8,7 @@ import * as consts from '../../../utils/Consts';
 })
 export class TaskItem {
   siteUrl : string;
-     
+
   task : any;
   Title : string;
   startDate : string;
@@ -23,13 +23,25 @@ export class TaskItem {
     this.Title = navParams.data.item.Title || navParams.data.item.TaskTitle;
     this.startDate = navParams.data.item.StartDate;
     this.deadLine = navParams.data.item.TaskDueDate || navParams.data.item.DueDate;
-    this.assignetTo = {Email: navParams.data.item.AssignetToEmail, Title: navParams.data.item.AssignetToTitle } || {Email: navParams.data.item.AthoreEmail ,Title: navParams.data.item.NameExecutor};
-    this.taskAuthore = navParams.data.item.TaskAuthore || {Eamil :navParams.data.item.ExecutorEmail,Title : navParams.data.item.NameAuthore };
+    this.assignetTo = navParams.data.item.AssignetToEmail ?{Email: navParams.data.item.AssignetToEmail, Title: navParams.data.item.AssignetToTitle } : {Email: navParams.data.item.ExecutorEmail ,Title: navParams.data.item.NameExecutor};
+    this.taskAuthore = navParams.data.item.TaskAuthore || {Email :navParams.data.item.AthoreEmail,Title : navParams.data.item.NameAuthore };
     console.log('this task',this.task);
   }
 
   dismiss(){
      this.viewCtrl.dismiss();
+  }
+
+  toworkTask(){
+     console.log('to work')
+  }
+
+  cancelTask(){
+     console.log('cancel work')
+  }
+
+  executeTask(){
+     console.log('execute task');
   }
 
 }

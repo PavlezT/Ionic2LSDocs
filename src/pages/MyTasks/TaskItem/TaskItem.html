@@ -48,4 +48,27 @@
        <div class="right">{{deadLine}}</div>
     </div>
   </ion-label>
+  <ion-item>
+      <ion-label floating>Введите коментарий к выполнению задачи</ion-label>
+      <ion-textarea></ion-textarea>
+ </ion-item>
 </ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons left>
+      <button full ion-button (click)="toworkTask()">
+         <ion-icon name="arrow-down"></ion-icon>
+         <div>В роботу</div>
+      </button>
+      <button full ion-button (click)="cancelTask()">
+         <ion-icon name="close"></ion-icon>
+         <div>Отменить</div>
+      </button>
+      <button full ion-button (click)="executeTask()">
+         <ion-icon name="checkmark"></ion-icon>
+         <div>Выполнить</div>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
