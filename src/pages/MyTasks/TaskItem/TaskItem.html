@@ -19,7 +19,7 @@
        <div class="right">
          <div class="user">
            <ion-avatar item-left>
-             <img src="{{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{taskAuthore.Email}}">
+             <img src="{{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{taskAuthore.Email}}" />
            </ion-avatar>
            <span>{{taskAuthore.Title}}</span>
          </div>
@@ -31,7 +31,7 @@
        <div class="right">
          <div class="user">
            <ion-avatar item-left>
-             <img src="{{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{assignetTo.Email}}">
+             <img src="{{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{assignetTo.Email}}" />
            </ion-avatar>
            <span>{{assignetTo.Title}}</span>
          </div>
@@ -47,28 +47,38 @@
        <div class="left">Срок</div>
        <div class="right">{{deadLine}}</div>
     </div>
-  </ion-label>
-  <ion-item>
-      <ion-label floating>Введите коментарий к выполнению задачи</ion-label>
-      <ion-textarea></ion-textarea>
- </ion-item>
+</ion-label>
+<ion-item>
+    <ion-label floating>Введите коментарий к выполнению задачи</ion-label>
+    <ion-textarea #coments rows="6" ></ion-textarea>
+</ion-item>
 </ion-content>
 
 <ion-footer>
   <ion-toolbar>
-    <ion-buttons left>
-      <button full ion-button (click)="toworkTask()">
-         <ion-icon name="arrow-down"></ion-icon>
-         <div>В роботу</div>
-      </button>
-      <button full ion-button (click)="cancelTask()">
-         <ion-icon name="close"></ion-icon>
-         <div>Отменить</div>
-      </button>
-      <button full ion-button (click)="executeTask()">
-         <ion-icon name="checkmark"></ion-icon>
-         <div>Выполнить</div>
-      </button>
+    <ion-buttons full>
+      <ion-grid>
+        <ion-row>
+          <ion-col >
+             <button  clear ion-button (click)="toworkTask()">
+                <ion-icon name="arrow-down"></ion-icon>
+                <div>В роботу</div>
+            </button>
+         </ion-col>
+         <ion-col>
+            <button  clear ion-button (click)="cancelTask()">
+               <ion-icon name="close"></ion-icon>
+               <div>Отменить</div>
+            </button>
+         </ion-col>
+         <ion-col>
+            <button  clear ion-button (click)="executeTask()">
+               <ion-icon name="checkmark"></ion-icon>
+               <div>Выполнить</div>
+            </button>
+         </ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-buttons>
   </ion-toolbar>
 </ion-footer>

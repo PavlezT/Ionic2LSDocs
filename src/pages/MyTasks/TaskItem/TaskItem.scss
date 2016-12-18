@@ -1,4 +1,26 @@
 taskitem {
+   opacity: 0.99 !important;
+   .scroll-content {
+      overflow: visible !important;
+   }
+
+   ion-footer{
+      padding:0;
+      ion-toolbar{
+         padding:0;
+         ion-grid{
+            padding:0;
+            ion-col{
+               padding:0;
+               button{
+                  color: #444 !important;
+                  width: 100%;
+               }
+            }
+         }
+      }
+   }
+
    .toolbar-title{
       white-space: normal;
       word-spacing: 10px;
@@ -38,8 +60,6 @@ taskitem {
         width:50%;
     }
     .user{
-      //  width:100px;
-      //  height:30px;
        display: inline-block;
        border:2px solid #444;
        border-radius: 20px;

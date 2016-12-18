@@ -3,7 +3,13 @@
     <button ion-button menuToggle>
         <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title><h2>{{id}} {{title}}</h2></ion-title>
+    <ion-title>
+      <ion-slides>
+         <ion-slide>
+            <h2>{{id}} {{title}}</h2>
+         </ion-slide>
+      </ion-slides>
+   </ion-title>
     <!--<ion-buttons end>
       <button ion-button icon-only color="royal">
         <ion-icon name="md-create"></ion-icon>

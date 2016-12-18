@@ -1,7 +1,7 @@
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 import { Injectable, Inject } from '@angular/core';
-import { File , Device } from 'ionic-native';
+import { File , Device, NativeStorage } from 'ionic-native';
 import * as consts from './Consts';
 
 declare var cordova:any;
@@ -14,6 +14,7 @@ export class Auth {
 
    constructor(@Inject(Http) http: Http){
       this.http = http;
+
    }
 
    public init(url:string, options:{username:string,password:string}){
@@ -33,7 +34,22 @@ export class Auth {
             .replace(/>/g, '&gt;');
    }
 
-   checkAuthAlready(host :string){
+   saveUserCredentials(): void{
+      NativeStorage.setItem('user',{username:this.options.username,password: this.options.password})
+      .then(
+         //()=>{
+         // Promise.all([this.secureStorage.set('username', 'ddd'),
+         //             this.secureStorage.set('password','pppp')])//this.options.password
+         //  .then(
+            data => console.log('<Auth> User credentials data saved'),
+            error => { console.error('<Auth> Error setting credentials in storage',error);}
+            //throw new Error('<Auth> Saving user credentials data:'+ error.message)}
+      //   );
+   //   }
+      )
+   }
+
+   checkAuthActive(host :string){
       host = host.substring(0,host.indexOf('/sites/'));
       let now = new Date();
       let expiredOn = new Date(window.localStorage.getItem(host));
@@ -45,8 +61,17 @@ export class Auth {
       return true;
    }
 
+   checkAuthAlready(host : string){
+      host = host.substring(0,host.indexOf('/sites/'));
+      let expiry= window.localStorage.getItem(host);
+      if(expiry)
+         return true;
+      return false;
+   }
+
    setCookieExpiry(host : string, expiry : Date){
       window.localStorage.setItem(host , expiry.toString());
+      this.saveUserCredentials();
    }
 
    getAuth(): any{
@@ -85,11 +110,11 @@ export class Auth {
                return true;
             })
             .catch(error => {
-               console.dir(error);
+               throw new Error(error.message);
             })
      }
 
-    public getTokenWithOnline(): Promise<any> {
+   public getTokenWithOnline(): Promise<any> {
         let self = this;
         let host = self.url.substring(0,self.url.indexOf('/sites/'));
         let spFormsEndPoint =  host + "/" + consts.FormsPath;//'https:' + "//" +
@@ -109,12 +134,11 @@ export class Auth {
                   return response.text()
                })
                .catch( error => {
-                  //return `Error:${error.text()}`;
                   throw new Error(`Error in posting XML to loginmicrosoft:\n${JSON.stringify(error)}`);
                })
     }
 
-    public readFile(path,filename):Promise <any>{
+   public readFile(path,filename):Promise <any>{
       if(Device.device.uuid)//this is device
          return File.readAsText(cordova.file.applicationDirectory + path,filename);
       else if(filename.includes('online_saml.tmpl')){
@@ -150,7 +174,7 @@ export class Auth {
       }
     }
 
-    public postToken(tokenResponse){//:Promise <any>
+   public postToken(tokenResponse){//:Promise <any>
        let self = this;
        let host = self.url.substring(0,self.url.indexOf('/sites/'));
        let spFormsEndPoint =  host + "/" + consts.FormsPath;//(Device.device.uuid) ? ( host + "/" + consts.FormsPath) : ('/api?'+ "/" + consts.FormsPath);

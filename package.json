@@ -36,6 +36,7 @@
     "cordova-plugin-device",
     "cordova-plugin-splashscreen",
     "cordova-plugin-file",
+    "cordova-plugin-secure-storage",
     "ionic-plugin-keyboard"
   ],
   "cordovaPlatforms": [

@@ -1,6 +1,6 @@
 import { Component, ViewChild ,NgZone, Inject} from '@angular/core';
-import { Nav, Platform , AlertController , LoadingController } from 'ionic-angular';
-import { StatusBar, Splashscreen } from 'ionic-native';
+import { Nav, Platform , AlertController , LoadingController, ToastController } from 'ionic-angular';
+import { StatusBar, Splashscreen, NativeStorage , Network } from 'ionic-native';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 
 import * as consts from '../utils/Consts';
@@ -16,14 +16,17 @@ import { Contracts } from '../pages/Contracts/Contracts';
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
+  errorCounter : number;
+  // secureStorage: SecureStorage;
   siteUrl = consts.siteUrl;
   rootPage: any = MyTasks;
   pages: Array<{title: string, icon:string, component: any , listGUID  : string }>;
   loader : any;
+  toast : any;
 
-  constructor(public platform: Platform, public alertCtrl: AlertController,public loadingCtrl: LoadingController, public auth: Auth,@Inject(Http) public http: Http, private zone:NgZone, @Inject(User) public user : User) {
+  constructor(public platform: Platform, public alertCtrl: AlertController,public loadingCtrl: LoadingController,public toastCtrl: ToastController, public auth: Auth,@Inject(Http) public http: Http, private zone:NgZone, @Inject(User) public user : User) {
     this.initializeApp();
-    // used for an example of ngFor and navigation
+    this.errorCounter = 0;
     this.pages = [
       { title: 'Мои задачи', icon:"home", component: MyTasks , listGUID : 'none'}
     ];
@@ -32,53 +35,89 @@ export class MyApp {
 
   initializeApp() {
     this.platform.ready().then(() => {
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
       StatusBar.styleDefault();
       Splashscreen.hide();
 
-      if(!(this.auth.checkAuthAlready(consts.siteUrl))){
-         this.showPrompt();
-      } else {
+      this.checkNetwork().then(()=>{
+         if(!(this.auth.checkAuthAlready(consts.siteUrl))){
+            this.showPrompt();
+         } else if(!(this.auth.checkAuthActive(consts.siteUrl))){
+            this.reLogin();
+         } else {
+            this.startApp();
+         }
+      })
+      .catch((reason : string)=>{
          this.presentLoading();
-         this.startApp();
-      }
+         this.showToast(reason);
+      })
     });
+  }
+
+  checkNetwork() : Promise<any>{
+    if(Network.connection != 'none'){
+      return Promise.resolve();
+    }
+    return Promise.reject('There is no internet connection');
   }
 
   getLogin(userName : string , userPassword : string) : void {
      this.presentLoading();
      this.auth.init(consts.siteUrl,{username : userName, password : userPassword});//'oleg.dub@lsdocs30.onmicrosoft.com'  'Ljrevtyn0'
-     this.auth.getAuth().then((result) => {
-        if(!result){
-           this.showPrompt();
+     this.auth.getAuth().then(
+        result => {
            this.stopLoading();
-           // throw Error('Auth fault!');
-        } else {
            this.startApp();
-        }
-     })
+        },
+        errorMessage => {
+           this.showPrompt();
+           this.showToast(errorMessage);
+           this.stopLoading();
+        })
+  }
+
+  reLogin():void {
+     //this.secureStorage = new SecureStorage();
+    // Promise.all([this.secureStorage.get('username'),this.secureStorage.get('password')])
+    this.presentLoading();
+    NativeStorage.getItem('user')
+     .then(
+       user => {
+          this.stopLoading();
+          this.getLogin(user.username, user.password);
+       },
+       error => {
+          console.error('#Native storage: ',error);
+          this.stopLoading();
+          this.showToast(`Can't load user credentials`);
+          this.showPrompt();
+       }
+     )
   }
 
   startApp() : Promise<any>{
+     this.presentLoading();
       return Promise.all([this.user.init(),this.getLists()])
         .then( res => {
              res[1].json().d.results.map((item,i,mass) => {
                  if(item.ListTitle && item.ListGUID)
                     this.pages.push({ title: item.ListTitle , icon:"folder", component: Contracts , listGUID : item.ListGUID})
              });
-        })
-        .then( () => {
-            this.stopLoading();
+             this.stopLoading();
         })
         .catch( error => {
             console.error(`Error in makein Burger Menu`,error);
-        });
- }
+            if(this.errorCounter < 3 && error.status == '403'){
+               this.errorCounter++;
+               this.stopLoading();
+               this.reLogin();
+            } else {
+               this.showToast('Can`t load entrance data');
+            }
+        })
+  }
 
   openPage(page) {
-    // Reset the content nav to have just this page
-    // we wouldn't want the back button to show in this scenario
     this.nav.setRoot(page.component,{title : page.title , guid : page.listGUID });
   }
 
@@ -91,7 +130,8 @@ export class MyApp {
     return this.http.get(listGet,options).toPromise();
   }
 
-  showPrompt() {
+   showPrompt() : void {
+     this.platform.registerBackButtonAction((e)=>{return false;},100); // e.preventDefault();
      let prompt = this.alertCtrl.create({
        title: 'LogIn',
        message: "Введите свой email и пароль для входа",
@@ -117,6 +157,7 @@ export class MyApp {
        ]
      });
      prompt.present();
+     prompt.onDidDismiss((event) => { });
    }
 
    presentLoading() : void {
@@ -126,7 +167,17 @@ export class MyApp {
       this.loader.present();
     }
 
-    stopLoading() : void{
+   stopLoading() : void {
       this.loader.dismiss();
+   }
+
+   showToast(message: any){
+       this.toast = this.toastCtrl.create({
+         message: (typeof message == 'string' )? message : message.toString().substring(0,( message.toString().indexOf('&#x') || message.toString().length)) ,
+         position: 'bottom',
+         showCloseButton : true,
+         duration: 9000
+       });
+       this.toast.present();
    }
 }

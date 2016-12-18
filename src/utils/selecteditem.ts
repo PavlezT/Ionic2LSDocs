@@ -72,7 +72,6 @@ export class SelectedItem {
     }
 
     private getRoutes() : Promise<any> {
-                                     //  _api/Web/Lists/GetByTitle('RoutesForDocs')/items?$filter=(sysListId eq 'da50a3c2-3138-4a85-9b2d-7c0c813c3a6c') and (sysTypeId eq '8cb170f9-87bd-4bab-9c3e-b26702590d6d')
       let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('RoutesForCurentDoc')/items?$select=sysListId,sysTypeId,ID,ManualState,StatePermission,EditState,StateNumber,StateName,StartDate,StateType,EndDate,ExecutJobTitle,StateEstimate,StateExecutore,StateStatus,ExecutorType,StateExecutore/Title,StateExecutore/Name&$expand=StateExecutore/Title,StateExecutore/Name&$filter=(sysListId eq '${this.listGUID}') and (sysIDItem eq '${this.item.Id}')&$orderby=StateNumber asc`;
 
       let headers = new Headers({'Accept': 'application/json;odata=verbose'});

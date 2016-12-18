@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ViewController, NavParams } from 'ionic-angular';
 import * as consts from '../../../utils/Consts';
 
@@ -16,6 +16,7 @@ export class TaskItem {
   assignetTo : {Email : string, Title: string};
   taskAuthore : {Email : string, Title: string};
 
+  @ViewChild('coments') myInput ;
 
   constructor(public viewCtrl: ViewController, public navParams: NavParams) {
     this.siteUrl = consts.siteUrl;
@@ -26,6 +27,14 @@ export class TaskItem {
     this.assignetTo = navParams.data.item.AssignetToEmail ?{Email: navParams.data.item.AssignetToEmail, Title: navParams.data.item.AssignetToTitle } : {Email: navParams.data.item.ExecutorEmail ,Title: navParams.data.item.NameExecutor};
     this.taskAuthore = navParams.data.item.TaskAuthore || {Email :navParams.data.item.AthoreEmail,Title : navParams.data.item.NameAuthore };
     console.log('this task',this.task);
+  }
+
+  ionViewDidLoad() {
+
+   //  setTimeout(() => {
+   //    this.myInput.setFocus();
+   // },550);
+
   }
 
   dismiss(){

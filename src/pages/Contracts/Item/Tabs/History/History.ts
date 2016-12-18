@@ -19,14 +19,13 @@ export class History {
   }
 
   getHistory(history) : void {
-    this.history = history[0] || [];
-    if(this.history && this.history.length > 0){
+    this.history = history[0] || {};
+    if(this.history && this.history.propertyIsEnumerable('TaskHistory') ){
       this.taskHistory = JSON.parse(this.history.TaskHistory).map( task => {
         task.EvanteDate = task.EvanteDate.substring(0,10).split('.').reverse().join('-') + task.EvanteDate.substring(10,task.EvanteDate.length);
         return task;
       })
-    } 
+    }
   }
 
 }
-
