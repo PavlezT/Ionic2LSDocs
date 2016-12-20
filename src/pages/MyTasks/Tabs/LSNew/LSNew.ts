@@ -1,5 +1,5 @@
 import { Component , Inject } from '@angular/core';
-import { Platform , NavController ,ModalController } from 'ionic-angular';
+import { Platform , NavController ,ModalController, Events } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
 import 'moment/locale/pt-br';
@@ -17,31 +17,37 @@ export class LSNew {
    items : Array<any>;
    siteUrl : string;
 
-   constructor(public platform: Platform, public navCtrl: NavController, public modalCtrl: ModalController, @Inject(Http) public http: Http, @Inject(User) public user : User) {
+   constructor(public platform: Platform, public navCtrl: NavController, public modalCtrl: ModalController,public events: Events, @Inject(Http) public http: Http, @Inject(User) public user : User) {
       this.platform.ready().then(()=> {
         this.siteUrl = consts.siteUrl;
         moment.locale('ru');
-
-         this.user.getUserProps()
-          .then(() => {
-              return this.getNewTasks()
-          })
-          .then( tasks => {
-              this.items = (JSON.parse(tasks._body)).d.results;
-              this.items.map((item,i,arr)=>{
-                item.StartDate = moment(item.StartDate).format("dd, DD MMMM");
-                item.TaskDueDate = moment(item.TaskDueDate).format("dd, DD MMMM");
-                return item;
-              });
-          })
-          .catch( error => {
-              console.error('<LSNew> Fail loading ',error);
-              this.items = [];
-          })
+        events.subscribe('user:loaded',()=>{
+            this.loadTasks();
+        });
+        this.loadTasks();
       });
    }
 
-   getNewTasks() : Promise<any>{
+   loadTasks() : void {
+     this.user.getUserProps()
+            .then(() => {
+                return this.getNewTasks()
+            })
+            .then( tasks => {
+                this.items = (JSON.parse(tasks._body)).d.results;
+                this.items.map((item,i,arr)=>{
+                  item.StartDate = moment(item.StartDate).format("dd, DD MMMM");
+                  item.TaskDueDate = moment(item.TaskDueDate).format("dd, DD MMMM");
+                  return item;
+                });
+            })
+            .catch( error => {
+                console.error('<LSNew> Fail loading ',error);
+                this.items = [];
+            });
+   }
+
+   getNewTasks() : Promise<any> {
      let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=sysIDItem,ContentTypeId,AssignetToEmail,AssignetToTitle,ID,sysIDList,Title,StartDate,ContentTypeId,ContentType/Name,sysTaskLevel,TaskResults,TaskDescription,sysIDMainTask,sysIDParentMainTask,TaskDueDate,OData__Status,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail,ContentType/Name&$filter=(AssignetToEmail eq '${this.user.getEmail()}') and (OData__Status eq 'Not Started')&$orderby=TaskDueDate%20asc&$top=1000`;
 
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});

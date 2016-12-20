@@ -69,7 +69,7 @@
     <preference name="orientation" value="portrait" />
     <preference name="FadeSplashScreen" value="true" />
     <preference name="FadeSplashScreenDuration" value="750" />
-    <preference name="loadUrlTimeoutValue" value="700000" />
+    <!--<preference name="loadUrlTimeoutValue" value="700000" />-->
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="10000" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />

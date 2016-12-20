@@ -18,25 +18,24 @@ export class InfoTab {
       this.id  = selectedItem.getId();
       this.listGUID = selectedItem.getListGUID();
       
-      selectedItem.getItemProps()
-         .then( itemProps => this.getItemProps(itemProps));
+      Promise.all([selectedItem.getItemFileds(),selectedItem.getItemProps()])
+         .then( (res) => this.getItemProps(res[0],res[1]));
   }
 
-  getItemProps(itemProps){
-     let keys = this.keys(itemProps);
+  getItemProps(ItemFields,itemProps){
+     let keys = ItemFields;//this.keys(itemFields);
      let props = {};
-     keys.map( (key, i ,arr) =>{
-        if(itemProps[key] && !key.includes('_'))
-            props[key] = itemProps[key];
+     keys.map( (key, i ,arr) => {
+        if(itemProps[key.StaticName] && !key.StaticName.includes('_'))
+            props[key.StaticName] = itemProps[key.StaticName];
      })
 
      this.itemProps = props;
-     this.itemKeys = this.keys(this.itemProps);
-
+     this.itemKeys = ItemFields;
   }
 
-  keys(obj) : Array<string> {
-     return Object.keys(obj);
-  }
+  // keys(obj) : Array<string> {
+  //    return Object.keys(obj);
+  // }
 
 }

@@ -2,8 +2,8 @@
     <ion-list  no-lines margin-bottom style="z-index: -1">
         <ion-item *ngFor="let key of itemKeys" >
             <div margin-right>
-               <h2>{{key}}</h2>
-               <h3>{{itemProps[key]}}</h3>
+               <h2>{{key.Title}}</h2>
+               <h3>{{itemProps[key.StaticName]}}</h3>
             </div>
         </ion-item>
         <ion-item *ngIf="itemKeys && itemKeys.length == 0">

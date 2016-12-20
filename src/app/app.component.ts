@@ -1,5 +1,5 @@
 import { Component, ViewChild ,NgZone, Inject} from '@angular/core';
-import { Nav, Platform , AlertController , LoadingController, ToastController } from 'ionic-angular';
+import { Nav, Platform , AlertController , LoadingController, ToastController, Events } from 'ionic-angular';
 import { StatusBar, Splashscreen, NativeStorage , Network } from 'ionic-native';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 
@@ -24,7 +24,7 @@ export class MyApp {
   loader : any;
   toast : any;
 
-  constructor(public platform: Platform, public alertCtrl: AlertController,public loadingCtrl: LoadingController,public toastCtrl: ToastController, public auth: Auth,@Inject(Http) public http: Http, private zone:NgZone, @Inject(User) public user : User) {
+  constructor(public platform: Platform, public alertCtrl: AlertController,public loadingCtrl: LoadingController,public toastCtrl: ToastController, public auth: Auth,@Inject(Http) public http: Http, public events: Events, private zone:NgZone, @Inject(User) public user : User) {
     this.initializeApp();
     this.errorCounter = 0;
     this.pages = [
@@ -76,7 +76,7 @@ export class MyApp {
         })
   }
 
-  reLogin():void {
+  reLogin() : void {
      //this.secureStorage = new SecureStorage();
     // Promise.all([this.secureStorage.get('username'),this.secureStorage.get('password')])
     this.presentLoading();
@@ -103,10 +103,11 @@ export class MyApp {
                  if(item.ListTitle && item.ListGUID)
                     this.pages.push({ title: item.ListTitle , icon:"folder", component: Contracts , listGUID : item.ListGUID})
              });
+             this.events.publish('user:loaded');
              this.stopLoading();
         })
         .catch( error => {
-            console.error(`Error in makein Burger Menu`,error);
+            console.error(`Error in making Burger Menu`,error);
             if(this.errorCounter < 3 && error.status == '403'){
                this.errorCounter++;
                this.stopLoading();

@@ -9,6 +9,7 @@ export class SelectedItem {
    item : any;
    listGUID : string;
 
+   itemFieldsLoaded : Promise<any>;
    itemPropsLoaded : Promise<any>;
    itemDocsLoaded : Promise<any>;
    itemHistoryLoaded : Promise<any>;
@@ -34,6 +35,23 @@ export class SelectedItem {
          .catch( error =>{
            console.error('<SelectedItem> Loading Props error!',error);
            return {'Ошибка':'Загрузка данных неуспешна'};
+         })
+    }
+
+    private getContentTypeFields() : Promise<any> {
+      let listGet = `${consts.siteUrl}/_api/Web/Lists('${this.listGUID}')/ContentTypes('${this.item.ContentTypeId}')/Fields?$select=StaticName,Title&$filter$filter=(Hidden nq 'true') and (Group nq 'Hidden')`;
+
+      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+      let options = new RequestOptions({ headers: headers });
+
+      return this.http.get(listGet,options)
+         .toPromise()
+         .then( res => {
+            return res.json().d.results;
+         })
+         .catch(error => {
+            console.error('<SelectedItem> Loading ContentTypeFields error!',error);
+            return [];
          })
     }
 
@@ -91,10 +109,15 @@ export class SelectedItem {
     public set(item : Object , listGUID : string){
       this.item = item;
       this.listGUID = listGUID;
+      this.itemFieldsLoaded = this.getContentTypeFields();
       this.itemPropsLoaded = this.getProps();
       this.itemDocsLoaded = this.getDocs();
       this.itemHistoryLoaded = this.getHistory();
       this.itemRoutesLoaded = this.getRoutes();
+    }
+
+    public getItemFileds() : Promise<any>{
+      return this.itemFieldsLoaded;
     }
 
     public getItemProps() : Promise<any> {
