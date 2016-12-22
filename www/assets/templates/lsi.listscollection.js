@@ -1,0 +1,27 @@
+LSi = LSi || {};
+LSi.ListsCollection = {
+'LSiDashboardSettings' : '6d091b90-37a7-47dc-916b-8cc8e0f46adb',
+'LSiDashboardUserSettings' : 'ba626e87-175a-42b6-b3d4-607fbeefcf5e',
+'LSiKeyPerfomanceIndicators' : '3bb47460-ebeb-4819-8783-d06f2a229b2c',
+'LSiUserKPIs' : '18719790-c170-458a-ae7f-b792d80786fe',
+'LSiFavoriteLinks' : '3875ea9b-ebfe-442c-9390-70b05de66579',
+'Departments' : '72FFE173-8B3D-4139-9AF2-9812672B4AC8',
+'LSiBirthdayGreetingsList' : '876afa59-a438-43ed-a6cc-a015400c2c66',
+'LSiBlogCommentsList' : '88d82265-a9e2-47d1-99b4-2488f5361ca7',
+'LSiBranch' : 'e1d16990-70aa-4b2c-b92f-ea65f6faaee6',
+'LSiCalendar' : '9300dfce-4e89-42f7-a661-9e98c5bc8833',
+'LSiIdeaCategories' : 'c56a48d7-cc13-491b-8521-6fb1859470d4',
+'LSiIdeasBank' : '1ed10219-a0a6-40c0-9326-920d945eb78a',
+'LSiIdeasInProgress' : '301e2ce5-75dd-4190-96f4-7cb55a427b7b',
+'LSiJobResponces' : '7790fffc-d620-4330-a4ea-5630d51e6977',
+'LSiJobs' : 'cb8d2374-5c17-4c2d-8c69-825ed56aca8d',
+'LSiLinks' : '7642a661-a69c-4fb7-a637-b54a048cc148',
+'LSiSettings' : '9f417182-eb3f-4c96-a328-88bdbd0050ea',
+'LSiNewsCommentsList' : '948e10ea-65aa-435b-98a2-c8db7781e734',
+'LSiPolicies' : 'a1c2c2db-fdad-4817-8d0f-03f31b402398',
+'LSiProducts' : '77cbc7b7-e502-4848-96c8-74b82265589e',
+'LSiRewards' : 'b131c5d1-5f45-422c-b8be-e0dc4bc3c0a1',
+'LSiRolesSubscriptions' : 'ce57a97d-e7a9-44a5-8926-f5da9052d1a8',
+'LSiSliders' : '6dc33399-add7-4709-9287-48767c68b751',
+'LSiProjects' : '9e9667ee-4322-4d59-b9b2-87c396421c42'
+};

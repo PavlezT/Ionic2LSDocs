@@ -1,5 +1,13 @@
 LSLate {
-   .list-md>.item-block:last-child .item-inner{
-      border-bottom: 1px solid #dedede;
+   .list-md .item-block .item-inner {
+      border-bottom: 0px !important;
+   }
+   ion-list{
+      .item {
+         border-bottom: 1px solid #dedede !important;
+      }
+   }
+   .scroll-content {
+      padding: 0px !important;
    }
 }

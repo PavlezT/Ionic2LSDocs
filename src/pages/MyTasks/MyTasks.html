@@ -10,9 +10,9 @@
 <ion-content padding>
    <ion-tabs tabsPlacement="top" >
       <!-- //tabBadge="3" -->
-       <ion-tab tabTitle="Нові" tabIcon="medical"   tabBadgeStyle="danger" [root]="tabNew"  [rootParams]="chatParams"></ion-tab>
-       <ion-tab tabTitle="В роботі" tabIcon="play"   tabBadgeStyle="danger" [root]="tabActive"></ion-tab>
-       <ion-tab tabTitle="Протерміновано" tabIcon="warning"[root]="tabLate" ></ion-tab>
-       <ion-tab tabTitle="Завершено" tabIcon="checkmark" [root]="tabEnded" ></ion-tab>
+       <ion-tab tabTitle="Нові" tabIcon="medical" tabBadge="{{this.counts.new}}" tabBadgeStyle="new" [root]="tabNew"  [rootParams]="chatParams"></ion-tab>
+       <ion-tab tabTitle="В роботі" tabIcon="play"   tabBadge="{{this.counts.active}}"  tabBadgeStyle="primary" [root]="tabActive"></ion-tab>
+       <ion-tab tabTitle="Протерміновано" tabIcon="warning" tabBadge="{{this.counts.late}}"  tabBadgeStyle="danger" [root]="tabLate" ></ion-tab>
+       <ion-tab tabTitle="Завершено" tabIcon="checkmark" tabBadge="{{this.counts.done}}"  tabBadgeStyle="background" [root]="tabEnded" ></ion-tab>
      </ion-tabs>
 </ion-content>

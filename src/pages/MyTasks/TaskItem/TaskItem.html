@@ -48,33 +48,52 @@
        <div class="right">{{deadLine}}</div>
     </div>
 </ion-label>
-<ion-item>
+<ion-item *ngIf="Status != 'Done'">
     <ion-label floating>Введите коментарий к выполнению задачи</ion-label>
     <ion-textarea #coments rows="6" ></ion-textarea>
 </ion-item>
 </ion-content>
 
-<ion-footer>
+<ion-footer *ngIf="Status != 'Done'">
   <ion-toolbar>
     <ion-buttons full>
       <ion-grid>
-        <ion-row>
-          <ion-col >
+        <ion-row >
+          <ion-col *ngIf="Status == 'Not Started'" >
              <button  clear ion-button (click)="toworkTask()">
                 <ion-icon name="arrow-down"></ion-icon>
                 <div>В роботу</div>
             </button>
          </ion-col>
-         <ion-col>
+         <ion-col *ngIf="task.sysTaskLevel == 1 && ContentType == ('LSTaskPreparetion' || 'LSTaskAppruve' || 'LSTaskAgreement' ) ">
             <button  clear ion-button (click)="cancelTask()">
                <ion-icon name="close"></ion-icon>
-               <div>Отменить</div>
+               <div *ngIf="ContentType == 'LSTaskPreparetion'">
+                  Отменить
+               </div>
+               <div *ngIf="ContentType == 'LSTaskAppruve' || ContentType == 'LSTaskAgreement'">
+                  Отклонить
+               </div>
+               <!-- <div *ngIf="ContentType != 'LSTaskToRegistrate' && assignetTo.Email == user.getEmail() ">
+                  Делегировать
+               </div> -->
             </button>
          </ion-col>
+         <!-- <ion-col *ngIf="ContentType == 'LSTaskToRegistrate'">
+           <button  clear ion-button (click)="addTask()">
+               <ion-icon name="arrow-down"></ion-icon>
+               <div>Новая подзадача</div>
+           </button>
+        </ion-col> -->
          <ion-col>
             <button  clear ion-button (click)="executeTask()">
                <ion-icon name="checkmark"></ion-icon>
-               <div>Выполнить</div>
+               <div *ngIf="ContentType == 'LSTaskAppruve'">
+                  Согласовать
+               </div>
+               <div *ngIf="ContentType != 'LSTaskAppruve'">
+                  Выполнить
+               </div>
             </button>
          </ion-col>
         </ion-row>

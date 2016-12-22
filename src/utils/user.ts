@@ -18,8 +18,8 @@ export class User{
     constructor(@Inject(Http) public http: Http ){
       this.email = 'e@e';
       this.user = {};
-      this.user.Title = 'Bob'; 
-      this.itemPropsLoaded = Promise.resolve('not inited');
+      this.user.Title = 'Bob';
+      this.itemPropsLoaded = Promise.resolve();//void to identify that requst not done yet
     }
 
     private getProps() : Promise<any> {
@@ -34,7 +34,7 @@ export class User{
          .toPromise()
          .then( res => {
             this.user = res.json().d;
-            this.email = this.user.Email; 
+            this.email = this.user.Email;
             this.Id = this.user.Id;
             return this.user;
          })
