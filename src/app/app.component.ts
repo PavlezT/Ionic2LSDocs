@@ -166,7 +166,7 @@ export class MyApp {
         content: "Подождите...",
       });
       this.loader.present();
-    }
+   }
 
    stopLoading() : void {
       this.loader.dismiss();

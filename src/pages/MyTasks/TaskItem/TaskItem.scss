@@ -31,7 +31,7 @@ taskitem {
       font-size: 2em;
    }
    ion-label{
-      padding-left:15px;
+      padding-left:10px;
       div.line{
          margin-bottom:1%;
       }
@@ -61,7 +61,7 @@ taskitem {
         vertical-align: text-bottom;
         width:50%;
     }
-    .user{
+    .userTag{
        display: inline-block;
        border:2px solid #444;
        border-radius: 20px;
@@ -71,5 +71,56 @@ taskitem {
           margin-right: 9px;
           margin-left: 5px;
        }
+    }   
+
+    .user {
+        color : #0072C6;
+    }
+
+    .task {
+      background-color: #F2F2F2;  
+      .input-wrapper{
+         border-left: 1px solid #DEDEDE;
+        //  padding-left:10px;
+      }
+    }
+
+    .scrollMy{
+        overflow:auto;
+        height: 70%;
+    }
+
+    div.marker{
+        display: block;
+        border: 1px solid #808080;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background-color: #CACACA;
+        position: absolute;
+        z-index: 1000;
+        margin-left: -14px;
+        margin-top: 5px;
+    }
+
+    .middlelabel{
+        padding-left:0px;
+        margin-bottom : 0px;
+        border-top: 1px solid #dedede;
+        border-bottom : 1px solid #dedede;
+        button {
+            border-right : 1px solid #dedede;
+            ion-icon{
+                width:inherit;
+            }
+        }
+    }
+
+    .history {
+        transition: max-height 0.1s ease-out;
+    }    
+
+    .history .active {
+        transition: max-height 0.3s ease-out;
     }
 }
