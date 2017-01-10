@@ -29,7 +29,7 @@ export class LSEnded {
             this.items = this.items.filter((item,i,arr)=> {
                item.StartDate = moment(item.StartDate).format("dd, DD MMMM");
                item.DueDate = moment(item.DueDate).format("dd, DD MMMM");
-               if(item.EventType && item.EventType.includes('EventDoneTask'))
+               if(item.EventType && (item.EventType.includes('EventDoneTask') ))//|| item.EventType.includes('Close')
                   return item;
             });
          })

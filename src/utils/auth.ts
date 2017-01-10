@@ -14,7 +14,6 @@ export class Auth {
 
    constructor(@Inject(Http) http: Http){
       this.http = http;
-
    }
 
    public init(url:string, options:{username:string,password:string}){

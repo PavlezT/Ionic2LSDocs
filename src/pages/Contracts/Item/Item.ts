@@ -22,10 +22,10 @@ export class Item {
   routes : any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
-    this.title = navParams.data.item.Title;
+    this.title = navParams.data.item.Title || '---';
     this.id = navParams.data.item.Id;
     this.listGUID = navParams.data.listGUID;
-    this.ContentTypeId = navParams.data.item.ContentTypeId;
+    this.ContentTypeId = navParams.data.item.ContentTypeId || '0x0';
 
     this.infoTab = InfoTab;
     this.documents = Documents;

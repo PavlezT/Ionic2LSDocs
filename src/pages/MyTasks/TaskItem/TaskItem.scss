@@ -71,14 +71,14 @@ taskitem {
           margin-right: 9px;
           margin-left: 5px;
        }
-    }   
+    }
 
     .user {
         color : #0072C6;
     }
 
     .task {
-      background-color: #F2F2F2;  
+      background-color: #F2F2F2;
       .input-wrapper{
          border-left: 1px solid #DEDEDE;
         //  padding-left:10px;
@@ -109,18 +109,31 @@ taskitem {
         border-top: 1px solid #dedede;
         border-bottom : 1px solid #dedede;
         button {
+            text-transform: none;
             border-right : 1px solid #dedede;
             ion-icon{
                 width:inherit;
+            }
+
+            ion-icon[name="document"]{
+               width: 12%;
+               margin-right: 5px;
             }
         }
     }
 
     .history {
         transition: max-height 0.1s ease-out;
-    }    
+    }
 
     .history .active {
         transition: max-height 0.3s ease-out;
     }
+
+    .active {
+      display:block;
+    }
+    .inactive{
+      display:none;
+   }
 }

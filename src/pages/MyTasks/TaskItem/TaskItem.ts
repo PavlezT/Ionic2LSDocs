@@ -1,11 +1,14 @@
-import { Component, ViewChild } from '@angular/core';
-import { ViewController, ToastController, NavParams } from 'ionic-angular';
+import { Component, ViewChild, Inject  } from '@angular/core';
+import { ViewController, ToastController, NavController,NavParams } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
+
+import { Item } from '../../Contracts/Item/Item';
 
 import { ArraySortPipe } from '../../../utils/arraySort';
 import * as consts from '../../../utils/Consts';
 import { User } from '../../../utils/user';
+import { SelectedItem } from '../../../utils/selecteditem';
 
 @Component({
   selector: 'TaskItem',
@@ -18,6 +21,8 @@ export class TaskItem {
   historyToggle : boolean = false;
   history : any;
   taskHistory : any;
+  connectedItem : any;
+  digest : Promise<any>;
 
   task : any;
   Title : string;
@@ -30,7 +35,7 @@ export class TaskItem {
 
   @ViewChild('coments') coments ;
 
-  constructor(public viewCtrl: ViewController,public toastCtrl: ToastController, public navParams: NavParams, public http : Http, public user : User) {
+  constructor(public navCtrl: NavController ,public viewCtrl: ViewController,public toastCtrl: ToastController,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams, public http : Http, public user : User) {
     this.siteUrl = consts.siteUrl;
     this.task = navParams.data.item;
     this.Status = navParams.data.item.OData__Status || 'Done';
@@ -42,6 +47,8 @@ export class TaskItem {
     this.taskAuthore = navParams.data.item.TaskAuthore || {EMail :navParams.data.item.AthoreEmail,Title : navParams.data.item.NameAuthore };
 
     this.getTaskHistory();
+    this.getConnectedDoc();
+    this.digest = this.getDigest();
     console.log('this task',this.task);
   }
 
@@ -68,10 +75,28 @@ export class TaskItem {
      this.viewCtrl.dismiss();
   }
 
+  getDigest() : Promise<any> {
+     let listGet = `${consts.siteUrl}/_layouts/15/viewlsts.aspx?view=14`;
+
+     let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded'});
+     let options = new RequestOptions({ headers: headers });
+
+     return this.http.get(listGet,options).toPromise()
+        .then(res=>{
+          let s:string = res.text();
+          let v= "{\""+s.substring(s.indexOf(' '),s.indexOf('canUserCreateMicrosoftForm')-2)+"}"
+          let obj = JSON.parse(v);
+          return obj;
+        })
+        .catch( err =>{
+          console.log('x-digest error',err);
+        })
+  }
+
   toworkTask(){
      console.log('to work');
 
-      this.writeToHistory();  
+      this.writeToHistory();
 
       let data = {
         "__metadata": {
@@ -88,12 +113,12 @@ export class TaskItem {
           console.log('post response',resdata);
           // GetCountNotStartedTask(LSOnlineTaskData.CurentUserEmail, 'Not Started', 0, 0, 0);
           // GetCountInWorkTask(LSOnlineTaskData.CurentUserEmail, 'In Progress', 0, 0, 0);
-        })      
+        })
   }
 
   cancelTask(){
      console.log('cancel work');
-     this.doneTask('RefuseTask');
+     //this.doneTask('RefuseTask');
   }
 
   executeTask(){
@@ -130,7 +155,7 @@ export class TaskItem {
         .then( ()=>{
             this.writeToHistoryAfterTaskDone();
            // addTaskNotificationButton();
-          
+
           // GetCountNotStartedTask(LSOnlineTaskData.CurentUserEmail, 'Not Started', 0, 0, 0);
           // GetCountInWorkTask(LSOnlineTaskData.CurentUserEmail, 'In Progress', 0, 0, 0);
           // GetCountNotDoneTask(LSOnlineTaskData.CurentUserEmail, 'Done', 0, 0, 0);
@@ -167,22 +192,22 @@ export class TaskItem {
         sysIDItem : this.task.sysIDItem,
         EventTypeUser : EventType,
         itemData : {
-            ItemId: this.task.sysIDItem, 
-            ListID: this.task.sysIDList, 
-            ItemTitle: "-", 
-            ListTitle: "-", 
+            ItemId: this.task.sysIDItem,
+            ListID: this.task.sysIDList,
+            ItemTitle: "-",
+            ListTitle: "-",
             EventType: 'Task'
           },
         HistoryArray : [{
             EventType: EventType,
-            Event: Event, 
+            Event: Event,
             NameExecutor: this.user.getUserName(),
-            NameAuthore: this.taskAuthore.Title, 
+            NameAuthore: this.taskAuthore.Title,
             TaskTitle: this.Title,
-            StartDate: StartDate, 
-            DueDate: DueDate, 
+            StartDate: StartDate,
+            DueDate: DueDate,
             StartDateSort: moment.utc(this.startDate).format("YYYYMMDD"),
-            DueDateSort: moment.utc(this.deadLine).format("YYYYMMDD"), 
+            DueDateSort: moment.utc(this.deadLine).format("YYYYMMDD"),
             EvanteDate: EvanteDate,
             Comments: this.coments.value,
             TaskType: this.task.TaskType,
@@ -192,7 +217,7 @@ export class TaskItem {
             AthoreEmail: this.taskAuthore.EMail,
             ItemId: this.task.sysIDItem,
             ListID: this.task.sysIDList,
-            TaskID: this.task.ID 
+            TaskID: this.task.ID
           }],
           HistoryType : 'HistoryDataForUser'
         }
@@ -212,12 +237,12 @@ export class TaskItem {
         //     }
         // });
 
-        this.updateHistory(StateInRouteData); 
+        this.updateHistory(StateInRouteData);
         StateInRouteData.HistoryType = 'TaskAndDocHistory';
-        this.updateHistory(StateInRouteData); 
+        this.updateHistory(StateInRouteData);
 
         //LSOnlineTaskData.LSDocsStartWriteToHistory();
-        
+
         // if (!!TypeAction) {
         //     TypeAction.Count++;
         //     LSCompliteGroupeAction(TypeAction);
@@ -239,8 +264,8 @@ export class TaskItem {
             itemData : {
               ItemId: this.task.sysIDList,
               ListID: this.task.sysIDItem,
-              ItemTitle: "-", 
-              ListTitle: "-", 
+              ItemTitle: "-",
+              ListTitle: "-",
               EventType: 'Task'
             },
             HistoryArray : [{
@@ -249,9 +274,9 @@ export class TaskItem {
               NameExecutor: this.user.getUserName(),
               NameAuthore: this.taskAuthore.Title,
               TaskTitle: this.Title,
-              StartDate: StartDate, 
-              DueDate: DueDate, 
-              EvanteDate: EvanteDate, 
+              StartDate: StartDate,
+              DueDate: DueDate,
+              EvanteDate: EvanteDate,
               Comments: this.coments.value,
               ExecutorEmail: this.user.getEmail(),
               AthoreEmail: this.taskAuthore.EMail,
@@ -263,9 +288,35 @@ export class TaskItem {
           this.updateHistory(StateInRouteData);
           StateInRouteData.HistoryType = 'TaskAndDocHistory';
           this.updateHistory(StateInRouteData);
-          
-          //LSOnlineTaskData.LSDocsStartWriteToHistory();
 
+          this.startWriteToHistory();
+
+  }
+
+  startWriteToHistory() : void {
+     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSMainTransit')/items`;
+
+     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+     let options = new RequestOptions({ headers: headers });
+
+     Promise.all([this.http.get(listGet,options).toPromise(),this.digest])
+         .then( res =>{
+            console.log('main transit res',res);
+            res[0].json().d.results.map(item => {
+               if(item.DataSource != 'true'){
+                  let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSMainTransit')/items`;
+                  let body = {
+                     __metadata : {
+                        type : 'SP.Data.LSMainTransitItem'
+                     },
+                     DataSource : 'true'
+                  }
+                  let headers = new Headers({"X-RequestDigest":res[1].formDigestValue, "X-HTTP-Method":"MERGE","IF-MATCH": "*",'Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+                  let options = new RequestOptions({ headers: headers });
+                   this.http.post(url,JSON.stringify(body),options).toPromise();
+               }
+            })
+         })
   }
 
   сheckResolution() : Promise<any>{
@@ -291,28 +342,31 @@ export class TaskItem {
       historyData : JSON.stringify(routeData.HistoryArray),
       itemData : JSON.stringify(routeData.itemData)
     }
-			// var Tenend = _spPageContextInfo.siteAbsoluteUrl.split('/');
-			// appInsights.trackEvent("WriteHistoryEvent", { User: LSOnlineTaskData.CurentUserTitle, Tenand: Tenend[2] + '/' + Tenend[3] + '/' + Tenend[4], ListID: StateInRouteData.sysIDList, DocumentID: StateInRouteData.sysIDItem }, { HistoryWriteCount: 1 });
 
     // Authorization: "Bearer " + accessToken
-    let headers = new Headers({'Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
-    let options = new RequestOptions({ headers: headers });
-    return Promise.resolve([url,body,options]);
-    //return this.http.post(url,JSON.stringify(body),options).toPromise();
+    return this.digest.then(obj =>{
+      let headers = new Headers({"Authorization":"Bearer "+'',"X-RequestDigest": obj.formDigestValue,'X-HTTP-Method':'MERGE','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+      let options = new RequestOptions({ headers: headers });
+
+      return this.http.post(url,JSON.stringify(body),options).toPromise().then(res=>{console.log('TransitHistory sucess')}).catch(err=>{console.log('LsTransiHistory error',err)})
+   })
+
   }
 
   updateTaskData(id : number, data : any) : Promise<any> {
     let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/Items(${id})`;
 
-    let headers = new Headers({'Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose","IF-MATCH": "*","X-Http-Method": "MERGE"});
-    let options = new RequestOptions({ headers: headers });
-    return Promise.resolve([url,options]);
-//    return this.http.post(url,JSON.stringify(data),options).toPromise();
+   return  this.digest.then(obj =>{
+       let headers = new Headers({"X-RequestDigest": obj.formDigestValue,'X-HTTP-Method':'MERGE','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+       let options = new RequestOptions({ headers: headers });
+
+       return this.http.post(url,JSON.stringify(data),options).toPromise().then(res=>{console.log('updateTask success',res)}).catch(err=>{console.log('updateTask error',err)});
+    });
   }
 
   getTaskHistory() : void {
-    let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSHistory')/items?$filter=(ItemId eq '${this.task.sysIDItem}') and (Title eq '${this.task.sysIDList}') and (ItemName eq 'Task')`;
-    
+    let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSHistory')/items?$filter=(ItemId eq '${this.task.sysIDItem || this.task.ItemId}') and (Title eq '${this.task.sysIDList || this.task.ListID}') and (ItemName eq 'Task')`;
+
     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
     let options = new RequestOptions({ headers: headers });
 
@@ -325,17 +379,29 @@ export class TaskItem {
             this.taskHistory = JSON.parse(this.history.TaskHistory).map( task => {
               task.EvanteDate = task.EvanteDate.substring(0,10).split('.').reverse().join('-') + task.EvanteDate.substring(10,task.EvanteDate.length);
               return task;
-            })
-             JSON.parse(this.history.TaskHistory).map( task => {
-              task.EvanteDate = task.EvanteDate.substring(0,10).split('.').reverse().join('-') + task.EvanteDate.substring(10,task.EvanteDate.length);
-              this.taskHistory.push(task);
-            })
+           });
           }
         })
         .catch(error => {
           console.error('<TaskItem> Loading History error!',error);
           this.history = [];
         })
+  }
+
+  getConnectedDoc() : void {
+     let listGet = `${consts.siteUrl}/_api/Web/Lists(guid'${this.task.sysIDList || this.task.ListID}')/items(${this.task.sysIDItem || this.task.ItemId})`;
+
+     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+     let options = new RequestOptions({ headers: headers });
+
+     this.http.get(listGet,options)
+         .toPromise()
+         .then(res =>{
+            this.connectedItem = res.json().d;
+         })
+         .catch(error => {
+            console.log('There is no connected doc',error);
+         })
   }
 
   showToast(message: any){
@@ -349,11 +415,19 @@ export class TaskItem {
   }
 
   showHistory() : void{
-    if(this.historyToggle){ 
+    if(this.historyToggle){
       this.historyToggle = false;
       return;
     }
     this.historyToggle = true;
+  }
+
+  openConnecedItem() : void {
+     this.selectedItem.set(this.connectedItem, this.task.sysIDList || this.task.ListID);
+     this.navCtrl.push(Item, {
+      item: this.connectedItem,
+      listGUID : this.task.sysIDList || this.task.ListID
+     });
   }
 
 }

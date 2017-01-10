@@ -51,6 +51,7 @@
 <ion-label class="middlelabel" >
   <!--<button ion-button color="primary" clear><ion-icon name="list"></ion-icon></button>-->
   <button ion-button color="primary" (click)="showHistory()" clear><ion-icon name="calendar"></ion-icon></button>
+  <button *ngIf="connectedItem" ion-button color="primary" (click)="openConnecedItem()" clear><ion-icon name="document"></ion-icon>Связанный элемент</button>
 </ion-label>
 <ion-scroll [ngClass]="'scrollMy'" scrollY="true">
   <ion-list *ngIf="historyToggle" no-lines class="history" [ngClass]="historyToggle? 'active' : '' " style="z-index: -1">
@@ -71,7 +72,7 @@
             <h2> Загрузка...</h2>
           </ion-item>
   </ion-list>
-  <ion-item *ngIf=" (Status != 'Done')">
+  <ion-item *ngIf="(Status != 'Done')" [ngClass]="historyToggle? 'inactive' : 'active'">
       <ion-label floating>Введите коментарий к выполнению задачи</ion-label>
       <ion-textarea #coments rows="6" ></ion-textarea>
   </ion-item>

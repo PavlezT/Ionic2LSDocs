@@ -16,7 +16,7 @@ export class SelectedItem {
    itemRoutesLoaded : Promise<any>;
 
     constructor(@Inject(Http) public http: Http ){
-      this.item = {title:'none',guid:'000'};
+      this.item = {title:'none',Id:'000'};
       this.listGUID = "000";
     }
 
@@ -67,7 +67,7 @@ export class SelectedItem {
             return res.json().d.results;
          })
          .catch(error => {
-            console.error('<SelectedItem> Loading Docs error!',error);
+            console.log('<SelectedItem> Loading Docs error!',error);
             return [];
          })
     }
