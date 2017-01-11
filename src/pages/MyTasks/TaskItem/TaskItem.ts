@@ -39,7 +39,7 @@ export class TaskItem {
     this.siteUrl = consts.siteUrl;
     this.task = navParams.data.item;
     this.Status = navParams.data.item.OData__Status || 'Done';
-    this.ContentType =  navParams.data.item.TaskType ||  navParams.data.item.ContentType.Name;
+    this.ContentType =  navParams.data.item.TaskType ||  navParams.data.item.ContentType.Name || "undefined";
     this.Title = navParams.data.item.Title || navParams.data.item.TaskTitle;
     this.startDate = navParams.data.item.StartDate;
     this.deadLine = navParams.data.item.TaskDueDate || navParams.data.item.DueDate;
@@ -76,20 +76,27 @@ export class TaskItem {
   }
 
   getDigest() : Promise<any> {
-     let listGet = `${consts.siteUrl}/_layouts/15/viewlsts.aspx?view=14`;
+     let listGet = `${consts.siteUrl}/_api/contextinfo`;
 
-     let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded'});
+     let headers = new Headers({'Authorization':"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlJyUXF1OXJ5ZEJWUldtY29jdVhVYjIwSEdSTSIsImtpZCI6IlJyUXF1OXJ5ZEJWUldtY29jdVhVYjIwSEdSTSJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvbGl6YXJkc29mdGRldi5zaGFyZXBvaW50LmNvbUBlZmQxZWNlYy04N2Y5LTQ5ZDAtYTdjYy0wNGM3ZTZiYzBjNjQiLCJpc3MiOiIwMDAwMDAwMS0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDBAZWZkMWVjZWMtODdmOS00OWQwLWE3Y2MtMDRjN2U2YmMwYzY0IiwiaWF0IjoxNDg0MTM0MTAxLCJuYmYiOjE0ODQxMzQxMDEsImV4cCI6MTQ4NDEzODAwMSwiYWN0b3IiOiIwZmUwMzg0YS00ZTYzLTQzZmUtOWI3OS1hM2JkMjQ5MWE2NjNAZWZkMWVjZWMtODdmOS00OWQwLWE3Y2MtMDRjN2U2YmMwYzY0IiwiaWRlbnRpdHlwcm92aWRlciI6InVybjpmZWRlcmF0aW9uOm1pY3Jvc29mdG9ubGluZSIsIm5hbWVpZCI6IjEwMDNiZmZkOTgzMDUyZjgifQ.RqBz438diVxkjP5QSDMQ0ejJZJGO7EaQVRClK-zmOSwcD9cZK5VQPNumq7gDh93dFxTSStwUbmrhrGeNtntDOEnL3mG8YMGVSyeK3IizbRVOxgOn75XueoKO-2smyb0C10NgSa8_NNlJIaqf-BOEF6iK4TzLq84pVaGDhLjPVxIG1pHl-tiQGkQ3v6S3-2D__g6dUhTeZWkYevkIVy4TW2voIDw0GaHTnyq92NbRGl5_vM35TeLeeea9lJNQ2eDvGgrofwe2zQfg4kB1g2FFrR6u0GUVf0mhfhjsE_VuytQPyrljWLCPIoUGmCRc9Nqzq3wiryxMWqnZQIGJjn6Rnw",'Accept':"application/json; odata=verbose",'Content-Type': 'application/x-www-form-urlencoded'});
      let options = new RequestOptions({ headers: headers });
 
-     return this.http.get(listGet,options).toPromise()
+     return this.http.post(listGet,{},options).toPromise()
         .then(res=>{
-          let s:string = res.text();
-          let v= "{\""+s.substring(s.indexOf(' '),s.indexOf('canUserCreateMicrosoftForm')-2)+"}"
-          let obj = JSON.parse(v);
-          return obj;
+          console.log('x-requesst success',res);
+          return res.json().d.GetContextWebInformation;
+
+          // let s:string = res.text();
+          // console.log('res string',s);
+          // let v= "{\""+s.substring(s.indexOf('formDigestValue'),s.indexOf('canUserCreateMicrosoftForm')-2)+"}"
+          // console.log('digest',v);
+          // let obj = JSON.parse(v);
+          // return obj;
+          
         })
         .catch( err =>{
           console.log('x-digest error',err);
+          return {FormDigestValue:''};
         })
   }
 
@@ -116,12 +123,25 @@ export class TaskItem {
         })
   }
 
-  cancelTask(){
+  executeTask(){//cancelTask(){
      console.log('cancel work');
      //this.doneTask('RefuseTask');
+      let url = `${consts.siteUrl}/_api/web/Lists(guid'6dc74f0c-f9b2-4821-bd3b-acd98c9a5a04')/items(33)`;
+      let body = {
+          __metadata : {
+            "type": "SP.Data.ContractsItem"
+          },
+          Amount:32
+      }
+      return this.digest.then(obj =>{
+        let headers = new Headers({'Authorization':"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlJyUXF1OXJ5ZEJWUldtY29jdVhVYjIwSEdSTSIsImtpZCI6IlJyUXF1OXJ5ZEJWUldtY29jdVhVYjIwSEdSTSJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvbGl6YXJkc29mdGRldi5zaGFyZXBvaW50LmNvbUBlZmQxZWNlYy04N2Y5LTQ5ZDAtYTdjYy0wNGM3ZTZiYzBjNjQiLCJpc3MiOiIwMDAwMDAwMS0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDBAZWZkMWVjZWMtODdmOS00OWQwLWE3Y2MtMDRjN2U2YmMwYzY0IiwiaWF0IjoxNDg0MTM0MTAxLCJuYmYiOjE0ODQxMzQxMDEsImV4cCI6MTQ4NDEzODAwMSwiYWN0b3IiOiIwZmUwMzg0YS00ZTYzLTQzZmUtOWI3OS1hM2JkMjQ5MWE2NjNAZWZkMWVjZWMtODdmOS00OWQwLWE3Y2MtMDRjN2U2YmMwYzY0IiwiaWRlbnRpdHlwcm92aWRlciI6InVybjpmZWRlcmF0aW9uOm1pY3Jvc29mdG9ubGluZSIsIm5hbWVpZCI6IjEwMDNiZmZkOTgzMDUyZjgifQ.RqBz438diVxkjP5QSDMQ0ejJZJGO7EaQVRClK-zmOSwcD9cZK5VQPNumq7gDh93dFxTSStwUbmrhrGeNtntDOEnL3mG8YMGVSyeK3IizbRVOxgOn75XueoKO-2smyb0C10NgSa8_NNlJIaqf-BOEF6iK4TzLq84pVaGDhLjPVxIG1pHl-tiQGkQ3v6S3-2D__g6dUhTeZWkYevkIVy4TW2voIDw0GaHTnyq92NbRGl5_vM35TeLeeea9lJNQ2eDvGgrofwe2zQfg4kB1g2FFrR6u0GUVf0mhfhjsE_VuytQPyrljWLCPIoUGmCRc9Nqzq3wiryxMWqnZQIGJjn6Rnw","X-RequestDigest": obj.FormDigestValue,'X-HTTP-Method': 'MERGE',
+				'IF-MATCH': '*','Accept': 'application/json; odata=verbose',"Content-Type": "application/json;odata=verbose"});
+        let options = new RequestOptions({ headers: headers });
+        this.http.post(url,JSON.stringify(body),options).toPromise().then(res=>{console.log('post data success',res);}).catch(err=>{console.log('post maint trasit error',err)});
+      })
   }
 
-  executeTask(){
+  cancelTask(){//executeTask(){
      console.log('execute task');
 
      if (this.ContentType == 'LSTaskResolution') {
@@ -301,8 +321,7 @@ export class TaskItem {
 
      Promise.all([this.http.get(listGet,options).toPromise(),this.digest])
          .then( res =>{
-            console.log('main transit res',res);
-            res[0].json().d.results.map(item => {
+           return res[0].json().d.results.map(item => {
                if(item.DataSource != 'true'){
                   let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSMainTransit')/items`;
                   let body = {
@@ -311,11 +330,19 @@ export class TaskItem {
                      },
                      DataSource : 'true'
                   }
-                  let headers = new Headers({"X-RequestDigest":res[1].formDigestValue, "X-HTTP-Method":"MERGE","IF-MATCH": "*",'Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+                  let headers = new Headers({"Authorization":`Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlJyUXF1OXJ5ZEJWUldtY29jdVhVYjIwSEdSTSIsImtpZCI6IlJyUXF1OXJ5ZEJWUldtY29jdVhVYjIwSEdSTSJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvbGl6YXJkc29mdGRldi5zaGFyZXBvaW50LmNvbUBlZmQxZWNlYy04N2Y5LTQ5ZDAtYTdjYy0wNGM3ZTZiYzBjNjQiLCJpc3MiOiIwMDAwMDAwMS0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDBAZWZkMWVjZWMtODdmOS00OWQwLWE3Y2MtMDRjN2U2YmMwYzY0IiwiaWF0IjoxNDg0MDYwMzcwLCJuYmYiOjE0ODQwNjAzNzAsImV4cCI6MTQ4NDA2NDI3MCwiYWN0b3IiOiIwZmUwMzg0YS00ZTYzLTQzZmUtOWI3OS1hM2JkMjQ5MWE2NjNAZWZkMWVjZWMtODdmOS00OWQwLWE3Y2MtMDRjN2U2YmMwYzY0IiwiaWRlbnRpdHlwcm92aWRlciI6InVybjpmZWRlcmF0aW9uOm1pY3Jvc29mdG9ubGluZSIsIm5hbWVpZCI6IjEwMDNiZmZkOTgzMDUyZjgifQ.ESPP-xoeIHMcb66JzxJRdwt6qATBlKIXWI61ilMNjMZZQmijjrLpwF5xDCs3K-3SJfrPLHd8w0pg4T0EVFzTVyJdGdkmOGbAXsrUDYEZ5mok-Lnp1tojCw7OQTPp-s7nT9fDxKYnvBfUmJ9iytbhacPjZuMarkvJsebF_Sp1ruytvfRLdwU9GQtTqGIdnSUDh6teGfbh9EY1jzXxMO1LluE95eFd5sc4EO2R--xZ4JlDIzCPtDYFTgGuKqLxUyIdKnZQYqA6SL6FQ0LIzLVWTNwjEPNZfHVK5KpnAEkOE3pONTfSdrP1dKIJeVz_79SxMqmLxPM3p-3UH6yXeGb_BA`,"X-RequestDigest":res[1].FormDigestValue, "X-HTTP-Method":"MERGE","IF-MATCH": "*",'Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
                   let options = new RequestOptions({ headers: headers });
-                   this.http.post(url,JSON.stringify(body),options).toPromise();
+                  return this.http.post(url,JSON.stringify(body),options).toPromise().catch(err=>{console.log('post maint trasit error',err)});
                }
             })
+         })
+         .then(res=>{
+           res[0].then(data=>{
+             console.log('lsmaintransit ok');
+           })
+         })
+         .catch(err=>{
+           console.log(`<TaskItem> Error startWtriteToHistory 'LSMainTransit'`,err);
          })
   }
 
@@ -345,7 +372,7 @@ export class TaskItem {
 
     // Authorization: "Bearer " + accessToken
     return this.digest.then(obj =>{
-      let headers = new Headers({"Authorization":"Bearer "+'',"X-RequestDigest": obj.formDigestValue,'X-HTTP-Method':'MERGE','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+      let headers = new Headers({"Authorization":"Bearer "+'',"X-RequestDigest": obj.FormDigestValue,'X-HTTP-Method':'MERGE','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
       let options = new RequestOptions({ headers: headers });
 
       return this.http.post(url,JSON.stringify(body),options).toPromise().then(res=>{console.log('TransitHistory sucess')}).catch(err=>{console.log('LsTransiHistory error',err)})
@@ -357,7 +384,7 @@ export class TaskItem {
     let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/Items(${id})`;
 
    return  this.digest.then(obj =>{
-       let headers = new Headers({"X-RequestDigest": obj.formDigestValue,'X-HTTP-Method':'MERGE','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+       let headers = new Headers({"X-RequestDigest": obj.FormDigestValue,'X-HTTP-Method':'MERGE','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
        let options = new RequestOptions({ headers: headers });
 
        return this.http.post(url,JSON.stringify(data),options).toPromise().then(res=>{console.log('updateTask success',res)}).catch(err=>{console.log('updateTask error',err)});

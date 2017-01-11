@@ -27,9 +27,9 @@ export class LSEnded {
          .then( tasks => {
             this.items = JSON.parse( (JSON.parse(tasks._body)).d.results[0].UserHistory || '[]');
             this.items = this.items.filter((item,i,arr)=> {
-               item.StartDate = moment(item.StartDate).format("dd, DD MMMM");
-               item.DueDate = moment(item.DueDate).format("dd, DD MMMM");
-               if(item.EventType && (item.EventType.includes('EventDoneTask') ))//|| item.EventType.includes('Close')
+               item.StartDate = moment(item.StartDate.split('.').reverse().join('-')).format("dd, DD MMMM");
+               item.DueDate = moment(item.DueDate.split('.').reverse().join('-')).format("dd, DD MMMM");
+               if(!!item.TaskType)//if(item.EventType && (item.EventType.includes('EventDoneTask') ))//|| item.EventType.includes('Close')
                   return item;
             });
          })
@@ -39,7 +39,7 @@ export class LSEnded {
          })
    }
 
-   getEndedTasks() : Promise<any>{
+   getEndedTasks() : Promise<any>{                                                     
      let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSUsersHistory')/items?$select=UserName/EMail,CountTasks,UserHistory&$expand=UserName/EMail&$filter=UserName/EMail eq '${this.user.getEmail()}'`;
 
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});

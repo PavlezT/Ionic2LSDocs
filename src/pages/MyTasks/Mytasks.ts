@@ -63,7 +63,7 @@ export class MyTasks {
          })
          res[1].map( item =>{
             if(item.CountTasks)
-               this.counts.done+= item.CountTasks;
+               this.counts.done += item.CountTasks;
          })
       })
       .catch( error => {
@@ -74,7 +74,7 @@ export class MyTasks {
  }
 
   getTasksCount() : Promise<any> {
-     let getUrl = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=AssignetToEmail,AssignetToTitle,Title,TaskDueDate,OData__Status&$filter=(AssignetToEmail eq '${this.user.getEmail()}')`;
+     let getUrl = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=AssignetToEmail,AssignetToTitle,Title,TaskDueDate,OData__Status&$filter=(AssignetToEmail eq '${this.user.getEmail()}')&$top=1000`;
      let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSUsersHistory')/items?$select=UserName/EMail,CountTasks&$expand=UserName/EMail&$filter=UserName/EMail eq '${this.user.getEmail()}'`;
 
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});

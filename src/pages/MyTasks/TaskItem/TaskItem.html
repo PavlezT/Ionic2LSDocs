@@ -54,7 +54,7 @@
   <button *ngIf="connectedItem" ion-button color="primary" (click)="openConnecedItem()" clear><ion-icon name="document"></ion-icon>Связанный элемент</button>
 </ion-label>
 <ion-scroll [ngClass]="'scrollMy'" scrollY="true">
-  <ion-list *ngIf="historyToggle" no-lines class="history" [ngClass]="historyToggle? 'active' : '' " style="z-index: -1">
+  <ion-list *ngIf="historyToggle" no-lines class="history" [ngClass]="historyToggle? 'active' : '' " style="z-index: -1;padding-bottom: 20px;">
           <ion-item class="task" *ngFor="let task of taskHistory | arraySort:'-EvanteDate'" >
               <h3>
                   <div class="marker"></div>
