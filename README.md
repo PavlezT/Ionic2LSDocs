@@ -46,6 +46,16 @@ make POST request to <https://accounts.accesscontrol.windows.net/site_realm/toke
 ##`step 4` adding permisions to app
 <https://your_site.com/_layouts/15/appinv.aspx>
 
+in field `Client Identifier` paste `client-id` and press `check`<br>
+in `XML-request permissions` paste <br>
+
+```xml
+<AppPermissionRequests AllowAppOnlyPolicy="true">
+    <AppPermissionRequest Scope="http://sharepoint/content/sitecollection" Right="FullControl" />
+    <AppPermissionRequest Scope="http://sharepoint/content/sitecollection/web" Right="FullControl" />
+</AppPermissionRequests>
+```
+
 ##`step 5` refreshing token
 similar to step 3, but need to change:
 * grant_type = refresh_token
