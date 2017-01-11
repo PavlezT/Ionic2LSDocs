@@ -44,7 +44,7 @@ make POST request to <https://accounts.accesscontrol.windows.net/site_realm/toke
 ![screenshot of sample](http://i.piccy.info/i9/4b9a430966706019327714a065a105a8/1484140055/144215/1107683/d1111.png)
 
 ##`step 4` refreshing token
-to refresh change:
+similar to step 3, but need to change:
 * grant_type = refresh_token
 * delete `code`
 * add `refresh_token` 
