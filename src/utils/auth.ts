@@ -77,10 +77,6 @@ export class Auth {
       let self = this;
       let host = self.url.substring(0,self.url.indexOf('/sites/'));
 
-      //  if(self.checkAuthAlready(host)){
-      //     return Promise.resolve(true);
-      //  }
-
       return self.getTokenWithOnline()
             .then( (res : string) => {
                if(res.includes('<S:Fault>') || res.startsWith('Error')){
@@ -92,8 +88,8 @@ export class Auth {
                    let expires = res.substring(res.indexOf('<wst:Lifetime>'),res.indexOf('</wst:Lifetime>'));
                    expires = expires.substring(expires.indexOf('<wsu:Expires>') + '<wsu:Expires>'.length,expires.indexOf('</wsu:Expires>'));
                    return {
-                       token : token,//res.find('BinarySecurityToken').text(),
-                       expires : expires//res.find('Lifetime').find('Expires').text()
+                       token : token,
+                       expires : expires
                    };
                }
             })
@@ -116,7 +112,7 @@ export class Auth {
    public getTokenWithOnline(): Promise<any> {
         let self = this;
         let host = self.url.substring(0,self.url.indexOf('/sites/'));
-        let spFormsEndPoint =  host + "/" + consts.FormsPath;//'https:' + "//" +
+        let spFormsEndPoint =  host + "/" + consts.FormsPath;
 
         return self.readFile(consts.Online_saml_path ,consts.Online_saml)
                .then( (text:string) => {
@@ -173,7 +169,7 @@ export class Auth {
       }
     }
 
-   public postToken(tokenResponse){//:Promise <any>
+   public postToken(tokenResponse):Promise <any>{
        let self = this;
        let host = self.url.substring(0,self.url.indexOf('/sites/'));
        let spFormsEndPoint =  host + "/" + consts.FormsPath;//(Device.device.uuid) ? ( host + "/" + consts.FormsPath) : ('/api?'+ "/" + consts.FormsPath);
