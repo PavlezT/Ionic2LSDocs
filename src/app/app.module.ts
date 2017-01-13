@@ -9,6 +9,7 @@ import { Documents } from '../pages/Contracts/Item/Tabs/Documents/Documents';
 import { History  } from '../pages/Contracts/Item/Tabs/History/History';
 import { Route } from '../pages/Contracts/Item/Tabs/Route/Route';
 import { Auth } from '../utils/auth';
+import { Access } from '../utils/access';
 import { SelectedItem } from '../utils/selecteditem';
 import { ArraySortPipe } from '../utils/arraySort';
 import { User } from '../utils/user';
@@ -41,6 +42,7 @@ import { TaskItem } from '../pages/MyTasks/TaskItem/TaskItem';
   ],
   providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},
       {provide: Auth , useClass: Auth},
+      {provide: Access, useClass: Access},
       {provide: SelectedItem , useClass: SelectedItem},
       {provide: User , useClass: User}
    ]

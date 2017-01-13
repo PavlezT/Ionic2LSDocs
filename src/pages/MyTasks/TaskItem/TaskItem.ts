@@ -8,6 +8,7 @@ import { Item } from '../../Contracts/Item/Item';
 import { ArraySortPipe } from '../../../utils/arraySort';
 import * as consts from '../../../utils/Consts';
 import { User } from '../../../utils/user';
+import { Access } from '../../../utils/access';
 import { SelectedItem } from '../../../utils/selecteditem';
 
 @Component({
@@ -33,9 +34,9 @@ export class TaskItem {
   assignetTo : {Email : string, Title: string};
   taskAuthore : {EMail : string, Title: string};
 
-  @ViewChild('coments') coments ;
+  @ViewChild('coments') coments;
 
-  constructor(public navCtrl: NavController ,public viewCtrl: ViewController,public toastCtrl: ToastController,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams, public http : Http, public user : User) {
+  constructor(public navCtrl: NavController ,public viewCtrl: ViewController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams, public http : Http, public user : User) {
     this.siteUrl = consts.siteUrl;
     this.task = navParams.data.item;
     this.Status = navParams.data.item.OData__Status || 'Done';
@@ -48,7 +49,8 @@ export class TaskItem {
 
     this.getTaskHistory();
     this.getConnectedDoc();
-    this.digest = this.getDigest();
+   // this.digest = access.getDigest();
+
     console.log('this task',this.task);
   }
 
@@ -75,31 +77,6 @@ export class TaskItem {
      this.viewCtrl.dismiss();
   }
 
-  getDigest() : Promise<any> {
-     let listGet = `${consts.siteUrl}/_api/contextinfo`;
-
-     let headers = new Headers({'Authorization':"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlJyUXF1OXJ5ZEJWUldtY29jdVhVYjIwSEdSTSIsImtpZCI6IlJyUXF1OXJ5ZEJWUldtY29jdVhVYjIwSEdSTSJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvbGl6YXJkc29mdGRldi5zaGFyZXBvaW50LmNvbUBlZmQxZWNlYy04N2Y5LTQ5ZDAtYTdjYy0wNGM3ZTZiYzBjNjQiLCJpc3MiOiIwMDAwMDAwMS0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDBAZWZkMWVjZWMtODdmOS00OWQwLWE3Y2MtMDRjN2U2YmMwYzY0IiwiaWF0IjoxNDg0MTM0MTAxLCJuYmYiOjE0ODQxMzQxMDEsImV4cCI6MTQ4NDEzODAwMSwiYWN0b3IiOiIwZmUwMzg0YS00ZTYzLTQzZmUtOWI3OS1hM2JkMjQ5MWE2NjNAZWZkMWVjZWMtODdmOS00OWQwLWE3Y2MtMDRjN2U2YmMwYzY0IiwiaWRlbnRpdHlwcm92aWRlciI6InVybjpmZWRlcmF0aW9uOm1pY3Jvc29mdG9ubGluZSIsIm5hbWVpZCI6IjEwMDNiZmZkOTgzMDUyZjgifQ.RqBz438diVxkjP5QSDMQ0ejJZJGO7EaQVRClK-zmOSwcD9cZK5VQPNumq7gDh93dFxTSStwUbmrhrGeNtntDOEnL3mG8YMGVSyeK3IizbRVOxgOn75XueoKO-2smyb0C10NgSa8_NNlJIaqf-BOEF6iK4TzLq84pVaGDhLjPVxIG1pHl-tiQGkQ3v6S3-2D__g6dUhTeZWkYevkIVy4TW2voIDw0GaHTnyq92NbRGl5_vM35TeLeeea9lJNQ2eDvGgrofwe2zQfg4kB1g2FFrR6u0GUVf0mhfhjsE_VuytQPyrljWLCPIoUGmCRc9Nqzq3wiryxMWqnZQIGJjn6Rnw",'Accept':"application/json; odata=verbose",'Content-Type': 'application/x-www-form-urlencoded'});
-     let options = new RequestOptions({ headers: headers });
-
-     return this.http.post(listGet,{},options).toPromise()
-        .then(res=>{
-          console.log('x-requesst success',res);
-          return res.json().d.GetContextWebInformation;
-
-          // let s:string = res.text();
-          // console.log('res string',s);
-          // let v= "{\""+s.substring(s.indexOf('formDigestValue'),s.indexOf('canUserCreateMicrosoftForm')-2)+"}"
-          // console.log('digest',v);
-          // let obj = JSON.parse(v);
-          // return obj;
-          
-        })
-        .catch( err =>{
-          console.log('x-digest error',err);
-          return {FormDigestValue:''};
-        })
-  }
-
   toworkTask(){
      console.log('to work');
 
@@ -123,9 +100,10 @@ export class TaskItem {
         })
   }
 
-  executeTask(){//cancelTask(){
+  cancelTask(){
      console.log('cancel work');
      //this.doneTask('RefuseTask');
+
       // let url = `${consts.siteUrl}/_api/web/Lists(guid'6dc74f0c-f9b2-4821-bd3b-acd98c9a5a04')/items(33)`;
       // let body = {
       //     __metadata : {
@@ -138,41 +116,10 @@ export class TaskItem {
 			// 	'IF-MATCH': '*','Accept': 'application/json; odata=verbose',"Content-Type": "application/json;odata=verbose"});
       //   let options = new RequestOptions({ headers: headers });
       //   this.http.post(url,JSON.stringify(body),options).toPromise().then(res=>{console.log('post data success',res);}).catch(err=>{console.log('post maint trasit error',err)});
-      // })
-
-        let url = `${consts.siteUrl}/_layouts/15/oauthauthorize.aspx?client_id=${consts.client_id}&scope=Web.Read&response_type=code&redirect_uri=${consts.redirected_uri}`;
-        return this.http.get(url+'&mobile=0').toPromise()
-          .then(res=>{
-            let page = res.text();
-            let page1 = page.substring(page.indexOf(`id="__REQUESTDIGEST" value="`)+ `id="__REQUESTDIGEST" value="`.length,page.length);
-            let page2 = page.substring(page.indexOf(`id="__VIEWSTATE" value="`)+`id="__VIEWSTATE" value="`.length,page.length);
-            let page3 = page.substring(page.indexOf(`id="__EVENTVALIDATION" value="`)+`id="__EVENTVALIDATION" value="`.length,page.length);
-            let __EVENTTARGET = `ctl00%24PlaceHolderMain%24BtnAllow`;
-            let __REQUESTDIGEST = page1.substring(0,page1.indexOf('" />')).replace(/ /g,'+');
-            let __VIEWSTATE = encodeURIComponent(page2.substring(0,page2.indexOf('" />')).replace(/ /g,'+'));
-            let __EVENTVALIDATION = encodeURIComponent(page3.substring(0,page3.indexOf('" />')).replace(/ /g,'+'));
-            return `__EVENTTARGET=${__EVENTTARGET}&__REQUESTDIGEST=${__REQUESTDIGEST}&__VIEWSTATE=${__VIEWSTATE}&__EVENTVALIDATION=${__EVENTVALIDATION}`;
-          })
-          .then(data=>{
-            console.log('pre post data');
-              let headers = new Headers({'Accept':'text/html,application/xhtml+xml,application/xml;',"Content-type":"application/x-www-form-urlencoded"});
-              let options = new RequestOptions({ headers: headers });
-              return this.http.post(url,data,options).toPromise().then(res=>{
-                console.log('post data success',res);
-                console.log('headers json',res.headers.toJSON());
-                console.log('res headers get location',res.headers.getAll('location'));
-                console.log('res headers get url',res.headers.getAll('url'));
-              })
-          })
-          .catch(err=>{
-            console.log('code getter error',err);
-          })
-          .then(data=>{
-            console.log('after post data',data);
-          })
+      // })       
   }
 
-  cancelTask(){//executeTask(){
+  executeTask(){
      console.log('execute task');
 
      if (this.ContentType == 'LSTaskResolution') {
@@ -361,7 +308,7 @@ export class TaskItem {
                      },
                      DataSource : 'true'
                   }
-                  let headers = new Headers({"Authorization":`Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlJyUXF1OXJ5ZEJWUldtY29jdVhVYjIwSEdSTSIsImtpZCI6IlJyUXF1OXJ5ZEJWUldtY29jdVhVYjIwSEdSTSJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvbGl6YXJkc29mdGRldi5zaGFyZXBvaW50LmNvbUBlZmQxZWNlYy04N2Y5LTQ5ZDAtYTdjYy0wNGM3ZTZiYzBjNjQiLCJpc3MiOiIwMDAwMDAwMS0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDBAZWZkMWVjZWMtODdmOS00OWQwLWE3Y2MtMDRjN2U2YmMwYzY0IiwiaWF0IjoxNDg0MDYwMzcwLCJuYmYiOjE0ODQwNjAzNzAsImV4cCI6MTQ4NDA2NDI3MCwiYWN0b3IiOiIwZmUwMzg0YS00ZTYzLTQzZmUtOWI3OS1hM2JkMjQ5MWE2NjNAZWZkMWVjZWMtODdmOS00OWQwLWE3Y2MtMDRjN2U2YmMwYzY0IiwiaWRlbnRpdHlwcm92aWRlciI6InVybjpmZWRlcmF0aW9uOm1pY3Jvc29mdG9ubGluZSIsIm5hbWVpZCI6IjEwMDNiZmZkOTgzMDUyZjgifQ.ESPP-xoeIHMcb66JzxJRdwt6qATBlKIXWI61ilMNjMZZQmijjrLpwF5xDCs3K-3SJfrPLHd8w0pg4T0EVFzTVyJdGdkmOGbAXsrUDYEZ5mok-Lnp1tojCw7OQTPp-s7nT9fDxKYnvBfUmJ9iytbhacPjZuMarkvJsebF_Sp1ruytvfRLdwU9GQtTqGIdnSUDh6teGfbh9EY1jzXxMO1LluE95eFd5sc4EO2R--xZ4JlDIzCPtDYFTgGuKqLxUyIdKnZQYqA6SL6FQ0LIzLVWTNwjEPNZfHVK5KpnAEkOE3pONTfSdrP1dKIJeVz_79SxMqmLxPM3p-3UH6yXeGb_BA`,"X-RequestDigest":res[1].FormDigestValue, "X-HTTP-Method":"MERGE","IF-MATCH": "*",'Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+                  let headers = new Headers({"Authorization":`Bearer `,"X-RequestDigest":res[1].FormDigestValue, "X-HTTP-Method":"MERGE","IF-MATCH": "*",'Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
                   let options = new RequestOptions({ headers: headers });
                   return this.http.post(url,JSON.stringify(body),options).toPromise().catch(err=>{console.log('post maint trasit error',err)});
                }
