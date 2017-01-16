@@ -23,7 +23,8 @@ export class TaskItem {
   history : any;
   taskHistory : any;
   connectedItem : any;
-  digest : Promise<any>;
+  digest : string;
+  access_token : string;
 
   task : any;
   Title : string;
@@ -49,28 +50,11 @@ export class TaskItem {
 
     this.getTaskHistory();
     this.getConnectedDoc();
-   // this.digest = access.getDigest();
-
-    console.log('this task',this.task);
+    access.getDigestValue().then(digest => this.digest = digest);
+    access.getToken().then(token => this.access_token = token);
   }
 
   ionViewDidLoad() {
-      //  let listGet = `${consts.siteUrl}/Documents/lsi.listscollection.js`;
-
-    //  let headers = new Headers({'Accept': 'application/json;odata=verbose'});
-    //  let options = new RequestOptions({ headers: headers ,withCredentials: true});
-
-    //  return this.http.get(listGet,options).toPromise()
-    //  .then(res => {
-    //     console.log('res data',res);
-    //     //console.log('json data',res.json());
-    //     let b = res.text();
-    //     b = b.replace(/\'/g,`"`).replace(/;/g,'');
-    //     console.log('b',b);
-    //     let c = JSON.parse(b.substring(b.indexOf('LSi.ListsCollection = ')+'LSi.ListsCollection = '.length,b.length));
-    //     console.log('c',c);
-    //  })
-
   }
 
   dismiss(){
@@ -86,7 +70,7 @@ export class TaskItem {
         "__metadata": {
             "type": "SP.Data.LSTasksListItem"
         },
-        OData_Status : 'In Progress',
+        OData__Status : 'In Progress',
         AssignetToEmail : this.user.getEmail(),
         AssignetToTitle : this.user.getUserName(),
         AssignedToId : this.user.getId()
@@ -102,21 +86,8 @@ export class TaskItem {
 
   cancelTask(){
      console.log('cancel work');
-     //this.doneTask('RefuseTask');
 
-      // let url = `${consts.siteUrl}/_api/web/Lists(guid'6dc74f0c-f9b2-4821-bd3b-acd98c9a5a04')/items(33)`;
-      // let body = {
-      //     __metadata : {
-      //       "type": "SP.Data.ContractsItem"
-      //     },
-      //     Amount:32
-      // }
-      // return this.digest.then(obj =>{
-      //   let headers = new Headers({'Authorization':"Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlJyUXF1OXJ5ZEJWUldtY29jdVhVYjIwSEdSTSIsImtpZCI6IlJyUXF1OXJ5ZEJWUldtY29jdVhVYjIwSEdSTSJ9.eyJhdWQiOiIwMDAwMDAwMy0wMDAwLTBmZjEtY2UwMC0wMDAwMDAwMDAwMDAvbGl6YXJkc29mdGRldi5zaGFyZXBvaW50LmNvbUBlZmQxZWNlYy04N2Y5LTQ5ZDAtYTdjYy0wNGM3ZTZiYzBjNjQiLCJpc3MiOiIwMDAwMDAwMS0wMDAwLTAwMDAtYzAwMC0wMDAwMDAwMDAwMDBAZWZkMWVjZWMtODdmOS00OWQwLWE3Y2MtMDRjN2U2YmMwYzY0IiwiaWF0IjoxNDg0MTM0MTAxLCJuYmYiOjE0ODQxMzQxMDEsImV4cCI6MTQ4NDEzODAwMSwiYWN0b3IiOiIwZmUwMzg0YS00ZTYzLTQzZmUtOWI3OS1hM2JkMjQ5MWE2NjNAZWZkMWVjZWMtODdmOS00OWQwLWE3Y2MtMDRjN2U2YmMwYzY0IiwiaWRlbnRpdHlwcm92aWRlciI6InVybjpmZWRlcmF0aW9uOm1pY3Jvc29mdG9ubGluZSIsIm5hbWVpZCI6IjEwMDNiZmZkOTgzMDUyZjgifQ.RqBz438diVxkjP5QSDMQ0ejJZJGO7EaQVRClK-zmOSwcD9cZK5VQPNumq7gDh93dFxTSStwUbmrhrGeNtntDOEnL3mG8YMGVSyeK3IizbRVOxgOn75XueoKO-2smyb0C10NgSa8_NNlJIaqf-BOEF6iK4TzLq84pVaGDhLjPVxIG1pHl-tiQGkQ3v6S3-2D__g6dUhTeZWkYevkIVy4TW2voIDw0GaHTnyq92NbRGl5_vM35TeLeeea9lJNQ2eDvGgrofwe2zQfg4kB1g2FFrR6u0GUVf0mhfhjsE_VuytQPyrljWLCPIoUGmCRc9Nqzq3wiryxMWqnZQIGJjn6Rnw","X-RequestDigest": obj.FormDigestValue,'X-HTTP-Method': 'MERGE',
-			// 	'IF-MATCH': '*','Accept': 'application/json; odata=verbose',"Content-Type": "application/json;odata=verbose"});
-      //   let options = new RequestOptions({ headers: headers });
-      //   this.http.post(url,JSON.stringify(body),options).toPromise().then(res=>{console.log('post data success',res);}).catch(err=>{console.log('post maint trasit error',err)});
-      // })       
+     //this.doneTask('RefuseTask');
   }
 
   executeTask(){
@@ -144,7 +115,7 @@ export class TaskItem {
         "__metadata": {
             "type": "SP.Data.LSTasksListItem"
         },
-        OData_Status : 'Done',
+        OData__Status : 'Done',
         OData__Comments : this.coments.value,
         TaskResults : taskResult
       }
@@ -297,18 +268,19 @@ export class TaskItem {
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
      let options = new RequestOptions({ headers: headers });
 
-     Promise.all([this.http.get(listGet,options).toPromise(),this.digest])
+     this.http.get(listGet,options).toPromise()
          .then( res =>{
-           return res[0].json().d.results.map(item => {
+           return res.json().d.results.map(item => {
+             console.log('items',item);
                if(item.DataSource != 'true'){
-                  let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSMainTransit')/items`;
+                  let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSMainTransit')/items(${item.Id})`;
                   let body = {
                      __metadata : {
                         type : 'SP.Data.LSMainTransitItem'
                      },
                      DataSource : 'true'
                   }
-                  let headers = new Headers({"Authorization":`Bearer `,"X-RequestDigest":res[1].FormDigestValue, "X-HTTP-Method":"MERGE","IF-MATCH": "*",'Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+                  let headers = new Headers({"Authorization":`Bearer ${this.access_token}`,"X-RequestDigest":this.digest, "X-HTTP-Method":"MERGE","IF-MATCH": "*",'Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
                   let options = new RequestOptions({ headers: headers });
                   return this.http.post(url,JSON.stringify(body),options).toPromise().catch(err=>{console.log('post maint trasit error',err)});
                }
@@ -348,25 +320,19 @@ export class TaskItem {
       itemData : JSON.stringify(routeData.itemData)
     }
 
-    // Authorization: "Bearer " + accessToken
-    return this.digest.then(obj =>{
-      let headers = new Headers({"Authorization":"Bearer "+'',"X-RequestDigest": obj.FormDigestValue,'X-HTTP-Method':'MERGE','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+      let headers = new Headers({"Authorization":`Bearer ${this.access_token}`,"X-RequestDigest": this.digest,'X-HTTP-Method':'POST','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
       let options = new RequestOptions({ headers: headers });
 
-      return this.http.post(url,JSON.stringify(body),options).toPromise().then(res=>{console.log('TransitHistory sucess')}).catch(err=>{console.log('LsTransiHistory error',err)})
-   })
-
+      return this.http.post(url,JSON.stringify(body),options).toPromise().then(res=>{console.log('TransitHistory sucess')}).catch(err=>{console.log('LSTransiHistory error',err)})
   }
 
   updateTaskData(id : number, data : any) : Promise<any> {
     let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/Items(${id})`;
 
-   return  this.digest.then(obj =>{
-       let headers = new Headers({"X-RequestDigest": obj.FormDigestValue,'X-HTTP-Method':'MERGE','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
-       let options = new RequestOptions({ headers: headers });
+    let headers = new Headers({"Authorization":`Bearer ${this.access_token}`,"X-RequestDigest": this.digest,'X-HTTP-Method':'MERGE','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+    let options = new RequestOptions({ headers: headers });
 
-       return this.http.post(url,JSON.stringify(data),options).toPromise().then(res=>{console.log('updateTask success',res)}).catch(err=>{console.log('updateTask error',err)});
-    });
+    return this.http.post(url,JSON.stringify(data),options).toPromise().then(res=>{console.log('updateTask success',res)}).catch(err=>{console.log('updateTask error',err)});
   }
 
   getTaskHistory() : void {

@@ -5,6 +5,7 @@ import { Http, Headers, RequestOptions  } from '@angular/http';
 
 import * as consts from '../utils/Consts';
 import { Auth } from '../utils/auth';
+import { Access } from '../utils/access';
 import { User } from '../utils/user';
 
 import { MyTasks } from '../pages/MyTasks/MyTasks';
@@ -23,8 +24,8 @@ export class MyApp {
   pages: Array<{title: string, icon:string, component: any , listGUID  : string }>;
   loader : any;
   toast : any;
-
-  constructor(public platform: Platform, public alertCtrl: AlertController,public loadingCtrl: LoadingController,public toastCtrl: ToastController, public auth: Auth,@Inject(Http) public http: Http, public events: Events, private zone:NgZone, @Inject(User) public user : User) {
+  // private zone:NgZone, 
+  constructor(public platform: Platform, public alertCtrl: AlertController,public loadingCtrl: LoadingController,public toastCtrl: ToastController, public auth: Auth,@Inject(Access) public access : Access,@Inject(Http) public http: Http, public events: Events,@Inject(User) public user : User) {
     this.initializeApp();
     this.errorCounter = 0;
     this.pages = [
@@ -37,6 +38,7 @@ export class MyApp {
     this.platform.ready().then(() => {
       StatusBar.styleDefault();
       Splashscreen.hide();
+      this.access._init();
 
       this.checkNetwork().then(()=>{
          if(!(this.auth.checkAuthAlready(consts.siteUrl))){
