@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { NavController, Events } from 'ionic-angular';
+import { NavController, Events, Platform, LoadingController } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 
 import { User } from '../../utils/user';
@@ -21,10 +21,11 @@ export class MyTasks {
    tabEnded : any;
 
    counts : any;
+   loader : any;
 
    chatParams : any;
 
-  constructor(public navCtrl: NavController, public http : Http, public events: Events, @Inject(User) public user : User) {
+  constructor(public navCtrl: NavController,public platform : Platform,public loadingCtrl: LoadingController, public http : Http, public events: Events, @Inject(User) public user : User) {
      this.tabNew =  LSNew;
      this.tabActive = LSActive;
      this.tabLate = LSLate;
@@ -35,17 +36,32 @@ export class MyTasks {
         late : 0,
         done : 0
      };
-
-     events.subscribe('user:loaded',()=>{
-         this.setTasksCount();
-     });
-     this.setTasksCount();
+     
+      platform.ready().then(()=>{
+        events.subscribe('user:loaded',()=>{
+            this.setTasksCount();
+        });
+        events.subscribe('task:checked',()=>{
+              this.counts = {
+                  new : 0,
+                  active : 0,
+                  late : 0,
+                  done : 0
+            };
+            this.setTasksCount();
+        });
+        this.setTasksCount();
+      })
 
      this.chatParams = {'d':'bb'};
+  }
 
+  ionViewDidEnter(){
+    this.platform.registerBackButtonAction((e)=>{this.platform.exitApp();return false;},100);
   }
 
   setTasksCount() : void {
+     this.presentLoading();
      this.user.getUserProps()
       .then( (status) => {
          if(status)
@@ -58,20 +74,21 @@ export class MyTasks {
                this.counts.new++;
             if(item.OData__Status == 'In Progress')
                this.counts.active++;
-            if(item.OData__Status != 'Done' && (new Date(item.TaskDueDate)) < (new Date()) )
+            if(item.OData__Status != 'Done' && (new Date(item.TaskDueDate)) < (new Date((new Date()).getFullYear(),(new Date()).getMonth(),(new Date()).getDate())) )
                this.counts.late++;
          })
          res[1].map( item =>{
             if(item.CountTasks)
                this.counts.done += item.CountTasks;
          })
+         this.stopLoading();
       })
       .catch( error => {
          console.log('<MyTasks> setting Count Tasks error',error);
          this.counts = {};
+         this.stopLoading();
       })
-
- }
+  }
 
   getTasksCount() : Promise<any> {
      let getUrl = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=AssignetToEmail,AssignetToTitle,Title,TaskDueDate,OData__Status&$filter=(AssignetToEmail eq '${this.user.getEmail()}')&$top=1000`;
@@ -93,7 +110,17 @@ export class MyTasks {
             console.error('<MyTasks> Loading Counts Tasks error!',error);
             return [[],[]];
          })
- }
+  }
 
+  presentLoading() : void {
+    if(this.loader)this.loader.dismiss();
+    this.loader = this.loadingCtrl.create({
+      content: "Подождите...",
+    });
+    this.loader.present();
+  }
 
+  stopLoading() : void {
+    this.loader.dismiss();
+  }
 }

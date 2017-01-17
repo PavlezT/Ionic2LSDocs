@@ -1,4 +1,4 @@
-import { Component, ViewChild ,NgZone, Inject} from '@angular/core';
+import { Component, ViewChild , Inject} from '@angular/core';//NgZone,
 import { Nav, Platform , AlertController , LoadingController, ToastController, Events } from 'ionic-angular';
 import { StatusBar, Splashscreen, NativeStorage , Network } from 'ionic-native';
 import { Http, Headers, RequestOptions  } from '@angular/http';
@@ -33,11 +33,16 @@ export class MyApp {
     ];
 
   }
+  
+  ionViewDidEnter(){
+    this.platform.registerBackButtonAction((e)=>{this.platform.exitApp();return false;},100);
+  }
 
   initializeApp() {
     this.platform.ready().then(() => {
       StatusBar.styleDefault();
       Splashscreen.hide();
+      this.ionViewDidEnter();
       this.access._init();
 
       this.checkNetwork().then(()=>{
@@ -101,15 +106,17 @@ export class MyApp {
      this.presentLoading();
       return Promise.all([this.user.init(),this.getLists()])
         .then( res => {
-             res[1].json().d.results.map((item,i,mass) => {
-                 if(item.ListTitle && item.ListGUID)
-                    this.pages.push({ title: item.ListTitle , icon:"folder", component: Contracts , listGUID : item.ListGUID})
+             res[1].map((list,i,mass) => {
+               if(!list)return;
+               list.then(item=>{
+                  this.pages.push({ title: item.Title , icon:"folder", component: Contracts , listGUID : item.Id})
+               })
              });
              this.events.publish('user:loaded');
              this.stopLoading();
         })
         .catch( error => {
-            console.error(`Error in making Burger Menu`,error);
+            console.log(`Error in making Burger Menu`,error);
             if(this.errorCounter < 3 && error.status == '403'){
                this.errorCounter++;
                this.stopLoading();
@@ -124,63 +131,77 @@ export class MyApp {
     this.nav.setRoot(page.component,{title : page.title , guid : page.listGUID });
   }
 
-  getLists() : Promise<any>{
+  getLists() : Promise<any> {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/getByTitle('LSListInLSDocs')/Items?$select=ListTitle,ListURL,ListGUID`;
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
     let options = new RequestOptions({ headers: headers ,withCredentials: true});
 
-    return this.http.get(listGet,options).toPromise();
+    return this.http.get(listGet,options).toPromise()
+      .then( response =>{
+          return response.json().d.results.map(item => {
+            return (item.ListGUID && !item.ListTitle) ? this.getListProps(item.ListGUID) : null;
+          })
+      })
   }
 
-   showPrompt() : void {
-     this.platform.registerBackButtonAction((e)=>{return false;},100); // e.preventDefault();
-     let prompt = this.alertCtrl.create({
-       title: 'LogIn',
-       message: "Введите свой email и пароль для входа",
-       enableBackdropDismiss: false,
-       inputs: [
-         {
-           name: 'Email',
-           placeholder: 'Email'
-         },
-         {
-           name: 'Password',
-           type: 'password',
-           placeholder: 'Password'
-         }
-       ],
-       buttons: [
-         {
-           text: 'Подтвердить',
-           handler: data => {
-             this.getLogin(data.Email,data.Password);
-           }
-         }
-       ]
-     });
-     prompt.present();
-     prompt.onDidDismiss((event) => { });
-   }
+  getListProps(guid : string) : Promise<any>{
+    let listGet = `${consts.siteUrl}/_api/Web/Lists(guid'${guid}')?$select=Title,Id,ItemCount`;
 
-   presentLoading() : void {
-      this.loader = this.loadingCtrl.create({
-        content: "Подождите...",
+    let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+    let options = new RequestOptions({ headers: headers ,withCredentials: true});
+
+    return this.http.get(listGet,options).toPromise().then(res => { return res.json().d })
+  }
+
+  showPrompt() : void {
+    this.platform.registerBackButtonAction((e)=>{return false;},100); // e.preventDefault();
+    let prompt = this.alertCtrl.create({
+      title: 'LogIn',
+      message: "Введите свой email и пароль для входа",
+      enableBackdropDismiss: false,
+      inputs: [
+        {
+          name: 'Email',
+          placeholder: 'Email'
+        },
+        {
+          name: 'Password',
+          type: 'password',
+          placeholder: 'Password'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Подтвердить',
+          handler: data => {
+            this.getLogin(data.Email,data.Password);
+          }
+        }
+      ]
+    });
+    prompt.present();
+    prompt.onDidDismiss((event) => { });
+  }
+
+  presentLoading() : void {
+    this.loader = this.loadingCtrl.create({
+      content: "Подождите...",
+    });
+    this.loader.present();
+  }
+
+  stopLoading() : void {
+    this.loader.dismiss();
+  }
+
+  showToast(message: any){
+      this.toast = this.toastCtrl.create({
+        message: (typeof message == 'string' )? message : message.toString().substring(0,( message.toString().indexOf('&#x') || message.toString().length)) ,
+        position: 'bottom',
+        showCloseButton : true,
+        duration: 9000
       });
-      this.loader.present();
-   }
-
-   stopLoading() : void {
-      this.loader.dismiss();
-   }
-
-   showToast(message: any){
-       this.toast = this.toastCtrl.create({
-         message: (typeof message == 'string' )? message : message.toString().substring(0,( message.toString().indexOf('&#x') || message.toString().length)) ,
-         position: 'bottom',
-         showCloseButton : true,
-         duration: 9000
-       });
-       this.toast.present();
-   }
+      this.toast.present();
+  }
 }

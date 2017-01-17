@@ -1,5 +1,5 @@
 import { Component , Inject } from '@angular/core';
-import { NavController, ModalController } from 'ionic-angular';
+import { NavController, ModalController, Events } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
 import 'moment/locale/pt-br';
@@ -17,10 +17,20 @@ export class LSActive {
   items : Array<any>;
   siteUrl : string;
 
-  constructor(public navCtrl: NavController,public modalCtrl: ModalController,@Inject(Http) public http: Http, @Inject(User) public user : User) {
+  constructor(public navCtrl: NavController,public modalCtrl: ModalController,public events: Events, @Inject(Http) public http: Http, @Inject(User) public user : User) {
      this.siteUrl = consts.siteUrl;
      moment.locale('ru');
-     this.user.getUserProps()
+     events.subscribe('task:towork',()=>{
+            this.loadTasks();
+     });
+     events.subscribe('task:doneTask',()=>{
+            this.loadTasks();
+     });
+     this.loadTasks();
+  }
+
+  private loadTasks() : void {
+    this.user.getUserProps()
       .then(() => {
         return this.getActiveTasks()
       })

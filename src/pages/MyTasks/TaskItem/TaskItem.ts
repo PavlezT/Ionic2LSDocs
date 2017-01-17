@@ -1,5 +1,5 @@
 import { Component, ViewChild, Inject  } from '@angular/core';
-import { ViewController, ToastController, NavController,NavParams } from 'ionic-angular';
+import { ViewController,LoadingController,Platform, ToastController, NavController,NavParams, Events } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
 
@@ -18,6 +18,7 @@ import { SelectedItem } from '../../../utils/selecteditem';
 })
 export class TaskItem {
   siteUrl : string;
+  loader : any;
 
   historyToggle : boolean = false;
   history : any;
@@ -37,7 +38,7 @@ export class TaskItem {
 
   @ViewChild('coments') coments;
 
-  constructor(public navCtrl: NavController ,public viewCtrl: ViewController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams, public http : Http, public user : User) {
+  constructor(public platform: Platform,public navCtrl: NavController,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams, public http : Http, public user : User) {
     this.siteUrl = consts.siteUrl;
     this.task = navParams.data.item;
     this.Status = navParams.data.item.OData__Status || 'Done';
@@ -54,17 +55,20 @@ export class TaskItem {
     access.getToken().then(token => this.access_token = token);
   }
 
-  ionViewDidLoad() {
+  ionViewDidEnter(){
+    this.platform.registerBackButtonAction((e)=>{this.dismiss();return false;},100);
+  }
+
+  ionViewCanLeave(){
+    this.platform.registerBackButtonAction((e)=>{this.platform.exitApp();return false;},100);
   }
 
   dismiss(){
      this.viewCtrl.dismiss();
   }
 
-  toworkTask(){
-     console.log('to work');
-
-      this.writeToHistory();
+  public toWorkTask() : void {
+      this.presentLoading();
 
       let data = {
         "__metadata": {
@@ -76,41 +80,43 @@ export class TaskItem {
         AssignedToId : this.user.getId()
       }
 
-      this.updateTaskData(this.task.Id,data)
+      Promise.all([ this.writeToHistoryAfterTaskGet(),this.updateTaskData(this.task.Id,data)])
         .then( (resdata)=> {
-          console.log('post response',resdata);
-          // GetCountNotStartedTask(LSOnlineTaskData.CurentUserEmail, 'Not Started', 0, 0, 0);
-          // GetCountInWorkTask(LSOnlineTaskData.CurentUserEmail, 'In Progress', 0, 0, 0);
+          this.events.publish('task:checked');
+          this.events.publish('task:towork');
+          this.stopLoading();
+        })
+        .catch(err=> {
+          console.log('<TaskItem> toWorkTask error',err);
+          this.showToast('Операция неуспешна.Произошла ошибка');
+          this.stopLoading();
         })
   }
 
-  cancelTask(){
-     console.log('cancel work');
-
-     //this.doneTask('RefuseTask');
+  public cancelTask() : void {
+     this.presentLoading();
+     this.doneTask('RefuseTask');
   }
 
-  executeTask(){
-     console.log('execute task');
+  public executeTask() : void {
+     this.presentLoading();
 
      if (this.ContentType == 'LSTaskResolution') {
       this.сheckResolution()
         .then( res => {
-          console.log('resolution res',res);
           if (res.json().d.results.length !== 0) {
               this.doneTask('Done');
           } else {
               this.showToast('Вы не наложили не одной резолюции');
+              this.stopLoading();
           }
         })
     } else {
       this.doneTask('Done');
     }
-
   }
 
-  doneTask(taskResult : string) : void {
-
+  private doneTask(taskResult : string) : void {
       let data = {
         "__metadata": {
             "type": "SP.Data.LSTasksListItem"
@@ -120,41 +126,42 @@ export class TaskItem {
         TaskResults : taskResult
       }
 
-      this.updateTaskData(this.task.Id,data)
+      Promise.all([this.writeToHistoryAfterTaskDone(),this.updateTaskData(this.task.Id,data)])
         .then( ()=>{
-            this.writeToHistoryAfterTaskDone();
-           // addTaskNotificationButton();
-
-          // GetCountNotStartedTask(LSOnlineTaskData.CurentUserEmail, 'Not Started', 0, 0, 0);
-          // GetCountInWorkTask(LSOnlineTaskData.CurentUserEmail, 'In Progress', 0, 0, 0);
-          // GetCountNotDoneTask(LSOnlineTaskData.CurentUserEmail, 'Done', 0, 0, 0);
+          this.events.publish('task:checked');
+          this.events.publish('task:doneTask');
+          this.stopLoading();
+        })
+        .catch(err=>{
+          console.log('<TaskItem> doneTask error',err);
+          this.showToast('Операция неуспешна.Произошла ошибка');
+          this.stopLoading();
         })
   }
 
-  writeToHistoryAfterTaskDone() : void {
-        let EvanteDate = moment.utc().format("DD.MM.YYYY HH:mm:ss");
-        let StartDate = moment.utc(this.startDate).format("DD.MM.YYYY HH:mm:ss");
-        let DueDate = moment.utc(this.deadLine).format("DD.MM.YYYY");
+  private writeToHistoryAfterTaskDone() : Promise<any> {
+        let EvanteDate = moment.utc('',"DD.MM.YYYY HH:mm:ss")
+        let StartDate = moment.utc(this.startDate,"DD.MM.YYYY HH:mm:ss")
+        let DueDate = moment.utc(this.deadLine,"DD.MM.YYYY")
 
-        let Event = 'Завершена задача';
+        let Event = 'Завершена задача';//LSLang.Alert60
         let EventType = 'EventDoneTask';
 
         if (this.ContentType == 'LSTaskAppruve') {
             if (this.task.TaskResults == 'Back') {
-              Event = 'Получен отказ по задаче';
+              Event = 'Получен отказ по задаче';//LSLang.Alert66
               EventType = 'EventBackTask';
             } else {
-              Event = 'Получено согласие по задаче';
+              Event = 'Получено согласие по задаче';//LSLang.Alert62
             }
         }
         if (this.ContentType == 'LSSTaskAdd') {
             EventType = 'EventDoneTask EventAddTask';
         }
         if (this.task.TaskResults == 'Delegate') {
-            Event = `${this.user.getUserName()} делегировал задачу`;
+            Event = `${this.user.getUserName()} делегировал задачу`;//LSLang.Alert67
             EventType = 'EventDelegateTask';
         }
-
 
         let StateInRouteData = {
         sysIDList : this.task.sysIDList,
@@ -191,40 +198,35 @@ export class TaskItem {
           HistoryType : 'HistoryDataForUser'
         }
 
-        // LSOnlineTaskData.LSDocsWriteRunRoute({
-        //     Action: 'TaskDone',
-        //     ListID: SelectData.d.results[0].sysIDList,
-        //     ItemID: SelectData.d.results[0].sysIDItem,
-        //     Type: 'Task',
-        //     DataSource: {
-        //       TaskResults: TaskResults,
-        //       CurentTaskID: CurentTaskID,
-        //       RelateListId: SelectData.d.results[0].sysIDList,
-        //       RelateItem: SelectData.d.results[0].sysIDItem,
-        //       Alert58: LSLang.Alert58,
-        //       StateID: SelectData.d.results[0].StateID
-        //     }
-        // });
+        let transitTaskData = {
+            Title: 'TaskDone',
+            ListID: this.task.sysIDList,
+            ItemID: this.task.sysIDItem,
+            Type: 'Task',
+            DataSource: {
+              TaskResults: this.ContentType,
+              CurentTaskID: this.task.Id,
+              RelateListId: this.task.sysIDList,
+              RelateItem: this.task.sysIDItem,
+              Alert58: "Автоматически закрыта задача",//LSLang.Alert58
+              StateID: this.task.StateID
+            }
+         }
 
-        this.updateHistory(StateInRouteData);
-        StateInRouteData.HistoryType = 'TaskAndDocHistory';
-        this.updateHistory(StateInRouteData);
-
-        //LSOnlineTaskData.LSDocsStartWriteToHistory();
-
-        // if (!!TypeAction) {
-        //     TypeAction.Count++;
-        //     LSCompliteGroupeAction(TypeAction);
-        // } else {
-        //     $('#LSPrelouderDiv').remove();
-        // }
+        return Promise.all([this.updateTransitTask(transitTaskData),this.updateTransitHistory(StateInRouteData),this.updateTransitHistory(StateInRouteData,'TaskAndDocHistory')])
+          .then(()=>{
+            return this.startWriteToHistory();
+          })
+          .catch(err=>{
+              console.log('<TaskItem> writeToHistoryAfterTaskDone error',err);
+              throw new Error('writeToHistoryAfterTaskDone error');
+          })
   }
 
-  writeToHistory() : void {
-
-          let EvanteDate = moment.utc().format("DD.MM.YYYY HH:mm:ss");
-          let StartDate = moment.utc(this.startDate).format("DD.MM.YYYY HH:mm:ss");
-          let DueDate = moment.utc(this.deadLine).format("DD.MM.YYYY");
+  private writeToHistoryAfterTaskGet() : Promise<any> {
+          let EvanteDate = moment.utc('',"DD.MM.YYYY HH:mm:ss");
+          let StartDate = moment.utc(this.startDate,"DD.MM.YYYY HH:mm:ss");
+          let DueDate = moment.utc(this.deadLine,"DD.MM.YYYY");
 
           let StateInRouteData = {
             sysIDList : this.task.sysIDList,
@@ -254,24 +256,25 @@ export class TaskItem {
             HistoryType : 'HistoryDataForUser'
           };
 
-          this.updateHistory(StateInRouteData);
-          StateInRouteData.HistoryType = 'TaskAndDocHistory';
-          this.updateHistory(StateInRouteData);
-
-          this.startWriteToHistory();
-
+         return Promise.all([this.updateTransitHistory(StateInRouteData),this.updateTransitHistory(StateInRouteData,'TaskAndDocHistory')])
+            .then(()=>{
+              return this.startWriteToHistory();
+            })
+            .catch(err=>{
+              console.log('<TaskItem> writeToHistory error',err);
+              throw new Error('writeToHistory error');
+            })
   }
 
-  startWriteToHistory() : void {
+  private startWriteToHistory() : Promise<any> {
      let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSMainTransit')/items`;
 
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
      let options = new RequestOptions({ headers: headers });
 
-     this.http.get(listGet,options).toPromise()
+     return this.http.get(listGet,options).toPromise()
          .then( res =>{
            return res.json().d.results.map(item => {
-             console.log('items',item);
                if(item.DataSource != 'true'){
                   let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSMainTransit')/items(${item.Id})`;
                   let body = {
@@ -286,17 +289,13 @@ export class TaskItem {
                }
             })
          })
-         .then(res=>{
-           res[0].then(data=>{
-             console.log('lsmaintransit ok');
-           })
-         })
          .catch(err=>{
            console.log(`<TaskItem> Error startWtriteToHistory 'LSMainTransit'`,err);
+           throw new Error('startWriteToHistory error');
          })
   }
 
-  сheckResolution() : Promise<any>{
+  private сheckResolution() : Promise<any>{
       let url =  `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=sysIDItem,ID,sysIDList,ContentTypeId,Title,TaskAuthore/Title,&$expand=TaskAuthore/Title,ContentType/Name&$filter=(sysIDItem eq '${this.task.sysIDItem}') and (sysIDList eq '${this.task.sysIDList}') and (ContentType/Name eq 'LSResolutionTaskToDo') and (TaskAuthore/Title eq '${encodeURI(this.taskAuthore.Title)}')`;
 
       let headers = new Headers({'Accept': 'application/json;odata=verbose'});
@@ -305,14 +304,35 @@ export class TaskItem {
       return this.http.get(url,options).toPromise();
   }
 
-  updateHistory(routeData : any) : Promise <any> {
+  private updateTransitTask(taskData) : Promise<any> {
+    taskData.DataSource.Alert57 = "Назначена задача";
+    taskData.DataSource.Alert58 = "Автоматически закрыта задача";
+    taskData.DataSource.Alert60 = "Завершена задача";
+    taskData.DataSource.Alert62 = "Получено согласие по задаче";
+    taskData.DataSource.Alert66 = "Получен отказ по задаче";
+
+    taskData.DataSource = JSON.stringify(taskData.DataSource);
+
+    taskData.__metadata = {
+      type: "SP.Data.LSDocsListTransitTasksItem"
+    }
+
+    let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSDocsListTransitTasks')/Items`;
+
+    let headers = new Headers({"Authorization":`Bearer ${this.access_token}`,"X-RequestDigest": this.digest,'X-HTTP-Method':'POST','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+    let options = new RequestOptions({ headers: headers });
+
+    return this.http.post(url,JSON.stringify(taskData),options).toPromise();
+  }
+
+  private updateTransitHistory(routeData : any, historyType? : string) : Promise <any> {
     let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSDocsListTransitHistory')/Items`;
 
     let body = {
       "__metadata": {
           type: "SP.Data.LSDocsListTransitHistoryItem"
       },
-      Title : routeData.HistoryType,
+      Title : historyType ? historyType : routeData.HistoryType,
       ListID : routeData.sysIDList,
       ItemID : routeData.sysIDItem,
       Type : routeData.EventTypeUser,
@@ -323,19 +343,20 @@ export class TaskItem {
       let headers = new Headers({"Authorization":`Bearer ${this.access_token}`,"X-RequestDigest": this.digest,'X-HTTP-Method':'POST','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
       let options = new RequestOptions({ headers: headers });
 
-      return this.http.post(url,JSON.stringify(body),options).toPromise().then(res=>{console.log('TransitHistory sucess')}).catch(err=>{console.log('LSTransiHistory error',err)})
+      return this.http.post(url,JSON.stringify(body),options).toPromise();
   }
 
-  updateTaskData(id : number, data : any) : Promise<any> {
+  private updateTaskData(id : number, data : any) : Promise<any> {
     let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/Items(${id})`;
 
     let headers = new Headers({"Authorization":`Bearer ${this.access_token}`,"X-RequestDigest": this.digest,'X-HTTP-Method':'MERGE','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
     let options = new RequestOptions({ headers: headers });
 
-    return this.http.post(url,JSON.stringify(data),options).toPromise().then(res=>{console.log('updateTask success',res)}).catch(err=>{console.log('updateTask error',err)});
+    return this.http.post(url,JSON.stringify(data),options).toPromise();
   }
 
-  getTaskHistory() : void {
+
+  private getTaskHistory() : void {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSHistory')/items?$filter=(ItemId eq '${this.task.sysIDItem || this.task.ItemId}') and (Title eq '${this.task.sysIDList || this.task.ListID}') and (ItemName eq 'Task')`;
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
@@ -359,7 +380,7 @@ export class TaskItem {
         })
   }
 
-  getConnectedDoc() : void {
+  private getConnectedDoc() : void {
      let listGet = `${consts.siteUrl}/_api/Web/Lists(guid'${this.task.sysIDList || this.task.ListID}')/items(${this.task.sysIDItem || this.task.ItemId})`;
 
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
@@ -375,7 +396,7 @@ export class TaskItem {
          })
   }
 
-  showToast(message: any){
+  public showToast(message: any) : void {
       let toast = this.toastCtrl.create({
         message: (typeof message == 'string' )? message : message.toString().substring(0,( message.toString().indexOf('&#x') || message.toString().length)) ,
         position: 'bottom',
@@ -385,7 +406,7 @@ export class TaskItem {
     toast.present();
   }
 
-  showHistory() : void{
+  public showHistory() : void{
     if(this.historyToggle){
       this.historyToggle = false;
       return;
@@ -393,12 +414,24 @@ export class TaskItem {
     this.historyToggle = true;
   }
 
-  openConnecedItem() : void {
+  public openConnecedItem() : void {
      this.selectedItem.set(this.connectedItem, this.task.sysIDList || this.task.ListID);
      this.navCtrl.push(Item, {
       item: this.connectedItem,
       listGUID : this.task.sysIDList || this.task.ListID
      });
+  }
+
+  public presentLoading() : void {
+    this.loader = this.loadingCtrl.create({
+      content: "Подождите...",
+    });
+    this.loader.present();
+  }   
+
+  public stopLoading() : void {
+      this.loader.dismiss();
+      this.dismiss();
   }
 
 }

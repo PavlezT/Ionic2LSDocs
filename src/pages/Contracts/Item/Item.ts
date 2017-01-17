@@ -1,5 +1,5 @@
 import { Component } from '@angular/core'; //, Inject
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, ViewController, Platform } from 'ionic-angular';
 
 import { InfoTab } from './Tabs/InfoTab/InfoTab';
 import { Documents } from './Tabs/Documents/Documents';
@@ -21,7 +21,7 @@ export class Item {
   history : any;
   routes : any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,public platform: Platform, public viewCtrl: ViewController) {
     this.title = navParams.data.item.Title || '---';
     this.id = navParams.data.item.Id;
     this.listGUID = navParams.data.listGUID;
@@ -31,6 +31,14 @@ export class Item {
     this.documents = Documents;
     this.history = History;
     this.routes = Route;
+  }
+
+  ionViewDidEnter(){
+    this.platform.registerBackButtonAction((e)=>{this.dismiss();return false;},100);
+  }
+
+  dismiss(){
+     this.viewCtrl.dismiss();
   }
 
 }

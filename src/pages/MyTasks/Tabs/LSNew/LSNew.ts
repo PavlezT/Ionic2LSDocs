@@ -17,11 +17,14 @@ export class LSNew {
    items : Array<any>;
    siteUrl : string;
 
-   constructor(public platform: Platform, public navCtrl: NavController, public modalCtrl: ModalController,public events: Events, @Inject(Http) public http: Http, @Inject(User) public user : User) {
+   constructor(public platform: Platform, public navCtrl: NavController, public modalCtrl: ModalController, public events: Events, @Inject(Http) public http: Http, @Inject(User) public user : User) {
       this.platform.ready().then(()=> {
         this.siteUrl = consts.siteUrl;
         moment.locale('ru');
         events.subscribe('user:loaded',()=>{
+            this.loadTasks();
+        });
+        events.subscribe('task:towork',()=>{
             this.loadTasks();
         });
         this.loadTasks();
