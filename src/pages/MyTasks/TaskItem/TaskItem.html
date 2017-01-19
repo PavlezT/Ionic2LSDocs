@@ -88,9 +88,9 @@
              <button  clear ion-button (click)="toWorkTask()">
                 <ion-icon name="arrow-down"></ion-icon>
                 <div>В роботу</div>
-            </button>
+            </button> 
          </ion-col>
-         <ion-col *ngIf="task.sysTaskLevel == 1 && ContentType == ('LSTaskPreparetion' || 'LSTaskAppruve' || 'LSTaskAgreement' ) ">
+         <ion-col *ngIf="task.sysTaskLevel == 1 && (ContentType == 'LSTaskPreparetion' || ContentType == 'LSTaskAppruve' || ContentType =='LSTaskAgreement' ) ">
             <button  clear ion-button (click)="cancelTask()">
                <ion-icon name="close"></ion-icon>
                <div *ngIf="ContentType == 'LSTaskPreparetion'">

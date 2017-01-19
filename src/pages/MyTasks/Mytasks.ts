@@ -39,7 +39,8 @@ export class MyTasks {
      
       platform.ready().then(()=>{
         events.subscribe('user:loaded',()=>{
-            this.setTasksCount();
+            this.presentLoading();
+            this.setTasksCount().then(()=>this.stopLoading());
         });
         events.subscribe('task:checked',()=>{
               this.counts = {
@@ -48,21 +49,22 @@ export class MyTasks {
                   late : 0,
                   done : 0
             };
-            this.setTasksCount();
+            this.presentLoading();
+            this.setTasksCount().then(()=>this.stopLoading());
         });
-        this.setTasksCount();
+        this.presentLoading();
+        this.setTasksCount().then(()=>this.stopLoading());
       })
 
-     this.chatParams = {'d':'bb'};
+      this.chatParams = {'d':'bb'};
   }
 
   ionViewDidEnter(){
     this.platform.registerBackButtonAction((e)=>{this.platform.exitApp();return false;},100);
   }
 
-  setTasksCount() : void {
-     this.presentLoading();
-     this.user.getUserProps()
+  setTasksCount() : Promise<any> {
+     return this.user.getUserProps()
       .then( (status) => {
          if(status)
             return this.getTasksCount();
@@ -81,12 +83,10 @@ export class MyTasks {
             if(item.CountTasks)
                this.counts.done += item.CountTasks;
          })
-         this.stopLoading();
       })
       .catch( error => {
          console.log('<MyTasks> setting Count Tasks error',error);
          this.counts = {};
-         this.stopLoading();
       })
   }
 
@@ -113,14 +113,14 @@ export class MyTasks {
   }
 
   presentLoading() : void {
-    if(this.loader)this.loader.dismiss();
     this.loader = this.loadingCtrl.create({
+      dismissOnPageChange : true,
       content: "Подождите...",
     });
     this.loader.present();
   }
 
   stopLoading() : void {
-    this.loader.dismiss();
+    this.loader.dismiss().then(()=>{console.log('<MyTasks> Data loaded')});
   }
 }
