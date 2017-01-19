@@ -68,10 +68,10 @@
     <preference name="SplashMaintainAspectRatio" value="true" />
     <preference name="orientation" value="portrait" />
     <preference name="FadeSplashScreen" value="true" />
-    <preference name="FadeSplashScreenDuration" value="750" />
+    <preference name="FadeSplashScreenDuration" value="550" />
     <!--<preference name="loadUrlTimeoutValue" value="700000" />-->
     <preference name="SplashScreen" value="screen" />
-    <preference name="SplashScreenDelay" value="10000" />
+    <!--<preference name="SplashScreenDelay" value="1000" />-->
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />

@@ -424,7 +424,7 @@ export class TaskItem {
 
   public presentLoading() : void {
     this.loader = this.loadingCtrl.create({
-      dismissOnPageChange : true,
+      // dismissOnPageChange : true,
       content: "Подождите...",
     });
     this.loader.present();

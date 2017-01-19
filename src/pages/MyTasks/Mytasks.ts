@@ -66,11 +66,13 @@ export class MyTasks {
   setTasksCount() : Promise<any> {
      return this.user.getUserProps()
       .then( (status) => {
+        console.log('status',status);
          if(status)
             return this.getTasksCount();
          return [[],[]];
       })
       .then( (res) => {
+        console.log('res',res)
          res[0].map((item) => {
             if(item.OData__Status == 'Not Started')
                this.counts.new++;
@@ -96,7 +98,7 @@ export class MyTasks {
 
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
      let options = new RequestOptions({ headers: headers });
-
+     
      return Promise.all([
         this.http.get(getUrl,options).toPromise(),
         this.http.get(listGet,options).toPromise()
@@ -114,13 +116,13 @@ export class MyTasks {
 
   presentLoading() : void {
     this.loader = this.loadingCtrl.create({
-      dismissOnPageChange : true,
+      // dismissOnPageChange : true,
       content: "Подождите...",
     });
     this.loader.present();
   }
 
   stopLoading() : void {
-    this.loader.dismiss().then(()=>{console.log('<MyTasks> Data loaded')});
+    if(this.loader)this.loader.dismiss().then(()=>{console.log('<MyTasks> Data loaded')});
   }
 }
