@@ -432,7 +432,7 @@ export class TaskItem {
 
   public stopLoading() : void {
       this.loader.dismiss().then(() =>{
-        
+        console.log('<TaskItem> closing task after process')
       })
       this.dismiss();
   }
