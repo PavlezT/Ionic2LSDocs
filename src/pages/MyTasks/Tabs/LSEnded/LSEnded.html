@@ -8,13 +8,13 @@
        <ion-label>
         <h2>{{item.TaskTitle}}</h2>
         <div class="description" >
-            <div class="descriptontext">{{item.DueDate}}</div>
+            <div class="descriptontext">{{item.DueDate_view}}</div>
         </div>
        </ion-label>
-       <!--<ion-icon name="pricetag"></ion-icon>
-        <div class="showId">
-         ID #{{item.sysIDItem || item.ItemId}}
-       </div>-->
+       <div item-right>
+         <ion-icon name="pricetag"></ion-icon>
+         <div class="showId">ID #{{item.sysIDItem || item.ItemId}}</div>
+       </div>
     </button>
     <h1 ion-item *ngIf="items && items.length == 0">Здесь пусто</h1>
     <h1 ion-item *ngIf="!items">Загрузка...</h1>

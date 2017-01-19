@@ -37,8 +37,8 @@ export class LSActive {
       .then( tasks => {
         this.items = (JSON.parse(tasks._body)).d.results;
         this.items.map((item,i,arr)=>{
-           item.StartDate = moment(item.StartDate).format("dd, DD MMMM");
-           item.TaskDueDate = moment(item.TaskDueDate).format("dd, DD MMMM");
+           item.StartDate_view = moment(item.StartDate).format("dd, DD MMMM");
+           item.TaskDueDate_view = moment(item.TaskDueDate).format("dd, DD MMMM");
            return item;
         });
       })

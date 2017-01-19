@@ -21,7 +21,7 @@ export class TaskItem {
   loader : any;
 
   historyToggle : boolean = false;
-  history : any;
+  history : any; 
   taskHistory : any;
   connectedItem : any;
   digest : string;
@@ -44,8 +44,8 @@ export class TaskItem {
     this.Status = navParams.data.item.OData__Status || 'Done';
     this.ContentType =  navParams.data.item.TaskType ||  navParams.data.item.ContentType.Name || "undefined";
     this.Title = navParams.data.item.Title || navParams.data.item.TaskTitle;
-    this.startDate = navParams.data.item.StartDate;
-    this.deadLine = navParams.data.item.TaskDueDate || navParams.data.item.DueDate;
+    this.startDate = navParams.data.item.StartDate_view;
+    this.deadLine = navParams.data.item.TaskDueDate_view || navParams.data.item.DueDate_view;
     this.assignetTo = navParams.data.item.AssignetToEmail ? {Email: navParams.data.item.AssignetToEmail, Title: navParams.data.item.AssignetToTitle } : {Email: navParams.data.item.ExecutorEmail ,Title: navParams.data.item.NameExecutor};
     this.taskAuthore = navParams.data.item.TaskAuthore || {EMail :navParams.data.item.AthoreEmail,Title : navParams.data.item.NameAuthore };
 
@@ -140,9 +140,9 @@ export class TaskItem {
   }
 
   private writeToHistoryAfterTaskDone() : Promise<any> {
-        let EvanteDate = moment.utc('',"DD.MM.YYYY HH:mm:ss")
-        let StartDate = moment.utc(this.startDate,"DD.MM.YYYY HH:mm:ss")
-        let DueDate = moment.utc(this.deadLine,"DD.MM.YYYY")
+        let EvanteDate = moment.utc().format("DD.MM.YYYY HH:mm:ss");
+        let StartDate = moment.utc(this.task.startDate).format("DD.MM.YYYY HH:mm:ss");
+        let DueDate = moment.utc(this.task.TaskDueDate).format("DD.MM.YYYY")
 
         let Event = 'Завершена задача';//LSLang.Alert60
         let EventType = 'EventDoneTask';
@@ -182,8 +182,8 @@ export class TaskItem {
             TaskTitle: this.Title,
             StartDate: StartDate,
             DueDate: DueDate,
-            StartDateSort: moment.utc(this.startDate).format("YYYYMMDD"),
-            DueDateSort: moment.utc(this.deadLine).format("YYYYMMDD"),
+            StartDateSort: moment.utc(this.task.StartDate).format("YYYYMMDD"),
+            DueDateSort: moment.utc(this.task.TaskDueDate).format("YYYYMMDD"),
             EvanteDate: EvanteDate,
             Comments: this.coments.value,
             TaskType: this.task.TaskType,
@@ -224,9 +224,9 @@ export class TaskItem {
   }
 
   private writeToHistoryAfterTaskGet() : Promise<any> {
-          let EvanteDate = moment.utc('',"DD.MM.YYYY HH:mm:ss");
-          let StartDate = moment.utc(this.startDate,"DD.MM.YYYY HH:mm:ss");
-          let DueDate = moment.utc(this.deadLine,"DD.MM.YYYY");
+          let EvanteDate = moment.utc().format("DD.MM.YYYY HH:mm:ss");
+          let StartDate = moment.utc(this.task.StartDate).format("DD.MM.YYYY HH:mm:ss");
+          let DueDate = moment.utc(this.task.TaskDueDate).format("DD.MM.YYYY");
 
           let StateInRouteData = {
             sysIDList : this.task.sysIDList,
@@ -424,13 +424,16 @@ export class TaskItem {
 
   public presentLoading() : void {
     this.loader = this.loadingCtrl.create({
+      dismissOnPageChange : true,
       content: "Подождите...",
     });
     this.loader.present();
   }   
 
   public stopLoading() : void {
-      this.loader.dismiss();
+      this.loader.dismiss().then(() =>{
+        
+      })
       this.dismiss();
   }
 

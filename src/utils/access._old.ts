@@ -241,3 +241,11 @@ export class Access{
     //     let c = JSON.parse(b.substring(b.indexOf('LSi.ListsCollection = ')+'LSi.ListsCollection = '.length,b.length));
     //     console.log('c',c);
     //  })
+
+
+    {"Authorization":`Bearer ${this.access_token}`,
+    "X-RequestDigest": this.digest,
+    'X-HTTP-Method':'MERGE',
+    'IF-MATCH': '*',
+    'Accept': 'application/json;odata=verbose',
+    "Content-Type": "application/json;odata=verbose"}
