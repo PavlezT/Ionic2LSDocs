@@ -12,7 +12,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-label>
+  <ion-label [ngClass]="typingComment? 'inactive' : 'active'">
     <div class="line" >
        <ion-icon name="ios-return-left"></ion-icon>
        <div class="left">Автор</div>
@@ -74,7 +74,7 @@
   </ion-list>
   <ion-item *ngIf="(Status != 'Done')" [ngClass]="historyToggle? 'inactive' : 'active'">
       <ion-label floating>Введите коментарий к выполнению задачи</ion-label>
-      <ion-textarea #coments rows="6" ></ion-textarea>
+      <ion-textarea #coments rows="6" (blur)="onBlur()" (focus)="onFocus()" ></ion-textarea>
   </ion-item>
 </ion-scroll>
 </ion-content>
@@ -83,16 +83,16 @@
   <ion-toolbar>
     <ion-buttons full>
       <ion-grid>
-        <ion-row >
+        <ion-row>
           <ion-col *ngIf="Status == 'Not Started'" >
              <button  clear ion-button (click)="toWorkTask()">
-                <ion-icon name="arrow-down"></ion-icon>
+                <ion-icon name="md-arrow-down"></ion-icon>
                 <div>В роботу</div>
             </button> 
          </ion-col>
          <ion-col *ngIf="task.sysTaskLevel == 1 && (ContentType == 'LSTaskPreparetion' || ContentType == 'LSTaskAppruve' || ContentType =='LSTaskAgreement' ) ">
             <button  clear ion-button (click)="cancelTask()">
-               <ion-icon name="close"></ion-icon>
+               <ion-icon name="md-close"></ion-icon>
                <div *ngIf="ContentType == 'LSTaskPreparetion'">
                   Отменить
                </div>
@@ -112,7 +112,7 @@
         </ion-col> -->
          <ion-col>
             <button  clear ion-button (click)="executeTask()">
-               <ion-icon name="checkmark"></ion-icon>
+               <ion-icon name="md-checkmark"></ion-icon>
                <div *ngIf="ContentType == 'LSTaskAppruve'">
                   Согласовать
                </div>

@@ -21,6 +21,7 @@ export class TaskItem {
   loader : any;
 
   historyToggle : boolean = false;
+  typingComment : boolean = false;
   history : any; 
   taskHistory : any;
   connectedItem : any;
@@ -437,6 +438,14 @@ export class TaskItem {
         console.log('<TaskItem> closing task after process')
       })
       this.dismiss();
+  }
+
+  onFocus(){
+    this.typingComment = true;
+  }
+
+  onBlur(){
+    this.typingComment = false;
   }
 
 }

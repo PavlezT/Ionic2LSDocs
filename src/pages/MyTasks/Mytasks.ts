@@ -73,7 +73,7 @@ export class MyTasks {
          return [[],[]];
       })
       .then( (res) => {
-         res[0].map((item) => {
+         res[1].map((item) => {
             if(item.OData__Status == 'Not Started')
                this.counts.new++;
             if(item.OData__Status == 'In Progress')
@@ -81,7 +81,8 @@ export class MyTasks {
             if(item.OData__Status != 'Done' && (new Date(item.TaskDueDate)) < (new Date((new Date()).getFullYear(),(new Date()).getMonth(),(new Date()).getDate())) )
                this.counts.late++;
          })
-         res[1].map( item =>{
+        
+         res[0].map( item =>{
             if(item.CountTasks)
                this.counts.done += item.CountTasks;
          })
@@ -99,7 +100,7 @@ export class MyTasks {
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
      let options = new RequestOptions({ headers: headers });
      console.log('<MyTasks> getTasksCount');
-     return Promise.all([this.http.get(getUrl,options).toPromise(),this.http.get(listGet,options).toPromise()])
+     return Promise.all([this.http.get(listGet,options).timeout(10).retry(3).toPromise().then((res)=>{console.log('Mytasks listGet only history');return res}),this.http.get(getUrl,options).toPromise().then((res)=>{console.log('MyTasks getUrl all tasks');return res;})])
           .then( res => {
             console.log('answer getTasks',res)
              res[0] = res[0].json().d.results;
