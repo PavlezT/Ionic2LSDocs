@@ -25,7 +25,7 @@ export class MyTasks {
 
    chatParams : any;
 
-  constructor(public navCtrl: NavController,public platform : Platform,public loadingCtrl: LoadingController, public http : Http, public events: Events, @Inject(User) public user : User) {
+  constructor(public navCtrl: NavController,public platform : Platform,public loadingCtrl: LoadingController,@Inject(Http) public http : Http, public events: Events, @Inject(User) public user : User) {
      this.tabNew =  LSNew;
      this.tabActive = LSActive;
      this.tabLate = LSLate;
@@ -49,8 +49,9 @@ export class MyTasks {
                   late : 0,
                   done : 0
             };
-            this.presentLoading();
-            this.setTasksCount().then(()=>this.stopLoading());
+           // this.presentLoading();
+            console.log('task:checked');
+            this.setTasksCount()//.then(()=>this.stopLoading());
         });
         this.presentLoading();
         this.setTasksCount().then(()=>this.stopLoading());
@@ -72,7 +73,6 @@ export class MyTasks {
          return [[],[]];
       })
       .then( (res) => {
-        console.log('res',res)
          res[0].map((item) => {
             if(item.OData__Status == 'Not Started')
                this.counts.new++;
@@ -93,17 +93,15 @@ export class MyTasks {
   }
 
   getTasksCount() : Promise<any> {
-     let getUrl = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=AssignetToEmail,AssignetToTitle,Title,TaskDueDate,OData__Status&$filter=(AssignetToEmail eq '${this.user.getEmail()}')&$top=1000`;
-     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSUsersHistory')/items?$select=UserName/EMail,CountTasks&$expand=UserName/EMail&$filter=UserName/EMail eq '${this.user.getEmail()}'`;
+     let getUrl = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=AssignetToEmail,OData__Status&$filter=(AssignetToEmail eq '${this.user.getEmail()}')&$top=1000`;
+     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSUsersHistory')/items?$select=UserName/EMail,CountTasks&$expand=UserName/EMail&$filter=UserName/EMail eq '${this.user.getEmail()}'&$top=1000`;
 
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
      let options = new RequestOptions({ headers: headers });
-     
-     return Promise.all([
-        this.http.get(getUrl,options).toPromise(),
-        this.http.get(listGet,options).toPromise()
-          ])
+     console.log('<MyTasks> getTasksCount');
+     return Promise.all([this.http.get(getUrl,options).toPromise(),this.http.get(listGet,options).toPromise()])
           .then( res => {
+            console.log('answer getTasks',res)
              res[0] = res[0].json().d.results;
              res[1] = res[1].json().d.results;
              return res;
@@ -115,14 +113,18 @@ export class MyTasks {
   }
 
   presentLoading() : void {
+    if(this.loader)return;
     this.loader = this.loadingCtrl.create({
-      // dismissOnPageChange : true,
+      dismissOnPageChange : true,
       content: "Подождите...",
     });
     this.loader.present();
   }
 
   stopLoading() : void {
-    if(this.loader)this.loader.dismiss().then(()=>{console.log('<MyTasks> Data loaded')});
+    if(this.loader){
+      this.loader.dismiss().then(()=>{console.log('<MyTasks> Data loaded')});
+      this.loader = null;
+    }
   }
 }

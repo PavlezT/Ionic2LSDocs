@@ -21,6 +21,7 @@ export class LSActive {
      this.siteUrl = consts.siteUrl;
      moment.locale('ru');
      events.subscribe('task:towork',()=>{
+       console.log('<LsActive> task:towork')
             this.loadTasks();
      });
      events.subscribe('task:doneTask',()=>{

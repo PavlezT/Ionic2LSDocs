@@ -25,6 +25,7 @@ export class LSNew {
             this.loadTasks();
         });
         events.subscribe('task:towork',()=>{
+            console.log('<LSNew> task:towork')
             this.loadTasks();
         });
         this.loadTasks();
@@ -52,9 +53,9 @@ export class LSNew {
 
    getNewTasks() : Promise<any> {
      let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=sysIDItem,ContentTypeId,AssignetToEmail,AssignetToTitle,ID,sysIDList,Title,StartDate,ContentTypeId,ContentType/Name,sysTaskLevel,TaskResults,TaskDescription,sysIDMainTask,sysIDParentMainTask,TaskDueDate,OData__Status,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail,ContentType/Name&$filter=(AssignetToEmail eq '${this.user.getEmail()}') and (OData__Status eq 'Not Started')&$orderby=TaskDueDate%20asc&$top=1000`;
-
+     console.log('<LSNew> get New Tasks')
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
-     let options = new RequestOptions({ headers: headers ,withCredentials: true});
+     let options = new RequestOptions({ headers: headers });
 
      return this.http.get(listGet,options).toPromise();
    }

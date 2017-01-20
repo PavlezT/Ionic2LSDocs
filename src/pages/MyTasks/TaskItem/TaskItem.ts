@@ -38,7 +38,7 @@ export class TaskItem {
 
   @ViewChild('coments') coments;
 
-  constructor(public platform: Platform,public navCtrl: NavController,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams, public http : Http, public user : User) {
+  constructor(public platform: Platform,public navCtrl: NavController,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams,@Inject(Http) public http : Http,@Inject(User) public user : User) {
     this.siteUrl = consts.siteUrl;
     this.task = navParams.data.item;
     this.Status = navParams.data.item.OData__Status || 'Done';
@@ -82,6 +82,7 @@ export class TaskItem {
 
       Promise.all([ this.writeToHistoryAfterTaskGet(),this.updateTaskData(this.task.Id,data)])
         .then( (resdata)=> {
+          console.log('<TaskItem> toWorkTask')
           this.events.publish('task:checked');
           this.events.publish('task:towork');
           this.stopLoading();
@@ -128,6 +129,7 @@ export class TaskItem {
 
       Promise.all([this.writeToHistoryAfterTaskDone(),this.updateTaskData(this.task.Id,data)])
         .then( ()=>{
+          console.log('<TaskItem> done Task')
           this.events.publish('task:checked');
           this.events.publish('task:doneTask');
           this.stopLoading();
