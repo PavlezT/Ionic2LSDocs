@@ -23,9 +23,9 @@ export class LSEnded {
       events.subscribe('task:doneTask',()=>{
             this.loadTasks();
       });
-      this.loadTasks();      
+      this.loadTasks();
    }
- 
+
    private loadTasks() : void {
      this.user.getUserProps()
          .then(() => {
@@ -47,13 +47,13 @@ export class LSEnded {
          })
    }
 
-   getEndedTasks() : Promise<any>{                                                     
+   getEndedTasks() : Promise<any>{
      let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSUsersHistory')/items?$select=UserName/EMail,CountTasks,UserHistory&$expand=UserName/EMail&$filter=UserName/EMail eq '${this.user.getEmail()}'`;
 
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
      let options = new RequestOptions({ headers: headers ,withCredentials: true});
 
-     return this.http.get(listGet,options).toPromise();
+     return this.http.get(listGet,options).timeout(3500).retry(3).toPromise();
    }
 
    itemTapped(event, item){

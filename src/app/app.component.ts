@@ -24,7 +24,7 @@ export class MyApp {
   pages: Array<{title: string, icon:string, component: any , listGUID  : string }>;
   loader : any;
   toast : any;
-  // private zone:NgZone, 
+  // private zone:NgZone,
   constructor(public platform: Platform, public alertCtrl: AlertController,public loadingCtrl: LoadingController,public toastCtrl: ToastController, public auth: Auth,@Inject(Access) public access : Access,@Inject(Http) public http: Http, public events: Events,@Inject(User) public user : User) {
     this.initializeApp();
     this.errorCounter = 0;
@@ -33,7 +33,7 @@ export class MyApp {
     ];
 
   }
-  
+
   ionViewDidEnter(){
     this.platform.registerBackButtonAction((e)=>{this.platform.exitApp();return false;},100);
   }
@@ -137,7 +137,7 @@ export class MyApp {
     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
     let options = new RequestOptions({ headers: headers ,withCredentials: true});
 
-    return this.http.get(listGet,options).toPromise()
+    return this.http.get(listGet,options).timeout(3500).retry(2).toPromise()
       .then( response =>{
           return response.json().d.results.map(item => {
             return (item.ListGUID && !item.ListTitle) ? this.getListProps(item.ListGUID) : null;
@@ -151,7 +151,7 @@ export class MyApp {
     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
     let options = new RequestOptions({ headers: headers ,withCredentials: true});
 
-    return this.http.get(listGet,options).toPromise().then(res => { return res.json().d })
+    return this.http.get(listGet,options).timeout(3500).retry(3).toPromise().then(res => { return res.json().d })
   }
 
   showPrompt() : void {

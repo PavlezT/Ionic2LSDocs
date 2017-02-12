@@ -49,13 +49,14 @@ export class LSActive {
       })
   }
 
-  getActiveTasks() : Promise<any>{
-    let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=sysIDItem,ContentTypeId,AssignetToEmail,AssignetToTitle,ID,sysIDList,Title,StartDate,ContentTypeId,ContentType/Name,sysTaskLevel,TaskResults,TaskDescription,sysIDMainTask,sysIDParentMainTask,TaskDueDate,OData__Status,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail,ContentType/Name&$filter=(AssignetToEmail eq '${this.user.getEmail()}') and (OData__Status eq 'In Progress')&$orderby=TaskDueDate%20asc&$top=1000`;
+  getActiveTasks(loadNew? : boolean) : Promise<any> {
+    let lastId = this.items && loadNew ? this.items[this.items.length-1].ID : false;
+    let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?${ loadNew ? '$skiptoken=Paged=TRUE=p_SortBehavior=0=p_ID='+lastId+'&' : ''}$select=sysIDItem,ContentTypeId,AssignetToEmail,AssignetToTitle,ID,sysIDList,Title,StartDate,ContentTypeId,ContentType/Name,sysTaskLevel,TaskResults,TaskDescription,sysIDMainTask,sysIDParentMainTask,TaskDueDate,OData__Status,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail,ContentType/Name&$filter=(AssignetToEmail eq '${this.user.getEmail()}') and (OData__Status eq 'In Progress')&$orderby=TaskDueDate%20asc&$top=25`;
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
     let options = new RequestOptions({ headers: headers ,withCredentials: true});
 
-    return this.http.get(listGet,options).toPromise();
+    return this.http.get(listGet,options).timeout(3500).retry(3).toPromise();
   }
 
   itemTapped(event, item){
@@ -63,6 +64,20 @@ export class LSActive {
         item : item
       });
       modal.present();
+   }
+
+   doInfinite(infiniteScroll){
+      console.log('do infinite scroll')
+     this.getActiveTasks(true)
+     .then( tasks => {
+         let newItems = (JSON.parse(tasks._body)).d.results;
+         newItems.map((item,i,arr)=>{
+             item.StartDate_view = moment(item.StartDate).format("dd, DD MMMM");
+             item.TaskDueDate_view = moment(item.TaskDueDate).format("dd, DD MMMM");
+             this.items.push(item);
+         });
+         infiniteScroll.complete();
+       })
    }
 
 }

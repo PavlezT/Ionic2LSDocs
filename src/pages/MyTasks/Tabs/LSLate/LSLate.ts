@@ -54,7 +54,7 @@ export class LSLate {
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
      let options = new RequestOptions({ headers: headers ,withCredentials: true});
 
-     return this.http.get(listGet,options).toPromise();
+     return this.http.get(listGet,options).timeout(3500).retry(3).toPromise();
    }
 
    itemTapped(event, item){

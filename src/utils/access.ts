@@ -11,8 +11,8 @@ export class Access{
     private access_token : string;
     private access_expiry : string;
 
-    constructor(@Inject(Http) public http: Http){        
-        
+    constructor(@Inject(Http) public http: Http){
+
     }
 
     public _init() : void {
@@ -38,9 +38,9 @@ export class Access{
                 if(err.status == '500'){
                     return this.getAccessToken().then(()=>{ return this.getDigest()});
                 }
-                return {FormDigestValue:''};    
+                return {FormDigestValue:''};
             })
-    } 
+    }
 
     private getAccessToken() : Promise<any>{
         let url = `https://accounts.accesscontrol.windows.net/${consts.site_realm}/tokens/OAuth/2`;
@@ -51,7 +51,7 @@ export class Access{
         let data = `grant_type=client_credentials&
             client_id=${consts.client_id}@${consts.site_realm}&
             client_secret=${encodeURIComponent(consts.secret)}&
-            resource=${consts.resource}/${consts.siteUrl.substring('https://'.length,consts.siteUrl.indexOf('/sites'))}@${consts.site_realm}`   
+            resource=${consts.resource}/${consts.siteUrl.substring('https://'.length,consts.siteUrl.indexOf('/sites'))}@${consts.site_realm}`
 
         return this.http.post(url,data,options).toPromise()
             .then(response=> {
@@ -66,9 +66,9 @@ export class Access{
 
     public getToken() : Promise<string> {
         return ((new Date(this.access_expiry)) <= (new Date())) ? this.getAccessToken().then(()=>{return this.access_token}) : Promise.resolve(this.access_token);
-    } 
+    }
 
     public getDigestValue() : Promise<string> {
         return ((new Date(this.digest_expiry)) <= (new Date())) ? this.getDigest().then(()=>{return this.digest}) : Promise.resolve(this.digest);
-    } 
+    }
 }

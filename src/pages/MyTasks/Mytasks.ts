@@ -36,7 +36,7 @@ export class MyTasks {
         late : 0,
         done : 0
      };
-     
+
       platform.ready().then(()=>{
         events.subscribe('user:loaded',()=>{
             this.presentLoading();
@@ -81,7 +81,7 @@ export class MyTasks {
             if(item.OData__Status != 'Done' && (new Date(item.TaskDueDate)) < (new Date((new Date()).getFullYear(),(new Date()).getMonth(),(new Date()).getDate())) )
                this.counts.late++;
          })
-        
+
          res[0].map( item =>{
             if(item.CountTasks)
                this.counts.done += item.CountTasks;
@@ -94,15 +94,14 @@ export class MyTasks {
   }
 
   getTasksCount() : Promise<any> {
-     let getUrl = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=AssignetToEmail,OData__Status&$filter=(AssignetToEmail eq '${this.user.getEmail()}')&$top=1000`;
+     let getUrl = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=AssignetToEmail,TaskDueDate,OData__Status&$filter=(AssignetToEmail eq '${this.user.getEmail()}')&$top=1000`;
      let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSUsersHistory')/items?$select=UserName/EMail,CountTasks&$expand=UserName/EMail&$filter=UserName/EMail eq '${this.user.getEmail()}'&$top=1000`;
 
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
      let options = new RequestOptions({ headers: headers });
-     console.log('<MyTasks> getTasksCount');
-     return Promise.all([this.http.get(listGet,options).timeout(10).retry(3).toPromise().then((res)=>{console.log('Mytasks listGet only history');return res}),this.http.get(getUrl,options).toPromise().then((res)=>{console.log('MyTasks getUrl all tasks');return res;})])
+
+     return Promise.all([this.http.get(listGet,options).timeout(3500).retry(3).toPromise(),this.http.get(getUrl,options).timeout(3500).retry(3).toPromise()])
           .then( res => {
-            console.log('answer getTasks',res)
              res[0] = res[0].json().d.results;
              res[1] = res[1].json().d.results;
              return res;
