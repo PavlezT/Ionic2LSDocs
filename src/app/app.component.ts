@@ -40,12 +40,15 @@ export class MyApp {
 
   initializeApp() {
     this.platform.ready().then(() => {
+      console.log('Platform ready');
       StatusBar.styleDefault();
       Splashscreen.hide();
       this.ionViewDidEnter();
       this.access._init();
 
+      this.presentLoading();
       this.checkNetwork().then(()=>{
+         this.stopLoading();
          if(!(this.auth.checkAuthAlready(consts.siteUrl))){
             this.showPrompt();
          } else if(!(this.auth.checkAuthActive(consts.siteUrl))){
@@ -55,7 +58,6 @@ export class MyApp {
          }
       })
       .catch((reason : string)=>{
-         this.presentLoading();
          this.showToast(reason);
       })
     });
