@@ -2,7 +2,7 @@ import { Component , Inject } from '@angular/core';
 import { NavController, ModalController,Events } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
-import 'moment/locale/pt-br';
+import 'moment/locale/ru';
 
 import * as consts from '../../../../utils/Consts';
 import { User } from '../../../../utils/user';

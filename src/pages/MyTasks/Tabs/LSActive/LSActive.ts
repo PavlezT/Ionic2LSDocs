@@ -2,7 +2,8 @@ import { Component , Inject } from '@angular/core';
 import { NavController, ModalController, Events } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
-import 'moment/locale/pt-br';
+import 'moment/locale/ru';
+
 import * as ntlm from 'httpntlm/ntlm';
 
 import * as consts from '../../../../utils/Consts';
@@ -29,7 +30,7 @@ export class LSActive {
             this.loadTasks();
      });
      this.loadTasks();
-     this.onpremise(`http://devdt01.dev.lizard.net.ua:43659/sites/DyckerHoff/`,{domain:'competence',username:'ivan.ivanov',password:'Pa$$w0rd'});
+     this.onpremise(`http://devdt01.dev.lizard.net.ua:43659/sites/DyckerHoff/`,{domain:'competence',workstation:'',username:'ivan.ivanov',password:'Pa$$w0rd'});
   }
 
   private loadTasks() : void {
@@ -83,11 +84,39 @@ export class LSActive {
   //  }
 
   onpremise(siteurl,options) : void{
-    let ntlmoptions = options;
-    ntlmoptions.url = siteurl;
+    let ntlmOptions = options;
+    ntlmOptions.url = siteurl;
     console.log('ntlm',ntlm);
-    let type1msg = ntlm.createType1Message(ntlmoptions);
+    let type1msg = ntlm.createType1Message(ntlmOptions);
     console.log('type1msg',type1msg);
+    
+    let headers = new Headers({'Authorization': type1msg,'Accept': 'application/json;odata=verbose'});//'Connection': 'keep-alive',
+    let httpOptions = new RequestOptions({ headers: headers });//,strictSSL: false,simple: false ,resolveWithFullResponse : true});
+
+    this.http.get(siteurl,httpOptions).toPromise()
+    .then(response =>{
+      console.log('response ntlm',response);
+      let message = response.headers.get('www-authenticate');
+      console.log('message',message);
+
+    })
+    .catch(error=>{
+      console.log('ntlm error',error);
+      let message = error.headers.get('www-authenticate');
+      console.log('message',message);
+      let type2msg = ntlm.parseType2Message(error.headers.get('www-authenticate'));
+      let type3msg = ntlm.createType3Message(type2msg, ntlmOptions);
+      console.log('type3msg',type3msg);
+
+      let headers = new Headers({'Authorization': type3msg,'Accept': 'application/json;odata=verbose'});
+      let httpOptions = new RequestOptions({ headers: headers });
+
+      this.http.get(`http://devdt01.dev.lizard.net.ua:43659/sites/DyckerHoff/_api/web/Lists(guid'a4c342e5-3f69-4cbd-8b60-f3cb7b764bd8')/items?$top=15`,httpOptions).toPromise()
+      .then(response=>{
+        console.log('response from Dycker',response);
+        console.log('response json',response.json());
+      })
+    })
   }
 
 }

@@ -2,7 +2,7 @@ import { Component , Inject } from '@angular/core';
 import { Platform , NavController ,ModalController, Events } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
-import 'moment/locale/pt-br';
+import 'moment/locale/ru';
 
 import * as consts from '../../../../utils/Consts';
 import { User } from '../../../../utils/user';
@@ -54,8 +54,8 @@ export class LSNew {
    getNewTasks(loadNew? : boolean) : Promise<any> {
      let lastId = this.items && loadNew ? this.items[this.items.length-1].ID : false;
      let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?${ loadNew ? '$skiptoken=Paged=TRUE=p_SortBehavior=0=p_ID='+lastId+'&' : ''}$select=sysIDItem,ContentTypeId,AssignetToEmail,AssignetToTitle,ID,sysIDList,Title,StartDate,ContentTypeId,ContentType/Name,sysTaskLevel,TaskResults,TaskDescription,sysIDMainTask,sysIDParentMainTask,TaskDueDate,OData__Status,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail,ContentType/Name&$filter=(AssignetToEmail eq '${this.user.getEmail()}') and (OData__Status eq 'Not Started')&$orderby=TaskDueDate%20asc&$top=1000`;
-     console.log('<LSNew> get New Tasks');
-     console.log('get active tasks',lastId);
+     //console.log('<LSNew> get New Tasks');
+     //console.log('get new tasks',lastId);
      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
      let options = new RequestOptions({ headers: headers });
 
