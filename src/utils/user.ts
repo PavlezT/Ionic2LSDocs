@@ -24,8 +24,8 @@ export class User{
 
     private getProps() : Promise<any> {
      let listGet = `${consts.siteUrl}/_api/Web/CurrentUser`;
-
-     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+     //authorization for OnPremise 'username:password' to base64
+     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':'Basic '+btoa('competence\mark.leon:Ljrevtyn33')});
      let options = new RequestOptions({ headers: headers });
 
      return this.http.get(listGet,options)

@@ -30,7 +30,7 @@ export class LSActive {
             this.loadTasks();
      });
      this.loadTasks();
-     this.onpremise(`http://devdt01.dev.lizard.net.ua:43659/sites/DyckerHoff/`,{domain:'competence',workstation:'',username:'ivan.ivanov',password:'Pa$$w0rd'});
+    // this.onpremise(`http://devdt01.dev.lizard.net.ua:43659/sites/DyckerHoff/`,{domain:'competence',workstation:'',username:'ivan.ivanov',password:'Pa$$w0rd'});
   }
 
   private loadTasks() : void {
@@ -92,7 +92,7 @@ export class LSActive {
   //   console.log('ntlm',ntlm);
   //   let type1msg = ntlm.createType1Message(ntlmOptions);
   //   console.log('type1msg',type1msg);
-    
+
   //   // let headers = new Headers({'Authorization': type1msg,'Accept': 'application/json;odata=verbose'});//'Connection': 'keep-alive',
   //   // let httpOptions = new RequestOptions({ headers: headers,Agent:b });//,strictSSL: false,simple: false ,resolveWithFullResponse : true});
 
