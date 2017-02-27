@@ -15,7 +15,6 @@ import { TaskItem } from '../../TaskItem/TaskItem';
   templateUrl: 'LSActive.html'
 })
 export class LSActive {
-
   items : Array<any>;
   siteUrl : string;
 

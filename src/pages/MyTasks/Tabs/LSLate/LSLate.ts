@@ -1,4 +1,4 @@
-import { Component , Inject } from '@angular/core';
+import { Component , Inject, ViewChild  } from '@angular/core';
 import { NavController, ModalController, Events } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
@@ -13,7 +13,7 @@ import { TaskItem } from '../../TaskItem/TaskItem';
   templateUrl: 'LSLate.html'
 })
 export class LSLate {
-
+   @ViewChild('Image') img : any;
    items : Array<any>;
    siteUrl : string;
 
@@ -39,8 +39,13 @@ export class LSLate {
               this.items.map((item,i,arr)=>{
                 item.StartDate_view = moment(item.StartDate).format("dd, DD MMMM");
                 item.TaskDueDate_view = moment(item.TaskDueDate).format("dd, DD MMMM");
+               ///@ViewChild(`Image${item.Id}`) img2;
+                //console.log('image id'+item.Id,img2)
                 return item;
               });
+          })
+          .then(()=>{
+             console.log('image',this.img);
           })
           .catch( error => {
               console.error('<LSLate> Fail loading ',error);
