@@ -50,7 +50,7 @@ export class LSEnded {
    getEndedTasks() : Promise<any>{
      let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSUsersHistory')/items?$select=UserName/EMail,CountTasks,UserHistory&$expand=UserName/EMail&$filter=UserName/EMail eq '${this.user.getEmail()}'`;
 
-     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers ,withCredentials: true});
 
      return this.http.get(listGet,options).timeout(3500).retry(3).toPromise();

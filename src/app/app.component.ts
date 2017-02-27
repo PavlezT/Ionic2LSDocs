@@ -40,13 +40,11 @@ export class MyApp {
 
   initializeApp() {
     this.platform.ready().then(() => {
-      console.log('Platform ready');
+      this.presentLoading();
       StatusBar.styleDefault();
       Splashscreen.hide();
       this.ionViewDidEnter();
-      this.access._init();
 
-      this.presentLoading();
       this.checkNetwork().then(()=>{
          this.stopLoading();
          if(!(this.auth.checkAuthAlready(consts.siteUrl))){
@@ -108,6 +106,7 @@ export class MyApp {
      this.presentLoading();
       return Promise.all([this.user.init(),this.getLists()])
         .then( res => {
+             this.access._init();
              res[1].map((list,i,mass) => {
                if(!list)return;
                list.then(item=>{
@@ -123,6 +122,9 @@ export class MyApp {
                this.errorCounter++;
                this.stopLoading();
                this.reLogin();
+            } else if(this.errorCounter < 3 && error.status == '401'){
+               this.showPrompt();
+               this.showToast('Check your credentials');
             } else {
                this.showToast('Can`t load entrance data');
             }
@@ -136,10 +138,10 @@ export class MyApp {
   getLists() : Promise<any> {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/getByTitle('LSListInLSDocs')/Items?$select=ListTitle,ListURL,ListGUID`;
 
-    let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+    let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
     let options = new RequestOptions({ headers: headers ,withCredentials: true});
 
-    return this.http.get(listGet,options).timeout(3500).retry(2).toPromise()
+    return this.http.get(listGet,options).timeout(3500).toPromise()
       .then( response =>{
           return response.json().d.results.map(item => {
             return (item.ListGUID && !item.ListTitle) ? this.getListProps(item.ListGUID) : null;
@@ -150,7 +152,7 @@ export class MyApp {
   getListProps(guid : string) : Promise<any>{
     let listGet = `${consts.siteUrl}/_api/Web/Lists(guid'${guid}')?$select=Title,Id,ItemCount`;
 
-    let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+    let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
     let options = new RequestOptions({ headers: headers ,withCredentials: true});
 
     return this.http.get(listGet,options).timeout(3500).retry(3).toPromise().then(res => { return res.json().d })
@@ -159,7 +161,7 @@ export class MyApp {
   showPrompt() : void {
     this.platform.registerBackButtonAction((e)=>{return false;},100); // e.preventDefault();
     let prompt = this.alertCtrl.create({
-      title: 'LogIn',
+      title: 'Вход',
       message: "Введите свой email и пароль для входа",
       enableBackdropDismiss: false,
       inputs: [
@@ -187,6 +189,7 @@ export class MyApp {
   }
 
   presentLoading() : void {
+    console.log('presentLoading')
     this.loader = this.loadingCtrl.create({
       content: "Подождите...",
     });
@@ -194,6 +197,7 @@ export class MyApp {
   }
 
   stopLoading() : void {
+     console.log('stoploading')
     this.loader.dismiss();
   }
 

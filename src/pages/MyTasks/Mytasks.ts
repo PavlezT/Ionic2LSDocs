@@ -97,7 +97,7 @@ export class MyTasks {
      let getUrl = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=AssignetToEmail,TaskDueDate,OData__Status&$filter=(AssignetToEmail eq '${this.user.getEmail()}')&$top=1000`;
      let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSUsersHistory')/items?$select=UserName/EMail,CountTasks&$expand=UserName/EMail&$filter=UserName/EMail eq '${this.user.getEmail()}'&$top=1000`;
 
-     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
 
      return Promise.all([this.http.get(listGet,options).timeout(3500).retry(3).toPromise(),this.http.get(getUrl,options).timeout(3500).retry(3).toPromise()])
