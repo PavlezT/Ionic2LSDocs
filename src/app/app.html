@@ -3,7 +3,7 @@
     <ion-toolbar>
    <ion-item class="userAvatart">
       <ion-avatar item-left>
-         <img src="{{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{user.getEmail()}}">
+         <img #Myimg src="{{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{user.getEmail()}}">
       </ion-avatar >
       <ion-title>{{user.getUserName()}}</ion-title>
    </ion-item>

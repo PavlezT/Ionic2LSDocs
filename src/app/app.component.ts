@@ -16,6 +16,7 @@ import { Contracts } from '../pages/Contracts/Contracts';
 })
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
+  @ViewChild('Myimg') myimg: any;
 
   errorCounter : number;
   // secureStorage: SecureStorage;
@@ -115,6 +116,17 @@ export class MyApp {
              });
              this.events.publish('user:loaded');
              this.stopLoading();
+
+             let url =`https://lsdocs.ext5.lizard.net.ua/sites/lsdocs//_layouts/15/userphoto.aspx?size=S&accountname=mark.leon@competence.net`;
+             let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
+             let options = new RequestOptions({ headers: headers ,withCredentials: true});
+             return this.http.get(url,options).timeout(3500).retry(3).toPromise()
+             .then(data=>{
+               console.log('myimg',this.myimg);
+               this.myimg.nativeElement.src = 'data:image/png;base64,'+ data.text();
+               console.log('mydata',data);
+             })
+             
         })
         .catch( error => {
             console.log(`Error in making Burger Menu`,error);
@@ -124,6 +136,7 @@ export class MyApp {
                this.reLogin();
             } else if(this.errorCounter < 3 && error.status == '401'){
                this.showPrompt();
+               this.stopLoading();
                this.showToast('Check your credentials');
             } else {
                this.showToast('Can`t load entrance data');
@@ -141,7 +154,7 @@ export class MyApp {
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
     let options = new RequestOptions({ headers: headers ,withCredentials: true});
 
-    return this.http.get(listGet,options).timeout(3500).toPromise()
+    return this.http.get(listGet,options).timeout(3500).retry(3).toPromise()
       .then( response =>{
           return response.json().d.results.map(item => {
             return (item.ListGUID && !item.ListTitle) ? this.getListProps(item.ListGUID) : null;
@@ -189,7 +202,7 @@ export class MyApp {
   }
 
   presentLoading() : void {
-    console.log('presentLoading')
+    console.log('presentLoading',this.loader)
     this.loader = this.loadingCtrl.create({
       content: "Подождите...",
     });
@@ -197,7 +210,7 @@ export class MyApp {
   }
 
   stopLoading() : void {
-     console.log('stoploading')
+     console.log('stoploading',this.loader)
     this.loader.dismiss();
   }
 

@@ -1,8 +1,9 @@
 import { Component, Inject } from '@angular/core';
-import { NavController, Events, Platform, LoadingController } from 'ionic-angular';
+import { NavController, Events, Platform } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 
 import { User } from '../../utils/user';
+import { Loader } from '../../utils/loader';
 import * as consts from '../../utils/Consts';
 
 import { LSNew } from './Tabs/LSNew/LSNew';
@@ -21,11 +22,10 @@ export class MyTasks {
    tabEnded : any;
 
    counts : any;
-   loader : any;
 
    chatParams : any;
 
-  constructor(public navCtrl: NavController,public platform : Platform,public loadingCtrl: LoadingController,@Inject(Http) public http : Http, public events: Events, @Inject(User) public user : User) {
+  constructor(public navCtrl: NavController,public platform : Platform,@Inject(Loader) public loaderctrl: Loader,@Inject(Http) public http : Http, public events: Events, @Inject(User) public user : User) {
      this.tabNew =  LSNew;
      this.tabActive = LSActive;
      this.tabLate = LSLate;
@@ -39,10 +39,14 @@ export class MyTasks {
 
       platform.ready().then(()=>{
         events.subscribe('user:loaded',()=>{
-            this.presentLoading();
-            this.setTasksCount().then(()=>this.stopLoading());
+            //this.presentLoading();
+            this.setTasksCount()
         });
         events.subscribe('task:checked',()=>{
+          // if(window.localStorage.getItem('task:checked')){
+          //   return;
+          // }
+          //window.localStorage.setItem('task:checked','true');
               this.counts = {
                   new : 0,
                   active : 0,
@@ -51,23 +55,23 @@ export class MyTasks {
             };
            // this.presentLoading();
             console.log('task:checked');
-            this.setTasksCount()//.then(()=>this.stopLoading());
+            this.setTasksCount()//.then(()=>{this.loaderctrl.stopLoading();});
         });
-        this.presentLoading();
-        this.setTasksCount().then(()=>this.stopLoading());
+        //this.presentLoading();
+        this.setTasksCount()//.then(()=>this.loaderctrl.stopLoading());
       })
 
       this.chatParams = {'d':'bb'};
   }
 
   ionViewDidEnter(){
-    this.platform.registerBackButtonAction((e)=>{this.platform.exitApp();return false;},100);
+    this.platform.registerBackButtonAction((e)=>{this.loaderctrl.stopLoading()});//this.platform.exitApp();return false;},100);
   }
 
   setTasksCount() : Promise<any> {
+    this.loaderctrl.presentLoading();
      return this.user.getUserProps()
       .then( (status) => {
-        console.log('status',status);
          if(status)
             return this.getTasksCount();
          return [[],[]];
@@ -87,8 +91,10 @@ export class MyTasks {
                this.counts.done += item.CountTasks;
          })
       })
+      .then(()=>this.loaderctrl.stopLoading())
       .catch( error => {
          console.log('<MyTasks> setting Count Tasks error',error);
+         this.loaderctrl.stopLoading();
          this.counts = {};
       })
   }
@@ -112,19 +118,4 @@ export class MyTasks {
          })
   }
 
-  presentLoading() : void {
-    if(this.loader)return;
-    this.loader = this.loadingCtrl.create({
-      dismissOnPageChange : true,
-      content: "Подождите...",
-    });
-    this.loader.present();
-  }
-
-  stopLoading() : void {
-    if(this.loader){
-      this.loader.dismiss().then(()=>{console.log('<MyTasks> Data loaded')});
-      this.loader = null;
-    }
-  }
 }
