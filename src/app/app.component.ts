@@ -123,10 +123,10 @@ export class MyApp {
              return this.http.get(url,options).timeout(3500).retry(3).toPromise()
              .then(data=>{
                console.log('myimg',this.myimg);
-               this.myimg.nativeElement.src = 'data:image/png;base64,'+ data.text();
+               //this.myimg.nativeElement.src = 'data:image/png;base64,'+ data.text();
                console.log('mydata',data);
              })
-             
+
         })
         .catch( error => {
             console.log(`Error in making Burger Menu`,error);
