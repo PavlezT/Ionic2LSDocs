@@ -16,11 +16,11 @@ import { Contracts } from '../pages/Contracts/Contracts';
 })
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
-  @ViewChild('Myimg') myimg: any;
 
   errorCounter : number;
   // secureStorage: SecureStorage;
   siteUrl = consts.siteUrl;
+  onPremise = consts.OnPremise;
   rootPage: any = MyTasks;
   pages: Array<{title: string, icon:string, component: any , listGUID  : string }>;
   loader : any;
@@ -116,17 +116,6 @@ export class MyApp {
              });
              this.events.publish('user:loaded');
              this.stopLoading();
-
-             let url =`https://lsdocs.ext5.lizard.net.ua/sites/lsdocs//_layouts/15/userphoto.aspx?size=S&accountname=mark.leon@competence.net`;
-             let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
-             let options = new RequestOptions({ headers: headers ,withCredentials: true});
-             return this.http.get(url,options).timeout(3500).retry(3).toPromise()
-             .then(data=>{
-               console.log('myimg',this.myimg);
-               //this.myimg.nativeElement.src = 'data:image/png;base64,'+ data.text();
-               console.log('mydata',data);
-             })
-
         })
         .catch( error => {
             console.log(`Error in making Burger Menu`,error);

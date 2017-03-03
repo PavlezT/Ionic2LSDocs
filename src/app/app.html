@@ -3,7 +3,9 @@
     <ion-toolbar>
    <ion-item class="userAvatart">
       <ion-avatar item-left>
-         <img #Myimg src="{{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{user.getEmail()}}">
+         <img *ngIf="!onPremise" #Myimg src="{{siteUrl}}/_layouts/15/userphoto.aspx?size=S&accountname={{user.getEmail()}}">
+         <img *ngIf="!onPremise" #Myimg src="{{siteUrl.substring(0,siteUrl.indexOf('/sites'))}}/User Photos/Profile Pictures/mark_leon_LThumb.jpg">
+         <img *ngIf="onPremise" #Myimg src="{{siteUrl.substring(0,siteUrl.indexOf('/sites'))}}/User Photos/Profile Pictures/mark_leon_LThumb.jpg">
       </ion-avatar >
       <ion-title>{{user.getUserName()}}</ion-title>
    </ion-item>
