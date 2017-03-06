@@ -11,29 +11,29 @@ export class Loader {
     }
 
     presentLoading() : Promise<any> {
-    console.log('<Loader> presentLoading',this.loader);
-    console.log('<Loader> presentLoading calls',this.calls);
-    //if(this.loader){console.log('<Loader>loader alredy loading');return;}
-    this.calls.push(1);
-    if(this.calls.length>1){return Promise.resolve();};
-    
-    this.loader = this.loadingCtrl.create({
-      content: "Подождите...",
-    });
-    console.log('nav',this.loader.getNav())
-    return this.loader.present();
+      this.calls.push(1);
+      if(this.calls.length>1){return Promise.resolve();};
+      
+      this.loader = this.loadingCtrl.create({
+        content: "Подождите...",
+      });
+
+      return this.loader.present();
    }
 
-   stopLoading() : void {
-     console.log('<Loader>stoploading',this.loader);
-     console.log('<Loader>stoploading calls',this.calls);
-     //if(!this.loader){console.log('<Loader>there is no loader');return;}
-     this.calls.pop();
+   stopLoading() : Promise<any> {
+      this.calls.pop();
 
-     if(this.calls.length==0){
-        this.loader.dismiss().then(()=>{this.loader=null})
-     }
-        //this.loader=null;
+      if(this.calls.length==0){
+        try{
+          return this.loader.dismiss().then(()=>{this.loader=null})
+        }catch(e){
+          console.log('<Loader> error in loader',e);
+          console.log('<Loader> this. loader',this.loader);
+          
+        }
+      }
+      return Promise.resolve();
   }
 
 }

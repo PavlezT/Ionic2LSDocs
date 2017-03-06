@@ -10,6 +10,7 @@ import * as consts from '../../../utils/Consts';
 import { User } from '../../../utils/user';
 import { Access } from '../../../utils/access';
 import { SelectedItem } from '../../../utils/selecteditem';
+import { Loader } from '../../../utils/loader';
 
 @Component({
   selector: 'TaskItem',
@@ -39,7 +40,7 @@ export class TaskItem {
 
   @ViewChild('coments') coments;
 
-  constructor(public platform: Platform,public navCtrl: NavController,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams,@Inject(Http) public http : Http,@Inject(User) public user : User) {
+  constructor(public platform: Platform,public navCtrl: NavController,@Inject(Loader) public loaderctrl: Loader,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams,@Inject(Http) public http : Http,@Inject(User) public user : User) {
     this.siteUrl = consts.siteUrl;
     this.task = navParams.data.item;
     this.Status = navParams.data.item.OData__Status || 'Done';
@@ -69,7 +70,7 @@ export class TaskItem {
   }
 
   public toWorkTask() : void {
-      this.presentLoading();
+      this.loaderctrl.presentLoading();
 
       let data = {
         "__metadata": {
@@ -86,22 +87,22 @@ export class TaskItem {
           console.log('<TaskItem> toWorkTask')
           this.events.publish('task:checked');
           this.events.publish('task:towork');
-          this.stopLoading();
+          this.loaderctrl.stopLoading().then(()=>{this.dismiss();});
         })
         .catch(err=> {
           console.log('<TaskItem> toWorkTask error',err);
           this.showToast('Операция неуспешна.Произошла ошибка');
-          this.stopLoading();
+          this.loaderctrl.stopLoading().then(()=>{this.dismiss();});
         })
   }
 
   public cancelTask() : void {
-     this.presentLoading();
+     this.loaderctrl.presentLoading();
      this.doneTask('RefuseTask');
   }
 
   public executeTask() : void {
-     this.presentLoading();
+     this.loaderctrl.presentLoading();
 
      if (this.ContentType == 'LSTaskResolution') {
       this.сheckResolution()
@@ -110,7 +111,7 @@ export class TaskItem {
               this.doneTask('Done');
           } else {
               this.showToast('Вы не наложили не одной резолюции');
-              this.stopLoading();
+              this.loaderctrl.stopLoading();
           }
         })
     } else {
@@ -133,12 +134,12 @@ export class TaskItem {
           console.log('<TaskItem> done Task')
           this.events.publish('task:checked');
           this.events.publish('task:doneTask');
-          this.stopLoading();
+          this.loaderctrl.stopLoading().then(()=>{this.dismiss();});
         })
         .catch(err=>{
           console.log('<TaskItem> doneTask error',err);
           this.showToast('Операция неуспешна.Произошла ошибка');
-          this.stopLoading();
+          this.loaderctrl.stopLoading().then(()=>{this.dismiss();});
         })
   }
 
@@ -275,7 +276,7 @@ export class TaskItem {
      let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
 
-     return this.http.get(listGet,options).toPromise()
+     return this.http.get(listGet,options).timeout(3500).retry(3).toPromise()
          .then( res =>{
            return res.json().d.results.map(item => {
                if(item.DataSource != 'true'){
@@ -288,7 +289,7 @@ export class TaskItem {
                   }
                   let headers = new Headers({"Authorization":(consts.OnPremise? `Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}` : `Bearer ${this.access_token}`),"X-RequestDigest":this.digest, "X-HTTP-Method":"MERGE","IF-MATCH": "*",'Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
                   let options = new RequestOptions({ headers: headers });
-                  return this.http.post(url,JSON.stringify(body),options).toPromise().catch(err=>{console.log('post maint trasit error',err)});
+                  return this.http.post(url,JSON.stringify(body),options).timeout(3500).retry(3).toPromise().catch(err=>{console.log('post maint trasit error',err)});
                }
             })
          })
@@ -304,7 +305,7 @@ export class TaskItem {
       let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
       let options = new RequestOptions({ headers: headers });
 
-      return this.http.get(url,options).toPromise();
+      return this.http.get(url,options).timeout(3500).retry(3).toPromise();
   }
 
   private updateTransitTask(taskData) : Promise<any> {
@@ -325,7 +326,7 @@ export class TaskItem {
     let headers = new Headers({"Authorization":(consts.OnPremise?`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}` : `Bearer ${this.access_token}`),"X-RequestDigest": this.digest,'X-HTTP-Method':'POST','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
     let options = new RequestOptions({ headers: headers });
 
-    return this.http.post(url,JSON.stringify(taskData),options).toPromise();
+    return this.http.post(url,JSON.stringify(taskData),options).timeout(3500).retry(3).toPromise();
   }
 
   private updateTransitHistory(routeData : any, historyType? : string) : Promise <any> {
@@ -346,7 +347,7 @@ export class TaskItem {
       let headers = new Headers({"Authorization":(consts.OnPremise?`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`:`Bearer ${this.access_token}`),"X-RequestDigest": this.digest,'X-HTTP-Method':'POST','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
       let options = new RequestOptions({ headers: headers });
 
-      return this.http.post(url,JSON.stringify(body),options).toPromise();
+      return this.http.post(url,JSON.stringify(body),options).timeout(3500).retry(3).toPromise();
   }
 
   private updateTaskData(id : number, data : any) : Promise<any> {
@@ -355,7 +356,7 @@ export class TaskItem {
     let headers = new Headers({"Authorization":(consts.OnPremise?`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`:`Bearer ${this.access_token}`),"X-RequestDigest": this.digest,'X-HTTP-Method':'MERGE','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
     let options = new RequestOptions({ headers: headers });
 
-    return this.http.post(url,JSON.stringify(data),options).toPromise();
+    return this.http.post(url,JSON.stringify(data),options).timeout(3500).retry(3).toPromise();
   }
 
 
@@ -365,7 +366,7 @@ export class TaskItem {
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
     let options = new RequestOptions({ headers: headers });
 
-    this.http.get(listGet,options)
+    this.http.get(listGet,options).timeout(3500).retry(3)
         .toPromise()
         .then( res => {
           this.history = res.json().d.results[0] || {};
@@ -389,7 +390,7 @@ export class TaskItem {
      let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
 
-     this.http.get(listGet,options)
+     this.http.get(listGet,options).timeout(3500).retry(3)
          .toPromise()
          .then(res =>{
             this.connectedItem = res.json().d;
@@ -423,21 +424,6 @@ export class TaskItem {
       item: this.connectedItem,
       listGUID : this.task.sysIDList || this.task.ListID
      });
-  }
-
-  public presentLoading() : void {
-    this.loader = this.loadingCtrl.create({
-      // dismissOnPageChange : true,
-      content: "Подождите...",
-    });
-    this.loader.present();
-  }   
-
-  public stopLoading() : void {
-      this.loader.dismiss().then(() =>{
-        console.log('<TaskItem> closing task after process')
-      })
-      this.dismiss();
   }
 
   onFocus(){

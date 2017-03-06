@@ -7,6 +7,7 @@ import * as consts from '../utils/Consts';
 import { Auth } from '../utils/auth';
 import { Access } from '../utils/access';
 import { User } from '../utils/user';
+import { Loader } from '../utils/loader';
 
 import { MyTasks } from '../pages/MyTasks/MyTasks';
 import { Contracts } from '../pages/Contracts/Contracts';
@@ -26,7 +27,7 @@ export class MyApp {
   loader : any;
   toast : any;
   // private zone:NgZone,
-  constructor(public platform: Platform, public alertCtrl: AlertController,public loadingCtrl: LoadingController,public toastCtrl: ToastController, public auth: Auth,@Inject(Access) public access : Access,@Inject(Http) public http: Http, public events: Events,@Inject(User) public user : User) {
+  constructor(public platform: Platform, public alertCtrl: AlertController,@Inject(Loader) public loaderctrl: Loader,public loadingCtrl: LoadingController,public toastCtrl: ToastController, public auth: Auth,@Inject(Access) public access : Access,@Inject(Http) public http: Http, public events: Events,@Inject(User) public user : User) {
     this.initializeApp();
     this.errorCounter = 0;
     this.pages = [
@@ -41,13 +42,13 @@ export class MyApp {
 
   initializeApp() {
     this.platform.ready().then(() => {
-      this.presentLoading();
+      this.loaderctrl.presentLoading();
       StatusBar.styleDefault();
       Splashscreen.hide();
       this.ionViewDidEnter();
 
       this.checkNetwork().then(()=>{
-         this.stopLoading();
+         this.loaderctrl.stopLoading();
          if(!(this.auth.checkAuthAlready(consts.siteUrl))){
             this.showPrompt();
          } else if(!(this.auth.checkAuthActive(consts.siteUrl))){
@@ -70,33 +71,33 @@ export class MyApp {
   }
 
   getLogin(userName : string , userPassword : string) : void {
-     this.presentLoading();
+     this.loaderctrl.presentLoading();
      this.auth.init(consts.siteUrl,{username : userName, password : userPassword});//'oleg.dub@lsdocs30.onmicrosoft.com'  'Ljrevtyn0'
      this.auth.getAuth().then(
         result => {
-           this.stopLoading();
+           this.loaderctrl.stopLoading();
            this.startApp();
         },
         errorMessage => {
            this.showPrompt();
            this.showToast(errorMessage);
-           this.stopLoading();
+           this.loaderctrl.stopLoading();
         })
   }
 
   reLogin() : void {
      //this.secureStorage = new SecureStorage();
     // Promise.all([this.secureStorage.get('username'),this.secureStorage.get('password')])
-    this.presentLoading();
+    this.loaderctrl.presentLoading();
     NativeStorage.getItem('user')
      .then(
        user => {
-          this.stopLoading();
+          this.loaderctrl.stopLoading();
           this.getLogin(user.username, user.password);
        },
        error => {
           console.error('#Native storage: ',error);
-          this.stopLoading();
+          this.loaderctrl.stopLoading();
           this.showToast(`Can't load user credentials`);
           this.showPrompt();
        }
@@ -104,7 +105,7 @@ export class MyApp {
   }
 
   startApp() : Promise<any>{
-     this.presentLoading();
+     this.loaderctrl.presentLoading();
       return Promise.all([this.user.init(),this.getLists()])
         .then( res => {
              this.access._init();
@@ -115,17 +116,17 @@ export class MyApp {
                })
              });
              this.events.publish('user:loaded');
-             this.stopLoading();
+             this.loaderctrl.stopLoading();
         })
         .catch( error => {
             console.log(`Error in making Burger Menu`,error);
             if(this.errorCounter < 3 && error.status == '403'){
                this.errorCounter++;
-               this.stopLoading();
+               this.loaderctrl.stopLoading();
                this.reLogin();
             } else if(this.errorCounter < 3 && error.status == '401'){
                this.showPrompt();
-               this.stopLoading();
+               this.loaderctrl.stopLoading();
                this.showToast('Check your credentials');
             } else {
                this.showToast('Can`t load entrance data');
@@ -188,19 +189,6 @@ export class MyApp {
     });
     prompt.present();
     prompt.onDidDismiss((event) => { });
-  }
-
-  presentLoading() : void {
-    console.log('presentLoading',this.loader)
-    this.loader = this.loadingCtrl.create({
-      content: "Подождите...",
-    });
-    this.loader.present();
-  }
-
-  stopLoading() : void {
-     console.log('stoploading',this.loader)
-    this.loader.dismiss();
   }
 
   showToast(message: any){

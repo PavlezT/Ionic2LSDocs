@@ -28,7 +28,7 @@ export class Access{
         let headers = new Headers({'Authorization':(consts.OnPremise?`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`:`Bearer ${this.access_token}`),'Accept':"application/json; odata=verbose",'Content-Type': 'application/x-www-form-urlencoded'});
         let options = new RequestOptions({ headers: headers });
 
-        return this.http.post(listGet,{},options).toPromise()
+        return this.http.post(listGet,{},options).timeout(3500).retry(3).toPromise()
             .then(response=>{
                 let res = response.json().d.GetContextWebInformation
                 this.digest = res.FormDigestValue;
@@ -54,7 +54,7 @@ export class Access{
             client_secret=${encodeURIComponent(consts.secret)}&
             resource=${consts.resource}/${consts.siteUrl.substring('https://'.length,consts.siteUrl.indexOf('/sites'))}@${consts.site_realm}`
 
-        return this.http.post(url,data,options).toPromise()
+        return this.http.post(url,data,options).timeout(3500).retry(3).toPromise()
             .then(response=> {
                 let res = response.json();
                 this.access_token = res.access_token;

@@ -39,33 +39,25 @@ export class MyTasks {
 
       platform.ready().then(()=>{
         events.subscribe('user:loaded',()=>{
-            //this.presentLoading();
             this.setTasksCount()
         });
         events.subscribe('task:checked',()=>{
-          // if(window.localStorage.getItem('task:checked')){
-          //   return;
-          // }
-          //window.localStorage.setItem('task:checked','true');
               this.counts = {
                   new : 0,
                   active : 0,
                   late : 0,
                   done : 0
             };
-           // this.presentLoading();
-            console.log('task:checked');
-            this.setTasksCount()//.then(()=>{this.loaderctrl.stopLoading();});
+            this.setTasksCount()
         });
-        //this.presentLoading();
-        this.setTasksCount()//.then(()=>this.loaderctrl.stopLoading());
+        this.setTasksCount();
       })
 
       this.chatParams = {'d':'bb'};
   }
 
   ionViewDidEnter(){
-    this.platform.registerBackButtonAction((e)=>{this.loaderctrl.stopLoading()});//this.platform.exitApp();return false;},100);
+    this.platform.registerBackButtonAction((e)=>{this.platform.exitApp();return false;},100);
   }
 
   setTasksCount() : Promise<any> {

@@ -13,7 +13,6 @@ import { TaskItem } from '../../TaskItem/TaskItem';
   templateUrl: 'LSEnded.html'
 })
 export class LSEnded {
-
    items : Array<any>;
    siteUrl : string;
 

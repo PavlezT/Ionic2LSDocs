@@ -4,8 +4,6 @@ import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
 import 'moment/locale/ru';
 
-// import * as ntlm from 'httpntlm/ntlm';
-
 import * as consts from '../../../../utils/Consts';
 import { User } from '../../../../utils/user';
 import { TaskItem } from '../../TaskItem/TaskItem';
@@ -29,7 +27,6 @@ export class LSActive {
             this.loadTasks();
      });
      this.loadTasks();
-    // this.onpremise(`http://devdt01.dev.lizard.net.ua:43659/sites/DyckerHoff/`,{domain:'competence',workstation:'',username:'ivan.ivanov',password:'Pa$$w0rd'});
   }
 
   private loadTasks() : void {
@@ -67,73 +64,5 @@ export class LSActive {
       });
       modal.present();
    }
-
-  //  doInfinite(infiniteScroll){
-  //     console.log('do infinite scroll')
-  //    this.getActiveTasks(true)
-  //    .then( tasks => {
-  //        let newItems = (JSON.parse(tasks._body)).d.results;
-  //        newItems.map((item,i,arr)=>{
-  //            item.StartDate_view = moment(item.StartDate).format("dd, DD MMMM");
-  //            item.TaskDueDate_view = moment(item.TaskDueDate).format("dd, DD MMMM");
-  //            this.items.push(item);
-  //        });
-  //        infiniteScroll.complete();
-  //      })
-  //  }
-
-  onpremise(siteurl,options) : void {
-  //   console.log('http',http);
-  //   let b = new http.Agent({ keepAlive: true });
-  //   console.log('b',b);
-  //   let ntlmOptions = options;
-  //   ntlmOptions.url = siteurl;
-  //   console.log('ntlm',ntlm);
-  //   let type1msg = ntlm.createType1Message(ntlmOptions);
-  //   console.log('type1msg',type1msg);
-
-  //   // let headers = new Headers({'Authorization': type1msg,'Accept': 'application/json;odata=verbose'});//'Connection': 'keep-alive',
-  //   // let httpOptions = new RequestOptions({ headers: headers,Agent:b });//,strictSSL: false,simple: false ,resolveWithFullResponse : true});
-
-  //   // this.http.get(siteurl,httpOptions).toPromise()
-  //   console.log('http.request',
-  //   http.request({
-  //      url:siteurl,
-  //      method: 'GET',
-  //           headers: {
-  //               'Connection': 'keep-alive',
-  //               'Authorization': type1msg,
-  //               'Accept': 'application/json;odata=verbose'
-  //           },
-  //           agent: b,
-  //           simple:false
-  //   },this.catcher))
-  // }
-
-  // catcher(response){
-  //     console.log('response ntlm',response);
-  //     let message = response.headers.get('www-authenticate');
-  //     console.log('message',message);
-
-  //   }
-  //   .catch(error=>{
-  //     console.log('ntlm error',error);
-  //     let message = error.headers.get('www-authenticate');
-  //     console.log('message',message);
-  //     let type2msg = ntlm.parseType2Message(error.headers.get('www-authenticate'));
-  //     let type3msg = ntlm.createType3Message(type2msg, ntlmOptions);
-  //     console.log('type3msg',type3msg);
-
-  //     // let headers = new Headers({'Authorization': type3msg,'Accept': 'application/json;odata=verbose'});
-  //     // let httpOptions = new RequestOptions({ headers: headers });
-
-  //     // this.http.get(`http://devdt01.dev.lizard.net.ua:43659/sites/DyckerHoff/_api/web/Lists(guid'a4c342e5-3f69-4cbd-8b60-f3cb7b764bd8')/items?$top=15`,httpOptions).toPromise()
-  //     http.get()
-  //     .then(response=>{
-  //       console.log('response from Dycker',response);
-  //       console.log('response json',response.json());
-  //     })
-  //   })
-  }
 
 }
