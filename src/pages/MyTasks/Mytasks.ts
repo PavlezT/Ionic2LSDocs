@@ -98,7 +98,7 @@ export class MyTasks {
      let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
 
-     return Promise.all([this.http.get(listGet,options).timeout(3500).retry(3).toPromise(),this.http.get(getUrl,options).timeout(3500).retry(3).toPromise()])
+     return Promise.all([this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise(),this.http.get(getUrl,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise()])
           .then( res => {
              res[0] = res[0].json().d.results;
              res[1] = res[1].json().d.results;

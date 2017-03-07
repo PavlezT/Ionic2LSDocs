@@ -128,7 +128,7 @@ export class Auth {
                   let headers = new Headers({'Content-Type': 'application/soap+xml; charset=utf-8'});
                   let options = new RequestOptions({ headers: headers });
 
-                  return self.http.post(url,samlBody,options).timeout(3500).retry(3)
+                  return self.http.post(url,samlBody,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
                      .toPromise()
                })
                .then( response => {
@@ -187,7 +187,7 @@ export class Auth {
        let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded'});
        let options = new RequestOptions({ headers: headers });
 
-       return  Promise.all([diffSeconds,self.http.post(spFormsEndPoint,tokenResponse.token,options).timeout(3500).retry(3)
+       return  Promise.all([diffSeconds,self.http.post(spFormsEndPoint,tokenResponse.token,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
         .toPromise()])
    }
 
