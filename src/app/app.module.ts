@@ -11,6 +11,7 @@ import { Route } from '../pages/Contracts/Item/Tabs/Route/Route';
 import { Auth } from '../utils/auth';
 import { Access } from '../utils/access';
 import { SelectedItem } from '../utils/selecteditem';
+import { Loader } from '../utils/loader';
 import { ArraySortPipe } from '../utils/arraySort';
 import { User } from '../utils/user';
 import { LSNew } from '../pages/MyTasks/Tabs/LSNew/LSNew';
@@ -44,7 +45,8 @@ import { TaskItem } from '../pages/MyTasks/TaskItem/TaskItem';
       {provide: Auth , useClass: Auth},
       {provide: Access, useClass: Access},
       {provide: SelectedItem , useClass: SelectedItem},
-      {provide: User , useClass: User}
+      {provide: User , useClass: User},
+      {provide: Loader, useClass: Loader}
    ]
 })
 export class AppModule {}

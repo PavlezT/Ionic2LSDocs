@@ -10,6 +10,7 @@ import * as consts from '../../../utils/Consts';
 import { User } from '../../../utils/user';
 import { Access } from '../../../utils/access';
 import { SelectedItem } from '../../../utils/selecteditem';
+import { Loader } from '../../../utils/loader';
 
 @Component({
   selector: 'TaskItem',
@@ -21,6 +22,7 @@ export class TaskItem {
   loader : any;
 
   historyToggle : boolean = false;
+  typingComment : boolean = false;
   history : any; 
   taskHistory : any;
   connectedItem : any;
@@ -38,7 +40,7 @@ export class TaskItem {
 
   @ViewChild('coments') coments;
 
-  constructor(public platform: Platform,public navCtrl: NavController,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams, public http : Http, public user : User) {
+  constructor(public platform: Platform,public navCtrl: NavController,@Inject(Loader) public loaderctrl: Loader,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams,@Inject(Http) public http : Http,@Inject(User) public user : User) {
     this.siteUrl = consts.siteUrl;
     this.task = navParams.data.item;
     this.Status = navParams.data.item.OData__Status || 'Done';
@@ -68,7 +70,7 @@ export class TaskItem {
   }
 
   public toWorkTask() : void {
-      this.presentLoading();
+      this.loaderctrl.presentLoading();
 
       let data = {
         "__metadata": {
@@ -82,24 +84,25 @@ export class TaskItem {
 
       Promise.all([ this.writeToHistoryAfterTaskGet(),this.updateTaskData(this.task.Id,data)])
         .then( (resdata)=> {
+          console.log('<TaskItem> toWorkTask')
           this.events.publish('task:checked');
           this.events.publish('task:towork');
-          this.stopLoading();
+          this.loaderctrl.stopLoading().then(()=>{this.dismiss();});
         })
         .catch(err=> {
           console.log('<TaskItem> toWorkTask error',err);
           this.showToast('Операция неуспешна.Произошла ошибка');
-          this.stopLoading();
+          this.loaderctrl.stopLoading().then(()=>{this.dismiss();});
         })
   }
 
   public cancelTask() : void {
-     this.presentLoading();
+     this.loaderctrl.presentLoading();
      this.doneTask('RefuseTask');
   }
 
   public executeTask() : void {
-     this.presentLoading();
+     this.loaderctrl.presentLoading();
 
      if (this.ContentType == 'LSTaskResolution') {
       this.сheckResolution()
@@ -108,7 +111,7 @@ export class TaskItem {
               this.doneTask('Done');
           } else {
               this.showToast('Вы не наложили не одной резолюции');
-              this.stopLoading();
+              this.loaderctrl.stopLoading();
           }
         })
     } else {
@@ -128,14 +131,15 @@ export class TaskItem {
 
       Promise.all([this.writeToHistoryAfterTaskDone(),this.updateTaskData(this.task.Id,data)])
         .then( ()=>{
+          console.log('<TaskItem> done Task')
           this.events.publish('task:checked');
           this.events.publish('task:doneTask');
-          this.stopLoading();
+          this.loaderctrl.stopLoading().then(()=>{this.dismiss();});
         })
         .catch(err=>{
           console.log('<TaskItem> doneTask error',err);
           this.showToast('Операция неуспешна.Произошла ошибка');
-          this.stopLoading();
+          this.loaderctrl.stopLoading().then(()=>{this.dismiss();});
         })
   }
 
@@ -269,10 +273,10 @@ export class TaskItem {
   private startWriteToHistory() : Promise<any> {
      let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSMainTransit')/items`;
 
-     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
 
-     return this.http.get(listGet,options).toPromise()
+     return this.http.get(listGet,options).timeout(3500).retry(3).toPromise()
          .then( res =>{
            return res.json().d.results.map(item => {
                if(item.DataSource != 'true'){
@@ -283,9 +287,9 @@ export class TaskItem {
                      },
                      DataSource : 'true'
                   }
-                  let headers = new Headers({"Authorization":`Bearer ${this.access_token}`,"X-RequestDigest":this.digest, "X-HTTP-Method":"MERGE","IF-MATCH": "*",'Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+                  let headers = new Headers({"Authorization":(consts.OnPremise? `Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}` : `Bearer ${this.access_token}`),"X-RequestDigest":this.digest, "X-HTTP-Method":"MERGE","IF-MATCH": "*",'Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
                   let options = new RequestOptions({ headers: headers });
-                  return this.http.post(url,JSON.stringify(body),options).toPromise().catch(err=>{console.log('post maint trasit error',err)});
+                  return this.http.post(url,JSON.stringify(body),options).timeout(3500).retry(3).toPromise().catch(err=>{console.log('post maint trasit error',err)});
                }
             })
          })
@@ -298,10 +302,10 @@ export class TaskItem {
   private сheckResolution() : Promise<any>{
       let url =  `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=sysIDItem,ID,sysIDList,ContentTypeId,Title,TaskAuthore/Title,&$expand=TaskAuthore/Title,ContentType/Name&$filter=(sysIDItem eq '${this.task.sysIDItem}') and (sysIDList eq '${this.task.sysIDList}') and (ContentType/Name eq 'LSResolutionTaskToDo') and (TaskAuthore/Title eq '${encodeURI(this.taskAuthore.Title)}')`;
 
-      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+      let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
       let options = new RequestOptions({ headers: headers });
 
-      return this.http.get(url,options).toPromise();
+      return this.http.get(url,options).timeout(3500).retry(3).toPromise();
   }
 
   private updateTransitTask(taskData) : Promise<any> {
@@ -319,10 +323,10 @@ export class TaskItem {
 
     let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSDocsListTransitTasks')/Items`;
 
-    let headers = new Headers({"Authorization":`Bearer ${this.access_token}`,"X-RequestDigest": this.digest,'X-HTTP-Method':'POST','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+    let headers = new Headers({"Authorization":(consts.OnPremise?`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}` : `Bearer ${this.access_token}`),"X-RequestDigest": this.digest,'X-HTTP-Method':'POST','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
     let options = new RequestOptions({ headers: headers });
 
-    return this.http.post(url,JSON.stringify(taskData),options).toPromise();
+    return this.http.post(url,JSON.stringify(taskData),options).timeout(3500).retry(3).toPromise();
   }
 
   private updateTransitHistory(routeData : any, historyType? : string) : Promise <any> {
@@ -340,29 +344,29 @@ export class TaskItem {
       itemData : JSON.stringify(routeData.itemData)
     }
 
-      let headers = new Headers({"Authorization":`Bearer ${this.access_token}`,"X-RequestDigest": this.digest,'X-HTTP-Method':'POST','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+      let headers = new Headers({"Authorization":(consts.OnPremise?`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`:`Bearer ${this.access_token}`),"X-RequestDigest": this.digest,'X-HTTP-Method':'POST','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
       let options = new RequestOptions({ headers: headers });
 
-      return this.http.post(url,JSON.stringify(body),options).toPromise();
+      return this.http.post(url,JSON.stringify(body),options).timeout(3500).retry(3).toPromise();
   }
 
   private updateTaskData(id : number, data : any) : Promise<any> {
     let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/Items(${id})`;
 
-    let headers = new Headers({"Authorization":`Bearer ${this.access_token}`,"X-RequestDigest": this.digest,'X-HTTP-Method':'MERGE','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+    let headers = new Headers({"Authorization":(consts.OnPremise?`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`:`Bearer ${this.access_token}`),"X-RequestDigest": this.digest,'X-HTTP-Method':'MERGE','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
     let options = new RequestOptions({ headers: headers });
 
-    return this.http.post(url,JSON.stringify(data),options).toPromise();
+    return this.http.post(url,JSON.stringify(data),options).timeout(3500).retry(3).toPromise();
   }
 
 
   private getTaskHistory() : void {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSHistory')/items?$filter=(ItemId eq '${this.task.sysIDItem || this.task.ItemId}') and (Title eq '${this.task.sysIDList || this.task.ListID}') and (ItemName eq 'Task')`;
 
-    let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+    let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
     let options = new RequestOptions({ headers: headers });
 
-    this.http.get(listGet,options)
+    this.http.get(listGet,options).timeout(3500).retry(3)
         .toPromise()
         .then( res => {
           this.history = res.json().d.results[0] || {};
@@ -383,10 +387,10 @@ export class TaskItem {
   private getConnectedDoc() : void {
      let listGet = `${consts.siteUrl}/_api/Web/Lists(guid'${this.task.sysIDList || this.task.ListID}')/items(${this.task.sysIDItem || this.task.ItemId})`;
 
-     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
 
-     this.http.get(listGet,options)
+     this.http.get(listGet,options).timeout(3500).retry(3)
          .toPromise()
          .then(res =>{
             this.connectedItem = res.json().d;
@@ -422,19 +426,12 @@ export class TaskItem {
      });
   }
 
-  public presentLoading() : void {
-    this.loader = this.loadingCtrl.create({
-      dismissOnPageChange : true,
-      content: "Подождите...",
-    });
-    this.loader.present();
-  }   
+  onFocus(){
+    this.typingComment = true;
+  }
 
-  public stopLoading() : void {
-      this.loader.dismiss().then(() =>{
-        
-      })
-      this.dismiss();
+  onBlur(){
+    this.typingComment = false;
   }
 
 }

@@ -1,8 +1,9 @@
 import { Component, Inject } from '@angular/core';
-import { NavController, Events, Platform, LoadingController } from 'ionic-angular';
+import { NavController, Events, Platform } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 
 import { User } from '../../utils/user';
+import { Loader } from '../../utils/loader';
 import * as consts from '../../utils/Consts';
 
 import { LSNew } from './Tabs/LSNew/LSNew';
@@ -21,11 +22,10 @@ export class MyTasks {
    tabEnded : any;
 
    counts : any;
-   loader : any;
 
    chatParams : any;
 
-  constructor(public navCtrl: NavController,public platform : Platform,public loadingCtrl: LoadingController, public http : Http, public events: Events, @Inject(User) public user : User) {
+  constructor(public navCtrl: NavController,public platform : Platform,@Inject(Loader) public loaderctrl: Loader,@Inject(Http) public http : Http, public events: Events, @Inject(User) public user : User) {
      this.tabNew =  LSNew;
      this.tabActive = LSActive;
      this.tabLate = LSLate;
@@ -36,11 +36,10 @@ export class MyTasks {
         late : 0,
         done : 0
      };
-     
+
       platform.ready().then(()=>{
         events.subscribe('user:loaded',()=>{
-            this.presentLoading();
-            this.setTasksCount().then(()=>this.stopLoading());
+            this.setTasksCount()
         });
         events.subscribe('task:checked',()=>{
               this.counts = {
@@ -49,11 +48,9 @@ export class MyTasks {
                   late : 0,
                   done : 0
             };
-            this.presentLoading();
-            this.setTasksCount().then(()=>this.stopLoading());
+            this.setTasksCount()
         });
-        this.presentLoading();
-        this.setTasksCount().then(()=>this.stopLoading());
+        this.setTasksCount();
       })
 
       this.chatParams = {'d':'bb'};
@@ -64,6 +61,7 @@ export class MyTasks {
   }
 
   setTasksCount() : Promise<any> {
+    this.loaderctrl.presentLoading();
      return this.user.getUserProps()
       .then( (status) => {
          if(status)
@@ -71,7 +69,7 @@ export class MyTasks {
          return [[],[]];
       })
       .then( (res) => {
-         res[0].map((item) => {
+         res[1].map((item) => {
             if(item.OData__Status == 'Not Started')
                this.counts.new++;
             if(item.OData__Status == 'In Progress')
@@ -79,28 +77,28 @@ export class MyTasks {
             if(item.OData__Status != 'Done' && (new Date(item.TaskDueDate)) < (new Date((new Date()).getFullYear(),(new Date()).getMonth(),(new Date()).getDate())) )
                this.counts.late++;
          })
-         res[1].map( item =>{
+
+         res[0].map( item =>{
             if(item.CountTasks)
                this.counts.done += item.CountTasks;
          })
       })
+      .then(()=>this.loaderctrl.stopLoading())
       .catch( error => {
          console.log('<MyTasks> setting Count Tasks error',error);
+         this.loaderctrl.stopLoading();
          this.counts = {};
       })
   }
 
   getTasksCount() : Promise<any> {
-     let getUrl = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=AssignetToEmail,AssignetToTitle,Title,TaskDueDate,OData__Status&$filter=(AssignetToEmail eq '${this.user.getEmail()}')&$top=1000`;
-     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSUsersHistory')/items?$select=UserName/EMail,CountTasks&$expand=UserName/EMail&$filter=UserName/EMail eq '${this.user.getEmail()}'`;
+     let getUrl = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=AssignetToEmail,TaskDueDate,OData__Status&$filter=(AssignetToEmail eq '${this.user.getEmail()}')&$top=1000`;
+     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSUsersHistory')/items?$select=UserName/EMail,CountTasks&$expand=UserName/EMail&$filter=UserName/EMail eq '${this.user.getEmail()}'&$top=1000`;
 
-     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
 
-     return Promise.all([
-        this.http.get(getUrl,options).toPromise(),
-        this.http.get(listGet,options).toPromise()
-          ])
+     return Promise.all([this.http.get(listGet,options).timeout(3500).retry(3).toPromise(),this.http.get(getUrl,options).timeout(3500).retry(3).toPromise()])
           .then( res => {
              res[0] = res[0].json().d.results;
              res[1] = res[1].json().d.results;
@@ -112,15 +110,4 @@ export class MyTasks {
          })
   }
 
-  presentLoading() : void {
-    this.loader = this.loadingCtrl.create({
-      dismissOnPageChange : true,
-      content: "Подождите...",
-    });
-    this.loader.present();
-  }
-
-  stopLoading() : void {
-    this.loader.dismiss().then(()=>{console.log('<MyTasks> Data loaded')});
-  }
 }

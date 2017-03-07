@@ -19,18 +19,16 @@ export class User{
       this.email = 'e@e';
       this.user = {};
       this.user.Title = 'Bob';
-      this.itemPropsLoaded = Promise.resolve();//void to identify that requst not done yet
+      this.itemPropsLoaded = Promise.resolve();
     }
 
     private getProps() : Promise<any> {
      let listGet = `${consts.siteUrl}/_api/Web/CurrentUser`;
-
-     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+     //authorization for OnPremise 'username:password' to base64
+     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
 
-     return this.http.get(listGet,options)
-        // .retryWhen(error => error.delay(500))
-        // .timeout(200, new Error('delay exceeded'))
+     return this.http.get(listGet,options).timeout(3500).retry(3)
          .toPromise()
          .then( res => {
             this.user = res.json().d;
@@ -40,7 +38,6 @@ export class User{
          })
          .catch( error => {
            console.error('<User> Loading Props error!',error);
-           //return this.getProps();
          })
    }
 

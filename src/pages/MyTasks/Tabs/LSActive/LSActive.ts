@@ -2,7 +2,7 @@ import { Component , Inject } from '@angular/core';
 import { NavController, ModalController, Events } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
-import 'moment/locale/pt-br';
+import 'moment/locale/ru';
 
 import * as consts from '../../../../utils/Consts';
 import { User } from '../../../../utils/user';
@@ -13,14 +13,14 @@ import { TaskItem } from '../../TaskItem/TaskItem';
   templateUrl: 'LSActive.html'
 })
 export class LSActive {
-
   items : Array<any>;
   siteUrl : string;
 
-  constructor(public navCtrl: NavController,public modalCtrl: ModalController,public events: Events, @Inject(Http) public http: Http, @Inject(User) public user : User) {
+  constructor(public navCtrl: NavController,public modalCtrl: ModalController,public events: Events,@Inject(User) public user : User, @Inject(Http) public http: Http, ) {
      this.siteUrl = consts.siteUrl;
      moment.locale('ru');
      events.subscribe('task:towork',()=>{
+       console.log('<LsActive> task:towork')
             this.loadTasks();
      });
      events.subscribe('task:doneTask',()=>{
@@ -48,13 +48,14 @@ export class LSActive {
       })
   }
 
-  getActiveTasks() : Promise<any>{
-    let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=sysIDItem,ContentTypeId,AssignetToEmail,AssignetToTitle,ID,sysIDList,Title,StartDate,ContentTypeId,ContentType/Name,sysTaskLevel,TaskResults,TaskDescription,sysIDMainTask,sysIDParentMainTask,TaskDueDate,OData__Status,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail,ContentType/Name&$filter=(AssignetToEmail eq '${this.user.getEmail()}') and (OData__Status eq 'In Progress')&$orderby=TaskDueDate%20asc&$top=1000`;
+  getActiveTasks(loadNew? : boolean) : Promise<any> {
+    let lastId = this.items && loadNew ? this.items[this.items.length-1].ID : false;
+    let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?${ loadNew ? '$skiptoken=Paged=TRUE=p_SortBehavior=0=p_ID='+lastId+'&' : ''}$select=sysIDItem,ContentTypeId,AssignetToEmail,AssignetToTitle,ID,sysIDList,Title,StartDate,ContentTypeId,ContentType/Name,sysTaskLevel,TaskResults,TaskDescription,sysIDMainTask,sysIDParentMainTask,TaskDueDate,OData__Status,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail,ContentType/Name&$filter=(AssignetToEmail eq '${this.user.getEmail()}') and (OData__Status eq 'In Progress')&$orderby=TaskDueDate%20asc&$top=1000`;
 
-    let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+    let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
     let options = new RequestOptions({ headers: headers ,withCredentials: true});
 
-    return this.http.get(listGet,options).toPromise();
+   return this.http.get(listGet,options).timeout(3500).retry(3).toPromise();
   }
 
   itemTapped(event, item){

@@ -1,0 +1,22 @@
+   <add key="ClientId" value="042a3cb4-c140-4455-ab2f-e46f149311dc" />
+  
+    <add key="ClientSigningCertificatePath" value="C:\Certificates\apps-ext5.pfx" />
+    <add key="ClientSigningCertificatePassword" value="123456" />
+    <add key="IssuerId" value="26bab6fd-6d83-4f7b-8a9c-54195697d012" />
+"https://lsdocsservice.ext5-apps.lizard.net.ua:4433
+
+
+
+
+<add key="clientIdAuth" value="b6dcc840-4049-4832-b792-94bbd208ad57" />
+    <add key="clientSecretIdAuth" value="GYY6kXam4jbEuWUL4FLlwL/vUBvCMa9cJt1NsE6b9k8=" />
+    <add key="ClientId" value="042a3cb4-c140-4455-ab2f-e46f149311dc" />
+    <add key="ClientSecret" value="uHR0hglMdSGYWhkr1UlykNf0BOzmHIeGa6+7vIrlPTI=" />
+    <!--<add key="URLForRER" value="https://lsdocsservicedev.azurewebsites.net/" />-->
+    <!--<add key="URLForRER" value="https://lsdocsfordevelopers.azurewebsites.net/" />-->
+    <!--<add key ="URLForRER" value="https://lsdocs.azurewebsites.net/" />-->
+    <add key="ClientSigningCertificatePath" value="C:\Certificates\apps-ext5.pfx" />
+    <add key="ClientSigningCertificatePassword" value="123456" />
+    <add key="IssuerId" value="26bab6fd-6d83-4f7b-8a9c-54195697d012" />
+    <add key="URLForRER" value="https://lsdocsservice.ext5-apps.lizard.net.ua:4433" />
+    <add key="urlAppCatalog" value="https://lsdocs.ext5.lizard.net.ua/sites/AppsCatalog" />

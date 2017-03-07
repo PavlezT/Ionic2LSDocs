@@ -1,9 +1,9 @@
 
 <ion-content >
-   <ion-list>
+   <ion-list #Image>
       <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
           <ion-avatar item-left>
-            <img src="{{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{item.TaskAuthore.EMail}}">
+            <img #Image{{item.Id}} src="{{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{item.TaskAuthore.EMail}}">
           </ion-avatar>
           <ion-label>
             <h2>{{item.Title}}</h2>

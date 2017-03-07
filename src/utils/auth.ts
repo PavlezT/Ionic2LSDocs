@@ -34,6 +34,10 @@ export class Auth {
    }
 
    saveUserCredentials(): void{
+      if(consts.OnPremise){
+         window.localStorage.setItem('username',this.options.username);
+         window.localStorage.setItem('password',this.options.password);
+      }
       NativeStorage.setItem('user',{username:this.options.username,password: this.options.password})
       .then(
          //()=>{
@@ -77,37 +81,39 @@ export class Auth {
       let self = this;
       let host = self.url.substring(0,self.url.indexOf('/sites/'));
 
-      return self.getTokenWithOnline()
-            .then( (res : string) => {
-               if(res.includes('<S:Fault>') || res.startsWith('Error')){
-                   let reason = res.substring(res.indexOf('<S:Detail>'),res.indexOf('</S:Detail>'));
-                   reason = reason.substring(reason.indexOf('<psf:text>') + '<psf:text>'.length,reason.indexOf('</psf:text>'));
-                   throw new Error(`Fail in loggin!\n ${reason}`);
-               } else {
-                   let token = res.substring(res.indexOf('<wsse:BinarySecurityToken Id="Compact0">') + '<wsse:BinarySecurityToken Id="Compact0">'.length,res.indexOf('</wsse:BinarySecurityToken>'));
-                   let expires = res.substring(res.indexOf('<wst:Lifetime>'),res.indexOf('</wst:Lifetime>'));
-                   expires = expires.substring(expires.indexOf('<wsu:Expires>') + '<wsu:Expires>'.length,expires.indexOf('</wsu:Expires>'));
-                   return {
-                       token : token,
-                       expires : expires
-                   };
-               }
-            })
-            .then( tokenResponse => {
-              return self.postToken(tokenResponse)
-            })
-            .then( response => {
-               let diffSeconds = response[0];
-               let now = new Date();
-               now.setSeconds(now.getSeconds() + diffSeconds);
+      return (!consts.OnPremise ?  this.getTokenWithOnline().then( (res : string) => {return this.XmlParse(res)})
+                                                          .then( tokenResponse => {
+                                                              return self.postToken(tokenResponse)
+                                                           })
+                                  : Promise.resolve([60*60*24*365]) )
+                                                   .then( response => {
+                                                      let diffSeconds = response[0];
+                                                      let now = new Date();
+                                                      now.setSeconds(now.getSeconds() + diffSeconds);
 
-               self.setCookieExpiry(host, now);
-               return true;
-            })
-            .catch(error => {
-               throw new Error(error.message);
-            })
+                                                      self.setCookieExpiry(host, now);
+                                                      return true;
+                                                   })
+                                                   .catch(error => {
+                                                      throw new Error(error.message);
+                                                   })
      }
+
+   public XmlParse(res) : Object {
+      if(res.includes('<S:Fault>') || res.startsWith('Error')){
+         let reason = res.substring(res.indexOf('<S:Detail>'),res.indexOf('</S:Detail>'));
+         reason = reason.substring(reason.indexOf('<psf:text>') + '<psf:text>'.length,reason.indexOf('</psf:text>'));
+         throw new Error(`Fail in loggin!\n ${reason}`);
+      } else {
+         let token = res.substring(res.indexOf('<wsse:BinarySecurityToken Id="Compact0">') + '<wsse:BinarySecurityToken Id="Compact0">'.length,res.indexOf('</wsse:BinarySecurityToken>'));
+         let expires = res.substring(res.indexOf('<wst:Lifetime>'),res.indexOf('</wst:Lifetime>'));
+         expires = expires.substring(expires.indexOf('<wsu:Expires>') + '<wsu:Expires>'.length,expires.indexOf('</wsu:Expires>'));
+         return {
+              token : token,
+              expires : expires
+         };
+      }
+   }
 
    public getTokenWithOnline(): Promise<any> {
         let self = this;
@@ -122,7 +128,7 @@ export class Auth {
                   let headers = new Headers({'Content-Type': 'application/soap+xml; charset=utf-8'});
                   let options = new RequestOptions({ headers: headers });
 
-                  return self.http.post(url,samlBody,options)
+                  return self.http.post(url,samlBody,options).timeout(3500).retry(3)
                      .toPromise()
                })
                .then( response => {
@@ -181,7 +187,7 @@ export class Auth {
        let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded'});
        let options = new RequestOptions({ headers: headers });
 
-       return  Promise.all([diffSeconds,self.http.post(spFormsEndPoint,tokenResponse.token,options)
+       return  Promise.all([diffSeconds,self.http.post(spFormsEndPoint,tokenResponse.token,options).timeout(3500).retry(3)
         .toPromise()])
    }
 

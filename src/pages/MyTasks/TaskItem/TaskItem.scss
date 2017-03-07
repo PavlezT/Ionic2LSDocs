@@ -17,8 +17,9 @@ taskitem {
                   width: 100%;
                   padding:0 !important;
                   margin:0 !important;
+                  font-size: 0.9em !important;
                   ion-icon {
-                      margin-right: 10px;
+                      margin-right: 5px;
                   }
                }
             }
@@ -123,14 +124,6 @@ taskitem {
                margin-right: 5px;
             }
         }
-    }
-
-    .history {
-        transition: max-height 0.1s ease-out;
-    }
-
-    .history .active {
-        transition: max-height 0.3s ease-out;
     }
 
     .active {

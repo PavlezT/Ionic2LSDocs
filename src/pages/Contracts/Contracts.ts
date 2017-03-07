@@ -41,13 +41,14 @@ export class Contracts {
     });
   }
 
-  getItems(): Promise <any> {
-     let listGet = `${consts.siteUrl}/_api/Web/Lists('${this.guid}')/Items?$select=Id,Title,ContentTypeId,Created,Modified&$top=50&$orderby=Id desc`;
+  getItems(loadNew? : boolean): Promise <any> {
+     let lastId = this.items && loadNew ? this.items[this.items.length-1].Id : false;
+     let listGet = `${consts.siteUrl}/_api/Web/Lists('${this.guid}')/Items?${ lastId ? '$skiptoken=Paged=TRUE=p_SortBehavior=0=p_ID='+lastId+'&' : ''}$select=Id,Title,ContentTypeId,Created,Modified&$top=25&$orderby=Id desc`;
 
-     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
 
-     return this.http.get(listGet,options).toPromise()
+     return this.http.get(listGet,options).timeout(3500).retry(3).toPromise()
   }
 
   searchItem(event :any){
@@ -64,5 +65,19 @@ export class Contracts {
             //   })
             }
          })
+  }
+
+  doInfinite(infiniteScroll){
+    this.getItems(true)
+      .then( res =>{
+        res.json().d.results.map( item =>{
+          if(item.Title){
+            item.Created = item.Created? (new Date(item.Created).toLocaleString()) : null;
+            item.Modified = item.Modified? (new Date(item.Modified).toLocaleString()) : null;
+            this.items.push(item);
+          }
+        })
+        infiniteScroll.complete();
+      })
   }
 }

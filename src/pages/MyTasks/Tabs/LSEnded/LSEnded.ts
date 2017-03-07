@@ -2,7 +2,7 @@ import { Component , Inject } from '@angular/core';
 import { NavController, ModalController,Events } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
-import 'moment/locale/pt-br';
+import 'moment/locale/ru';
 
 import * as consts from '../../../../utils/Consts';
 import { User } from '../../../../utils/user';
@@ -13,7 +13,6 @@ import { TaskItem } from '../../TaskItem/TaskItem';
   templateUrl: 'LSEnded.html'
 })
 export class LSEnded {
-
    items : Array<any>;
    siteUrl : string;
 
@@ -23,9 +22,9 @@ export class LSEnded {
       events.subscribe('task:doneTask',()=>{
             this.loadTasks();
       });
-      this.loadTasks();      
+      this.loadTasks();
    }
- 
+
    private loadTasks() : void {
      this.user.getUserProps()
          .then(() => {
@@ -47,13 +46,13 @@ export class LSEnded {
          })
    }
 
-   getEndedTasks() : Promise<any>{                                                     
+   getEndedTasks() : Promise<any>{
      let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSUsersHistory')/items?$select=UserName/EMail,CountTasks,UserHistory&$expand=UserName/EMail&$filter=UserName/EMail eq '${this.user.getEmail()}'`;
 
-     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers ,withCredentials: true});
 
-     return this.http.get(listGet,options).toPromise();
+     return this.http.get(listGet,options).timeout(3500).retry(3).toPromise();
    }
 
    itemTapped(event, item){

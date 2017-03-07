@@ -23,10 +23,10 @@ export class SelectedItem {
     private getProps() : Promise<any> {
      let listGet = `${consts.siteUrl}/_api/Web/Lists('${this.listGUID}')/Items(${this.item.Id})/FieldValuesAsText`;
 
-     let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
 
-     return this.http.get(listGet,options)
+     return this.http.get(listGet,options).timeout(3500).retry(3)
          .toPromise()
          .then( res => {
             this.item = res.json().d;
@@ -41,10 +41,10 @@ export class SelectedItem {
     private getContentTypeFields() : Promise<any> {
       let listGet = `${consts.siteUrl}/_api/Web/Lists('${this.listGUID}')/ContentTypes('${this.item.ContentTypeId}')/Fields?$select=StaticName,Title&$filter$filter=(Hidden nq 'true') and (Group nq 'Hidden')`;
 
-      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+      let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
       let options = new RequestOptions({ headers: headers });
 
-      return this.http.get(listGet,options)
+      return this.http.get(listGet,options).timeout(3500).retry(3)
          .toPromise()
          .then( res => {
             return res.json().d.results;
@@ -58,10 +58,10 @@ export class SelectedItem {
     private getDocs() : Promise<any> {
       let listGet = `${consts.siteUrl}/_api/Web/Lists('${this.listGUID}')/Items(${this.item.Id})/Folder/Files`;
 
-      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+      let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
       let options = new RequestOptions({ headers: headers });
 
-      return this.http.get(listGet,options)
+      return this.http.get(listGet,options).timeout(3500).retry(3)
          .toPromise()
          .then( res => {
             return res.json().d.results;
@@ -75,10 +75,10 @@ export class SelectedItem {
     private getHistory() : Promise<any>{
       let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSHistory')/items?$filter=(ItemId eq '${this.item.Id}') and (Title eq '${this.listGUID}') and (ItemName eq 'Task')`;
 
-      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+      let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
       let options = new RequestOptions({ headers: headers });
 
-      return this.http.get(listGet,options)
+      return this.http.get(listGet,options).timeout(3500).retry(3)
          .toPromise()
          .then( res => {
             return res.json().d.results;
@@ -92,10 +92,10 @@ export class SelectedItem {
     private getRoutes() : Promise<any> {
       let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('RoutesForCurentDoc')/items?$select=sysListId,sysTypeId,ID,ManualState,StatePermission,EditState,StateNumber,StateName,StartDate,StateType,EndDate,ExecutJobTitle,StateEstimate,StateExecutore,StateStatus,ExecutorType,StateExecutore/Title,StateExecutore/Name&$expand=StateExecutore/Title,StateExecutore/Name&$filter=(sysListId eq '${this.listGUID}') and (sysIDItem eq '${this.item.Id}')&$orderby=StateNumber asc`;
 
-      let headers = new Headers({'Accept': 'application/json;odata=verbose'});
+      let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
       let options = new RequestOptions({ headers: headers });
 
-      return this.http.get(listGet,options)
+      return this.http.get(listGet,options).timeout(3500).retry(3)
          .toPromise()
          .then( res => {
             return res.json().d.results;

@@ -19,8 +19,17 @@
    background-color: #0072C6;
 }
 
+.menucontainer {
+    button {
+        text-transform: none !important;
+    }
+}
+
 .userAvatart{
-   .item-inner{
+   .item-inner{ 
       border-bottom: 0px !important;
+   }
+   ion-title{
+       vertical-align: middle;
    }
 }
