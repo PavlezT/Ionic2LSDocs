@@ -1,4 +1,4 @@
-import { Transfer } from 'ionic-native';
+import { Transfer, NativeStorage } from 'ionic-native';
 import { Injectable } from '@angular/core';
 import * as consts from './Consts';
 
@@ -8,25 +8,44 @@ const fileTransfer = new Transfer();
 @Injectable()
 export class Images {
 
-   constructor(){
-      this.imagesLoad();
+   images : any;//Array<string>;
+
+   constructor() {
+      this.images = {};
    }
 
-   private imagesLoad() : void {
-      let listGet = `${consts.siteUrl}/_layouts/15/userphoto.aspx?size=S&accountname=mark.leon@competence.net`;
+   public _init() : void {
+      this.imagesLoad().then(res => {this.images = res;})
+   }
 
-      fileTransfer.download(listGet,cordova.file.dataDirectory+'userphoto.png',true,{headers:{'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
+   private imagesLoad() : Promise<any> {
+      return NativeStorage.getItem('images');
+   }
+
+   private saveImage() : void {
+      NativeStorage.setItem('images',this.images);
+   }
+
+   private loadImage(key : string) :  string {
+      let listGet = `${consts.siteUrl}/_layouts/15/userphoto.aspx?size=S&accountname=${key}`;//mark.leon@competence.net
+
+      fileTransfer.download(listGet,cordova.file.dataDirectory+key+'.png',true,{headers:{'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
          .then(data=>{
             console.log('file transfer success',data);
+            this.images[key] = data.path;
+            this.saveImage();
          })
          .catch(err=>{
             console.log('file transfer error',err);
          })
+
+      return (cordova.file.applicationDirectory + 'www/assets/icon/favicon.ico');
    }
 
-   public getImage() : string {
-      let path;
-      return path;
+   public getImage(key : string) : string {
+       let path = this.images[key] || this.loadImage(key)
+       return this.images[key] ? this.images[key] : this.loadImage(key); //let path =
+      //return path;
    }
 
 }
