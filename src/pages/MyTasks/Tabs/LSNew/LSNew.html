@@ -3,7 +3,8 @@
    <ion-list >
      <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
        <ion-avatar item-left>
-        <img src="{{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{item.TaskAuthore.EMail || 'undefined'}}">
+        <img src="{{images.getImage(item.TaskAuthore.EMail || 'undefined')}}" >
+        <!-- {{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{item.TaskAuthore.EMail || 'undefined'}}"> -->
        </ion-avatar>
        <div>
          <h2>{{item.Title}}</h2>

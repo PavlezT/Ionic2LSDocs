@@ -8,6 +8,7 @@ import { Auth } from '../utils/auth';
 import { Access } from '../utils/access';
 import { User } from '../utils/user';
 import { Loader } from '../utils/loader';
+import { Images } from '../utils/images';
 
 import { MyTasks } from '../pages/MyTasks/MyTasks';
 import { Contracts } from '../pages/Contracts/Contracts';
@@ -27,7 +28,7 @@ export class MyApp {
   loader : any;
   toast : any;
   // private zone:NgZone,
-  constructor(public platform: Platform, public alertCtrl: AlertController,@Inject(Loader) public loaderctrl: Loader,public toastCtrl: ToastController, public auth: Auth,@Inject(Access) public access : Access,@Inject(Http) public http: Http, public events: Events,@Inject(User) public user : User) {
+  constructor(public platform: Platform, public alertCtrl: AlertController,@Inject(Loader) public loaderctrl: Loader,@Inject(Images) public images: Images ,public toastCtrl: ToastController, public auth: Auth,@Inject(Access) public access : Access,@Inject(Http) public http: Http, public events: Events,@Inject(User) public user : User) {
     this.initializeApp();
     this.errorCounter = 0;
     this.pages = [
@@ -109,6 +110,7 @@ export class MyApp {
       return Promise.all([this.user.init(),this.getLists()])
         .then( res => {
              this.access._init();
+             this.images._init();
              res[1].map((list,i,mass) => {
                if(!list)return;
                list.then(item=>{

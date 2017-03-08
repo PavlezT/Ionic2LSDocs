@@ -11,6 +11,7 @@ import { User } from '../../../utils/user';
 import { Access } from '../../../utils/access';
 import { SelectedItem } from '../../../utils/selecteditem';
 import { Loader } from '../../../utils/loader';
+import { Images } from '../../../utils/images';
 
 @Component({
   selector: 'TaskItem',
@@ -40,7 +41,7 @@ export class TaskItem {
 
   @ViewChild('coments') coments;
 
-  constructor(public platform: Platform,public navCtrl: NavController,@Inject(Loader) public loaderctrl: Loader,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams,@Inject(Http) public http : Http,@Inject(User) public user : User) {
+  constructor(public platform: Platform,public navCtrl: NavController,@Inject(Images) public images: Images ,@Inject(Loader) public loaderctrl: Loader,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams,@Inject(Http) public http : Http,@Inject(User) public user : User) {
     this.siteUrl = consts.siteUrl;
     this.task = navParams.data.item;
     this.Status = navParams.data.item.OData__Status || 'Done';

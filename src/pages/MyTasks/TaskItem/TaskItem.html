@@ -19,7 +19,8 @@
        <div class="right">
          <div class="userTag">
            <ion-avatar item-left>
-             <img src="{{siteUrl}}/_layouts/15/userphoto.aspx?size=S&accountname={{taskAuthore.EMail}}" />
+             <img src="{{images.getImage(taskAuthore.EMail || 'undefined')}}" >
+             <!-- {{siteUrl}}/_layouts/15/userphoto.aspx?size=S&accountname={{taskAuthore.EMail}}" /> -->
            </ion-avatar>
            <span>{{taskAuthore.Title}}</span>
          </div>
@@ -31,7 +32,8 @@
        <div class="right">
          <div class="userTag">
            <ion-avatar item-left>
-             <img src="{{siteUrl}}/_layouts/15/userphoto.aspx?size=S&accountname={{assignetTo.Email}}" />
+             <img src="{{images.getImage(assignetTo.Email || 'undefined')}}" >
+             <!-- {{siteUrl}}/_layouts/15/userphoto.aspx?size=S&accountname={{assignetTo.Email}}" /> -->
            </ion-avatar>
            <span>{{assignetTo.Title}}</span>
          </div>
@@ -88,7 +90,7 @@
              <button  clear ion-button (click)="toWorkTask()">
                 <ion-icon name="md-arrow-down"></ion-icon>
                 <div>В роботу</div>
-            </button> 
+            </button>
          </ion-col>
          <ion-col *ngIf="task.sysTaskLevel == 1 && (ContentType == 'LSTaskPreparetion' || ContentType == 'LSTaskAppruve' || ContentType =='LSTaskAgreement' ) ">
             <button  clear ion-button (click)="cancelTask()">

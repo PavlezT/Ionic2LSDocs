@@ -7,6 +7,7 @@ import 'moment/locale/ru';
 import * as consts from '../../../../utils/Consts';
 import { User } from '../../../../utils/user';
 import { TaskItem } from '../../TaskItem/TaskItem';
+import { Images } from '../../../../utils/images';
 
 @Component({
   selector: 'LSActive',
@@ -16,7 +17,7 @@ export class LSActive {
   items : Array<any>;
   siteUrl : string;
 
-  constructor(public navCtrl: NavController,public modalCtrl: ModalController,public events: Events,@Inject(User) public user : User, @Inject(Http) public http: Http, ) {
+  constructor(public navCtrl: NavController,public modalCtrl: ModalController,public events: Events,@Inject(Images) public images: Images,@Inject(User) public user : User, @Inject(Http) public http: Http, ) {
      this.siteUrl = consts.siteUrl;
      moment.locale('ru');
      events.subscribe('task:towork',()=>{

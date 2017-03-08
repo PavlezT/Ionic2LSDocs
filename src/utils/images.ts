@@ -8,44 +8,44 @@ const fileTransfer = new Transfer();
 @Injectable()
 export class Images {
 
-   images : any;//Array<string>;
+   images : any;
 
    constructor() {
       this.images = {};
    }
 
    public _init() : void {
-      this.imagesLoad().then(res => {this.images = res;})
+      this.imagesLoad().then(res => {this.images = res})
    }
 
    private imagesLoad() : Promise<any> {
-      return NativeStorage.getItem('images');
+      return NativeStorage.getItem('images').catch(err=>{console.log('<Images> loading images error',err);return {};});
    }
 
-   private saveImage() : void {
-      NativeStorage.setItem('images',this.images);
+   private saveImage() : Promise<any> {
+      return NativeStorage.setItem('images',this.images).catch(err=>{console.log('<Images> error saving images',err)})
    }
 
    private loadImage(key : string) :  string {
-      let listGet = `${consts.siteUrl}/_layouts/15/userphoto.aspx?size=S&accountname=${key}`;//mark.leon@competence.net
+      let listGet = `${consts.siteUrl}/_layouts/15/userphoto.aspx?size=S&accountname=${key}&mobile=0`;//mark.leon@competence.net
 
-      fileTransfer.download(listGet,cordova.file.dataDirectory+key+'.png',true,{headers:{'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
+      this.images[key] = (cordova.file.applicationDirectory + 'www/assets/icon/favicon.ico');
+
+      cordova.file.dataDirectory && fileTransfer.download(listGet,cordova.file.externalDataDirectory+key+'.png',true,{headers:{'Content-Type':`image/png`,'Accept':`image/webp`,'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
          .then(data=>{
-            console.log('file transfer success',data);
-            this.images[key] = data.path;
+            console.log('<Image> file transfer success',data);
+            this.images[key] = data.nativeURL;
             this.saveImage();
          })
          .catch(err=>{
-            console.log('file transfer error',err);
+            console.log('<Images> file transfer error',err);
          })
 
-      return (cordova.file.applicationDirectory + 'www/assets/icon/favicon.ico');
+      return this.images[key];
    }
 
    public getImage(key : string) : string {
-       let path = this.images[key] || this.loadImage(key)
-       return this.images[key] ? this.images[key] : this.loadImage(key); //let path =
-      //return path;
+       return this.images[key] || this.loadImage(key);
    }
 
 }
