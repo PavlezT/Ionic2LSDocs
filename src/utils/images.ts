@@ -19,7 +19,7 @@ export class Images {
    }
 
    private imagesLoad() : Promise<any> {
-      return NativeStorage.getItem('images').catch(err=>{console.log('<Images> loading images error',err);return {};});
+      return NativeStorage.getItem('images').then(data=>{console.log('images loaded',data);return data;}).catch(err=>{console.log('<Images> loading images error',err);return {};});
    }
 
    private saveImage() : Promise<any> {
@@ -31,7 +31,7 @@ export class Images {
 
       this.images[key] = (cordova.file.applicationDirectory + 'www/assets/icon/favicon.ico');
 
-      cordova.file.dataDirectory && fileTransfer.download(listGet,cordova.file.externalDataDirectory+key+'.png',true,{headers:{'Content-Type':`image/png`,'Accept':`image/webp`,'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
+      cordova.file.dataDirectory && fileTransfer.download(listGet,cordova.file.dataDirectory+key+'.png',true,{headers:{'Content-Type':`image/png`,'Accept':`image/webp`,'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
          .then(data=>{
             console.log('<Image> file transfer success',data);
             this.images[key] = data.nativeURL;

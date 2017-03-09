@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
 import { SelectedItem } from '../../../../../utils/selecteditem';
 import * as moment from 'moment';
-import 'moment/locale/pt-br';
+import 'moment/locale/uk';
 
 @Component({
    selector: 'route',
@@ -13,7 +13,7 @@ export class Route {
   routesList : Array<any>;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, @Inject(SelectedItem) public selectedItem : SelectedItem) {
-      moment.locale('ru');
+      moment.locale('uk');
       selectedItem.getItemRoutes()
        .then( routes => this.getRoutes(routes) )
   }

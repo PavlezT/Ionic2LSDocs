@@ -32,7 +32,7 @@ export class MyApp {
     this.initializeApp();
     this.errorCounter = 0;
     this.pages = [
-      { title: 'Мои задачи', icon:"home", component: MyTasks , listGUID : 'none'}
+      { title: 'Мої завдання', icon:"home", component: MyTasks , listGUID : 'none'}
     ];
 
   }

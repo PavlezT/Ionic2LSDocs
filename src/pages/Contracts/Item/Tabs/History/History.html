@@ -5,17 +5,17 @@
             <h3>
                 <div class="marker"></div>
                 <span>{{task.Event}}</span> <span>{{task.TaskTitle}}</span> для
-                <span class="user">{{task.NameExecutor}}</span> от <span class="user">{{task.NameAuthore}}</span>
-                <span> со сроком до </span>
+                <span class="user">{{task.NameExecutor}}</span> від <span class="user">{{task.NameAuthore}}</span>
+                <span> з терміном до </span>
                 <span>{{task.DueDate}}</span>
             </h3>
             <p>{{task.EvanteDate}}</p>
         </ion-item>
         <ion-item *ngIf="history && !taskHistory">
-           <h2> Здесь пусто</h2>
+           <h2> Тут пусто</h2>
         </ion-item>
         <ion-item *ngIf="!history">
-           <h2> Загрузка...</h2>
+           <h2> Завантаження...</h2>
         </ion-item>
     </ion-list>
 </ion-content>

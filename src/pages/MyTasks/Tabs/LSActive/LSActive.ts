@@ -2,7 +2,7 @@ import { Component , Inject } from '@angular/core';
 import { NavController, ModalController, Events } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
-import 'moment/locale/ru';
+import 'moment/locale/uk';
 
 import * as consts from '../../../../utils/Consts';
 import { User } from '../../../../utils/user';
@@ -19,9 +19,9 @@ export class LSActive {
 
   constructor(public navCtrl: NavController,public modalCtrl: ModalController,public events: Events,@Inject(Images) public images: Images,@Inject(User) public user : User, @Inject(Http) public http: Http, ) {
      this.siteUrl = consts.siteUrl;
-     moment.locale('ru');
+     moment.locale('uk');
      events.subscribe('task:towork',()=>{
-       console.log('<LsActive> task:towork')
+       console.log('<LSActive> task:towork')
             this.loadTasks();
      });
      events.subscribe('task:doneTask',()=>{

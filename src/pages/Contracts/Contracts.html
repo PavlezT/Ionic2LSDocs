@@ -19,13 +19,13 @@
     <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
       <h2>#{{item.Id}}  {{item.Title}}</h2>
       <div class="description" >
-       <div class="descriptontext">Когда создано:</div><span class="creator" >{{item.Created}}</span>
+       <div class="descriptontext">Коли створено:</div><span class="creator" >{{item.Created}}</span>
        <br>
-       <div class="descriptontext">Когда изменено: </div><span class="creator" >{{item.Modified}}</span>
+       <div class="descriptontext">Коли змінено: </div><span class="creator" >{{item.Modified}}</span>
      </div>
     </button>
-    <h1 ion-item *ngIf="items && items.length == 0">Здесь пусто</h1>
-    <h1 ion-item *ngIf="!items">Загрузка...</h1>
+    <h1 ion-item *ngIf="items && items.length == 0">Тут пусто</h1>
+    <h1 ion-item *ngIf="!items">Завантаження...</h1>
   </ion-list>
   <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
     <ion-infinite-scroll-content

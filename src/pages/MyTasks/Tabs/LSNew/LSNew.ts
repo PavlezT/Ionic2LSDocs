@@ -2,7 +2,7 @@ import { Component , Inject } from '@angular/core';
 import { Platform , NavController ,ModalController, Events } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
-import 'moment/locale/ru';
+import 'moment/locale/uk';
 
 import * as consts from '../../../../utils/Consts';
 import { User } from '../../../../utils/user';
@@ -21,7 +21,7 @@ export class LSNew {
    constructor(public platform: Platform, public navCtrl: NavController, @Inject(Images) public images: Images ,public modalCtrl: ModalController, public events: Events, @Inject(Http) public http: Http, @Inject(User) public user : User) {
       this.platform.ready().then(()=> {
         this.siteUrl = consts.siteUrl;
-        moment.locale('ru');
+        moment.locale('uk');
         events.subscribe('user:loaded',()=>{
             this.loadTasks();
         });
@@ -35,8 +35,10 @@ export class LSNew {
 
    loadTasks() : void {
      this.user.getUserProps()
-            .then(() => {
-                return this.getNewTasks()
+            .then((status) => {
+                if(status)
+                    return this.getNewTasks();
+                return {_body:JSON.stringify({d:{results:[]}})};
             })
             .then( tasks => {
                 this.items = (JSON.parse(tasks._body)).d.results;
@@ -47,7 +49,7 @@ export class LSNew {
                 });
             })
             .catch( error => {
-                console.error('<LSNew> Fail loading ',error);
+                console.log('<LSNew> Fail loading ',error);
                 this.items = [];
             });
    }
@@ -70,7 +72,7 @@ export class LSNew {
    }
 
    doInfinite(infiniteScroll){
-      console.log('do infinite scroll')
+     console.log('do infinite scroll')
      this.getNewTasks(true)
      .then( tasks => {
          let newItems = (JSON.parse(tasks._body)).d.results;
