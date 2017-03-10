@@ -41,9 +41,9 @@ export class Contracts {
     });
   }
 
-  getItems(loadNew? : boolean): Promise <any> {
+  getItems(loadNew? : boolean, search ? : string): Promise <any> {
      let lastId = this.items && loadNew ? this.items[this.items.length-1].Id : false;
-     let listGet = `${consts.siteUrl}/_api/Web/Lists('${this.guid}')/Items?${ lastId ? '$skiptoken=Paged=TRUE=p_SortBehavior=0=p_ID='+lastId+'&' : ''}$select=Id,Title,ContentTypeId,Created,Modified&$top=25&$orderby=Id desc`;
+     let listGet = `${consts.siteUrl}/_api/Web/Lists('${this.guid}')/Items?${ lastId ? '$skiptoken=Paged=TRUE=p_SortBehavior=0=p_ID='+lastId+'&' : ''}$select=Id,Title,ContentTypeId,Created,Modified&$top=25&$orderby=Id desc`+(search?`&$filter=substringof('${search}',Title)`:'');
 
      let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
@@ -52,18 +52,10 @@ export class Contracts {
   }
 
   searchItem(event :any){
-      this.getItems()
+      this.getItems(false,event.target.value)
          .then( (res) => {
             res = res.json().d.results;
-            let val = event.target.value;
-
-            if (val && val.trim() != '') {
-               //this.zone.run(()=>{
-                  this.items = res.filter((item) => {
-                    return (item.Title && item.Title.toLowerCase().includes(val.toLowerCase())) ? item : null;
-                 })
-            //   })
-            }
+            this.items = res;
          })
   }
 
