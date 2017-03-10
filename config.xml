@@ -67,11 +67,17 @@
   <preference name="KeyboardDisplayRequiresUserAction" value="false"/>
   <preference name="OverrideUserAgent" value="Mozilla/5.0 My Browser"/>
   <preference name="SplashScreenDelay" value="10000"/>
+  <preference name="KeepRunning" value="false"/>
+  <preference name="LoadUrlTimeoutValue" value="10000"/>
   <!--<feature name="StatusBar">
     <param name="ios-package" onload="true" value="CDVStatusBar"/>
   </feature>-->
   <allow-navigation href="http://192.168.137.1:8000"/>
   <allow-navigation href="http://192.168.0.78:8000"/>
+  <!--<preference name="SuppressesIncrementalRendering" value="true"/>-->
+  <!--<preference name="ShowSplashScreenSpinner" value="false"/>-->
+  <!--<preference name="LoadingDialog" value="Please wait, the app is loading"/>
+  <preference name="LoadingPageDialog" value="Please wait, the data is loading"/>-->
   <plugin name="cordova-plugin-network-information" spec="~1.3.1"/>
   <plugin name="cordova-plugin-nativestorage" spec="~2.0.2"/>
   <plugin name="cordova-plugin-file-transfer" spec="~1.6.2"/>
