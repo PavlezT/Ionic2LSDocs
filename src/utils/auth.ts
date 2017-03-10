@@ -90,7 +90,7 @@ export class Auth {
                                                       let diffSeconds = response[0];
                                                       let now = new Date();
                                                       now.setSeconds(now.getSeconds() + diffSeconds);
-
+                                                      
                                                       self.setCookieExpiry(host, now);
                                                       return true;
                                                    })
@@ -123,7 +123,7 @@ export class Auth {
         return self.readFile(consts.Online_saml_path ,consts.Online_saml)
                .then( (text:string) => {
                   let samlBody = text.replace('<%= username %>',self.options.username).replace('<%= password %>',self.options.password).replace('<%= endpoint %>',spFormsEndPoint);
-                  let url = consts.MSOnlineSts;//(Device.device.uuid) ? (consts.MSOnlineSts) : (consts.MSOnlineSts);
+                  let url = consts.MSOnlineSts;
 
                   let headers = new Headers({'Content-Type': 'application/soap+xml; charset=utf-8'});
                   let options = new RequestOptions({ headers: headers });

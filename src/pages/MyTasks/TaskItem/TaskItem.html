@@ -75,7 +75,7 @@
           </ion-item>
   </ion-list>
   <ion-item *ngIf="(Status != 'Done')" [ngClass]="historyToggle? 'inactive' : 'active'">
-      <ion-label floating>Введіть коментарій до виконання задачі</ion-label>
+      <ion-label floating>Введіть коментар до виконання задачі</ion-label>
       <ion-textarea #coments rows="6" (blur)="onBlur()" (focus)="onFocus()" ></ion-textarea>
   </ion-item>
 </ion-scroll>

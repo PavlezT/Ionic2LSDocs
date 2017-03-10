@@ -145,7 +145,7 @@ export class MyApp {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/getByTitle('LSListInLSDocs')/Items?$select=ListTitle,ListURL,ListGUID`;
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
-    let options = new RequestOptions({ headers: headers ,withCredentials: true});
+    let options = new RequestOptions({ headers: headers });//,withCredentials: true});
 
     return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise()
       .then( response =>{
@@ -159,7 +159,7 @@ export class MyApp {
     let listGet = `${consts.siteUrl}/_api/Web/Lists(guid'${guid}')?$select=Title,Id,ItemCount`;
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
-    let options = new RequestOptions({ headers: headers ,withCredentials: true});
+    let options = new RequestOptions({ headers: headers });//,withCredentials: true});
 
     return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise().then(res => { return res.json().d })
   }

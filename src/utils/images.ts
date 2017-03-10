@@ -3,23 +3,25 @@ import { Injectable } from '@angular/core';
 import * as consts from './Consts';
 
 declare var cordova:any;
-const fileTransfer = new Transfer();
 
 @Injectable()
 export class Images {
 
    images : any;
+   fileTransfer :any;
 
    constructor() {
-      this.images = {};
+     this.fileTransfer = new Transfer();
+     this.images = {};
    }
 
    public _init() : void {
+      this.fileTransfer = new Transfer();
       this.imagesLoad().then(res => {this.images = res})
    }
 
    private imagesLoad() : Promise<any> {
-      return NativeStorage.getItem('images').then(data=>{console.log('images loaded',data);return data;}).catch(err=>{console.log('<Images> loading images error',err);return {};});
+      return NativeStorage.getItem('images').catch(err=>{console.log('<Images> loading images error',err);return {};});//.then(data=>{console.log('<Images> images loaded',data);return data;})
    }
 
    private saveImage() : Promise<any> {
@@ -27,19 +29,24 @@ export class Images {
    }
 
    private loadImage(key : string) :  string {
-      let listGet = `${consts.siteUrl}/_layouts/15/userphoto.aspx?size=S&accountname=${key}&mobile=0`;//mark.leon@competence.net
-
-      this.images[key] = (cordova.file.applicationDirectory + 'www/assets/icon/favicon.ico');
-
-      cordova.file.dataDirectory && fileTransfer.download(listGet,cordova.file.dataDirectory+key+'.png',true,{headers:{'Content-Type':`image/png`,'Accept':`image/webp`,'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
-         .then(data=>{
-            console.log('<Image> file transfer success',data);
-            this.images[key] = data.nativeURL;
-            this.saveImage();
-         })
-         .catch(err=>{
-            console.log('<Images> file transfer error',err);
-         })
+      let listGet = `${consts.siteUrl}/_layouts/15/userphoto.aspx?size=S&accountname=${key}&mobile=0`;
+      // try{
+      //       this.images[key] = (cordova.file.applicationDirectory + 'www/assets/icon/favicon.ico');
+      // }catch(e){
+      //   console.log('eror images load',e);
+          this.images[key] = listGet;
+      //}
+      //console.log('fileTransfer', this.fileTransfer);
+      //cordova.file.dataDirectory &&  cordova.file.dataDirectory+
+      // this.fileTransfer.download(listGet,key+'.png',true,{headers:{'Content-Type':`image/png`,'Accept':`image/webp`,'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
+      //    .then(data=>{
+      //       console.log('<Image> file transfer success',data);
+      //       this.images[key] = data.nativeURL;
+      //       this.saveImage();
+      //    })
+      //    .catch(err=>{
+      //       console.log('<Images> file transfer error',err);
+      //    })
 
       return this.images[key];
    }
