@@ -1,5 +1,5 @@
 import { Component, ViewChild , Inject} from '@angular/core';//NgZone,
-import { Nav, Platform , AlertController , LoadingController, ToastController, Events } from 'ionic-angular';
+import { Nav, Platform , AlertController , ToastController, Events } from 'ionic-angular';
 import { StatusBar, Splashscreen, NativeStorage , Network } from 'ionic-native';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 
@@ -8,6 +8,7 @@ import { Auth } from '../utils/auth';
 import { Access } from '../utils/access';
 import { User } from '../utils/user';
 import { Loader } from '../utils/loader';
+import { Images } from '../utils/images';
 
 import { MyTasks } from '../pages/MyTasks/MyTasks';
 import { Contracts } from '../pages/Contracts/Contracts';
@@ -27,11 +28,11 @@ export class MyApp {
   loader : any;
   toast : any;
   // private zone:NgZone,
-  constructor(public platform: Platform, public alertCtrl: AlertController,@Inject(Loader) public loaderctrl: Loader,public loadingCtrl: LoadingController,public toastCtrl: ToastController, public auth: Auth,@Inject(Access) public access : Access,@Inject(Http) public http: Http, public events: Events,@Inject(User) public user : User) {
+  constructor(public platform: Platform, public alertCtrl: AlertController,@Inject(Loader) public loaderctrl: Loader,@Inject(Images) public images: Images ,public toastCtrl: ToastController, public auth: Auth,@Inject(Access) public access : Access,@Inject(Http) public http: Http, public events: Events,@Inject(User) public user : User) {
     this.initializeApp();
     this.errorCounter = 0;
     this.pages = [
-      { title: 'Мои задачи', icon:"home", component: MyTasks , listGUID : 'none'}
+      { title: 'Мої завдання', icon:"home", component: MyTasks , listGUID : 'none'}
     ];
 
   }
@@ -109,6 +110,7 @@ export class MyApp {
       return Promise.all([this.user.init(),this.getLists()])
         .then( res => {
              this.access._init();
+             this.images._init();
              res[1].map((list,i,mass) => {
                if(!list)return;
                list.then(item=>{
@@ -119,12 +121,13 @@ export class MyApp {
              this.loaderctrl.stopLoading();
         })
         .catch( error => {
-            console.log(`Error in making Burger Menu`,error);
+            console.log(`<App> Error in making Burger Menu`,error);
             if(this.errorCounter < 3 && error.status == '403'){
                this.errorCounter++;
                this.loaderctrl.stopLoading();
                this.reLogin();
             } else if(this.errorCounter < 3 && error.status == '401'){
+               this.errorCounter++;
                this.showPrompt();
                this.loaderctrl.stopLoading();
                this.showToast('Check your credentials');
@@ -142,9 +145,9 @@ export class MyApp {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/getByTitle('LSListInLSDocs')/Items?$select=ListTitle,ListURL,ListGUID`;
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
-    let options = new RequestOptions({ headers: headers ,withCredentials: true});
+    let options = new RequestOptions({ headers: headers });//,withCredentials: true});
 
-    return this.http.get(listGet,options).timeout(3500).retry(3).toPromise()
+    return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise()
       .then( response =>{
           return response.json().d.results.map(item => {
             return (item.ListGUID && !item.ListTitle) ? this.getListProps(item.ListGUID) : null;
@@ -156,9 +159,9 @@ export class MyApp {
     let listGet = `${consts.siteUrl}/_api/Web/Lists(guid'${guid}')?$select=Title,Id,ItemCount`;
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
-    let options = new RequestOptions({ headers: headers ,withCredentials: true});
+    let options = new RequestOptions({ headers: headers });//,withCredentials: true});
 
-    return this.http.get(listGet,options).timeout(3500).retry(3).toPromise().then(res => { return res.json().d })
+    return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise().then(res => { return res.json().d })
   }
 
   showPrompt() : void {

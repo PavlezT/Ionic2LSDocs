@@ -11,6 +11,7 @@ import { User } from '../../../utils/user';
 import { Access } from '../../../utils/access';
 import { SelectedItem } from '../../../utils/selecteditem';
 import { Loader } from '../../../utils/loader';
+import { Images } from '../../../utils/images';
 
 @Component({
   selector: 'TaskItem',
@@ -23,7 +24,7 @@ export class TaskItem {
 
   historyToggle : boolean = false;
   typingComment : boolean = false;
-  history : any; 
+  history : any;
   taskHistory : any;
   connectedItem : any;
   digest : string;
@@ -40,7 +41,7 @@ export class TaskItem {
 
   @ViewChild('coments') coments;
 
-  constructor(public platform: Platform,public navCtrl: NavController,@Inject(Loader) public loaderctrl: Loader,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams,@Inject(Http) public http : Http,@Inject(User) public user : User) {
+  constructor(public platform: Platform,public navCtrl: NavController,@Inject(Images) public images: Images ,@Inject(Loader) public loaderctrl: Loader,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams,@Inject(Http) public http : Http,@Inject(User) public user : User) {
     this.siteUrl = consts.siteUrl;
     this.task = navParams.data.item;
     this.Status = navParams.data.item.OData__Status || 'Done';
@@ -276,7 +277,7 @@ export class TaskItem {
      let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
 
-     return this.http.get(listGet,options).timeout(3500).retry(3).toPromise()
+     return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise()
          .then( res =>{
            return res.json().d.results.map(item => {
                if(item.DataSource != 'true'){
@@ -289,7 +290,7 @@ export class TaskItem {
                   }
                   let headers = new Headers({"Authorization":(consts.OnPremise? `Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}` : `Bearer ${this.access_token}`),"X-RequestDigest":this.digest, "X-HTTP-Method":"MERGE","IF-MATCH": "*",'Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
                   let options = new RequestOptions({ headers: headers });
-                  return this.http.post(url,JSON.stringify(body),options).timeout(3500).retry(3).toPromise().catch(err=>{console.log('post maint trasit error',err)});
+                  return this.http.post(url,JSON.stringify(body),options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise().catch(err=>{console.log('post maint trasit error',err)});
                }
             })
          })
@@ -305,7 +306,7 @@ export class TaskItem {
       let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
       let options = new RequestOptions({ headers: headers });
 
-      return this.http.get(url,options).timeout(3500).retry(3).toPromise();
+      return this.http.get(url,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise();
   }
 
   private updateTransitTask(taskData) : Promise<any> {
@@ -326,7 +327,7 @@ export class TaskItem {
     let headers = new Headers({"Authorization":(consts.OnPremise?`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}` : `Bearer ${this.access_token}`),"X-RequestDigest": this.digest,'X-HTTP-Method':'POST','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
     let options = new RequestOptions({ headers: headers });
 
-    return this.http.post(url,JSON.stringify(taskData),options).timeout(3500).retry(3).toPromise();
+    return this.http.post(url,JSON.stringify(taskData),options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise();
   }
 
   private updateTransitHistory(routeData : any, historyType? : string) : Promise <any> {
@@ -347,7 +348,7 @@ export class TaskItem {
       let headers = new Headers({"Authorization":(consts.OnPremise?`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`:`Bearer ${this.access_token}`),"X-RequestDigest": this.digest,'X-HTTP-Method':'POST','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
       let options = new RequestOptions({ headers: headers });
 
-      return this.http.post(url,JSON.stringify(body),options).timeout(3500).retry(3).toPromise();
+      return this.http.post(url,JSON.stringify(body),options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise();
   }
 
   private updateTaskData(id : number, data : any) : Promise<any> {
@@ -356,7 +357,7 @@ export class TaskItem {
     let headers = new Headers({"Authorization":(consts.OnPremise?`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`:`Bearer ${this.access_token}`),"X-RequestDigest": this.digest,'X-HTTP-Method':'MERGE','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
     let options = new RequestOptions({ headers: headers });
 
-    return this.http.post(url,JSON.stringify(data),options).timeout(3500).retry(3).toPromise();
+    return this.http.post(url,JSON.stringify(data),options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise();
   }
 
 
@@ -366,7 +367,7 @@ export class TaskItem {
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
     let options = new RequestOptions({ headers: headers });
 
-    this.http.get(listGet,options).timeout(3500).retry(3)
+    this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
         .toPromise()
         .then( res => {
           this.history = res.json().d.results[0] || {};
@@ -390,7 +391,7 @@ export class TaskItem {
      let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
 
-     this.http.get(listGet,options).timeout(3500).retry(3)
+     this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
          .toPromise()
          .then(res =>{
             this.connectedItem = res.json().d;

@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { NavController, Events, Platform } from 'ionic-angular';
+import { NavController,NavParams,Events, Platform } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 
 import { User } from '../../utils/user';
@@ -23,9 +23,11 @@ export class MyTasks {
 
    counts : any;
 
+   Title: string;
    chatParams : any;
 
-  constructor(public navCtrl: NavController,public platform : Platform,@Inject(Loader) public loaderctrl: Loader,@Inject(Http) public http : Http, public events: Events, @Inject(User) public user : User) {
+  constructor(public navCtrl: NavController,public platform : Platform, public navParams: NavParams, @Inject(Loader) public loaderctrl: Loader,@Inject(Http) public http : Http, public events: Events, @Inject(User) public user : User) {
+     this.Title = navParams.data.title || "Мої завдання";
      this.tabNew =  LSNew;
      this.tabActive = LSActive;
      this.tabLate = LSLate;
@@ -98,7 +100,7 @@ export class MyTasks {
      let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
 
-     return Promise.all([this.http.get(listGet,options).timeout(3500).retry(3).toPromise(),this.http.get(getUrl,options).timeout(3500).retry(3).toPromise()])
+     return Promise.all([this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise(),this.http.get(getUrl,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise()])
           .then( res => {
              res[0] = res[0].json().d.results;
              res[1] = res[1].json().d.results;

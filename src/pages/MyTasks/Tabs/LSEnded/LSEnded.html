@@ -3,7 +3,8 @@
    <ion-list >
       <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
        <ion-avatar item-left>
-         <img src="{{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{item.AthoreEmail}}">
+         <img src="{{images.getImage(item.AthoreEmail)}}">
+         <!-- {{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{item.AthoreEmail}}"> -->
        </ion-avatar>
        <ion-label>
         <h2>{{item.TaskTitle}}</h2>
@@ -16,7 +17,7 @@
          <div class="showId">ID #{{item.sysIDItem || item.ItemId}}</div>
        </div>
     </button>
-    <h1 ion-item *ngIf="items && items.length == 0">Здесь пусто</h1>
-    <h1 ion-item *ngIf="!items">Загрузка...</h1>
+    <h1 ion-item *ngIf="items && items.length == 0">Тут пусто</h1>
+    <h1 ion-item *ngIf="!items">Завантаження...</h1>
   </ion-list>
 </ion-content>

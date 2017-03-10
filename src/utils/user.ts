@@ -27,8 +27,8 @@ export class User{
      //authorization for OnPremise 'username:password' to base64
      let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
-
-     return this.http.get(listGet,options).timeout(3500).retry(3)
+   
+     return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
          .toPromise()
          .then( res => {
             this.user = res.json().d;
