@@ -32,24 +32,15 @@ export class MyTasks {
      this.tabActive = LSActive;
      this.tabLate = LSLate;
      this.tabEnded = LSEnded;
-     this.counts = {
-        new : 0,
-        active : 0,
-        late : 0,
-        done : 0
-     };
+     this.resetCounts();
 
       platform.ready().then(()=>{
         events.subscribe('user:loaded',()=>{
+            this.resetCounts();
             this.setTasksCount()
         });
         events.subscribe('task:checked',()=>{
-              this.counts = {
-                  new : 0,
-                  active : 0,
-                  late : 0,
-                  done : 0
-            };
+            this.resetCounts();
             this.setTasksCount()
         });
         this.setTasksCount();
@@ -110,6 +101,15 @@ export class MyTasks {
             console.error('<MyTasks> Loading Counts Tasks error!',error);
             return [[],[]];
          })
+  }
+
+  private resetCounts() : void{
+    this.counts = {
+      new : 0,
+      active : 0,
+      late : 0,
+      done : 0
+    };
   }
 
 }
