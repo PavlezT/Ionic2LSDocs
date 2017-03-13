@@ -25,7 +25,7 @@ export class User{
     private getProps() : Promise<any> {
      let listGet = `${consts.siteUrl}/_api/Web/CurrentUser`;
      //authorization for OnPremise 'username:password' to base64
-     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
+     let headers = new Headers({ 'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
    
      return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount)

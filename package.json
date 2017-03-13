@@ -40,7 +40,8 @@
     "cordova-plugin-splashscreen",
     "cordova-plugin-file",
     "cordova-plugin-secure-storage",
-    "ionic-plugin-keyboard"
+    "ionic-plugin-keyboard",
+    "cordova-plugin-file-opener2"
   ],
   "cordovaPlatforms": [
     "android"
