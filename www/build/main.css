@@ -26944,7 +26944,7 @@ taskitem ion-footer ion-toolbar ion-grid ion-col button ion-icon {
 }
 
 taskitem .toolbar-title {
-  white-space: normal;
+  white-space: nowrap;
   word-spacing: 10px;
 }
 
