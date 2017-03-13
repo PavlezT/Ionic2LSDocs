@@ -1,7 +1,7 @@
 <ion-menu  [content]="content">
   <ion-header>
     <ion-toolbar>
-   <ion-item class="userAvatart">
+   <ion-item (click)="userTapped()" class="userAvatart">
       <ion-avatar item-left>
          <!-- <img *ngIf="!onPremise" #Myimg src="{{siteUrl}}/_layouts/15/userphoto.aspx?size=S&accountname={{user.getEmail()}}"> -->
          <img  #Myimg src="{{images.getImage(user.getEmail())}}">

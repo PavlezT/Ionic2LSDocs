@@ -86,10 +86,14 @@ export class MyApp {
         })
   }
 
-  reLogin() : void {
+  reLogin(manual?:boolean) : void {
      //this.secureStorage = new SecureStorage();
     // Promise.all([this.secureStorage.get('username'),this.secureStorage.get('password')])
     this.loaderctrl.presentLoading();
+    if(manual){
+      NativeStorage.remove('user');
+      window.localStorage.removeItem(consts.siteUrl.substring(0,consts.siteUrl.indexOf('/sites/')));
+    }
     NativeStorage.getItem('user')
      .then(
        user => {
@@ -97,9 +101,9 @@ export class MyApp {
           this.getLogin(user.username, user.password);
        },
        error => {
-          console.error('#Native storage: ',error);
+          !manual && console.error('#Native storage: ',error);
           this.loaderctrl.stopLoading();
-          this.showToast(`Can't load user credentials`);
+          !manual && this.showToast(`Can't load user credentials`);
           this.showPrompt();
        }
      )
@@ -111,6 +115,7 @@ export class MyApp {
         .then( res => {
              this.access._init();
              this.images._init();
+             this.pages.splice(1);
              res[1].map((list,i,mass) => {
                if(!list)return;
                list.then(item=>{
@@ -133,15 +138,16 @@ export class MyApp {
                this.showToast('Check your credentials');
             } else {
                this.showToast('Can`t load entrance data');
+               //this.loaderctrl.stopLoading(); //////remove
             }
         })
   }
 
-  openPage(page) {
+  public openPage(page) : void {
     this.nav.setRoot(page.component,{title : page.title , guid : page.listGUID });
   }
 
-  getLists() : Promise<any> {
+  private getLists() : Promise<any> {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/getByTitle('LSListInLSDocs')/Items?$select=ListTitle,ListURL,ListGUID`;
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
@@ -155,7 +161,7 @@ export class MyApp {
       })
   }
 
-  getListProps(guid : string) : Promise<any>{
+  private getListProps(guid : string) : Promise<any>{
     let listGet = `${consts.siteUrl}/_api/Web/Lists(guid'${guid}')?$select=Title,Id,ItemCount`;
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
@@ -164,11 +170,35 @@ export class MyApp {
     return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise().then(res => { return res.json().d })
   }
 
-  showPrompt() : void {
+  public userTapped() : void {
+    let prompt = this.alertCtrl.create({
+      title: 'Вийти',
+      message: "Вийти із даного облікового запису і зайти під іншим",
+      enableBackdropDismiss: true,
+      buttons: [
+        {
+          text: 'Скасувати',
+          handler: data => {
+            prompt.dismiss();
+          }
+        },
+        {
+          text: 'Підтвердити',
+          handler: data => {
+            this.reLogin(true);
+          }
+        }
+      ]
+    });
+    prompt.present();
+    prompt.onDidDismiss((event) => { });
+  }
+
+  private showPrompt() : void {
     this.platform.registerBackButtonAction((e)=>{return false;},100); // e.preventDefault();
     let prompt = this.alertCtrl.create({
-      title: 'Вход',
-      message: "Введите свой email и пароль для входа",
+      title: 'Вхід',
+      message: "Введіть свій email и пароль для входу",
       enableBackdropDismiss: false,
       inputs: [
         {
@@ -183,7 +213,7 @@ export class MyApp {
       ],
       buttons: [
         {
-          text: 'Подтвердить',
+          text: 'Підтвердити',
           handler: data => {
             this.getLogin(data.Email,data.Password);
           }
@@ -194,7 +224,7 @@ export class MyApp {
     prompt.onDidDismiss((event) => { });
   }
 
-  showToast(message: any){
+  private showToast(message: any){
       this.toast = this.toastCtrl.create({
         message: (typeof message == 'string' )? message : message.toString().substring(0,( message.toString().indexOf('&#x') || message.toString().length)) ,
         position: 'bottom',
