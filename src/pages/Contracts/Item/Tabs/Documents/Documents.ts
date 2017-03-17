@@ -45,7 +45,7 @@ export class Documents {
 
     this.fileTransfer && this.fileTransfer.download(url, nativeURL + doc.Name,true,{headers:{'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
          .then(data=>{
-            this.opendDocs(decodeURI(data.nativeURL),decodeURI(doc.Name));
+            this.opendDocs(data.nativeURL,doc.Name);
          })
          .catch(err=>{
             console.log('<Documents> file transfer error',err);
@@ -55,7 +55,7 @@ export class Documents {
   }
 
   public opendDocs(nativeURL,docName) : void {
-    FileOpener.open(nativeURL,mimes.lookup(docName))
+    FileOpener.open(decodeURI(nativeURL),mimes.lookup(decodeURI(docName)))
       .then((data)=>{this.loaderctrl.stopLoading();})
       .catch(err=>{
         this.loaderctrl.stopLoading();
