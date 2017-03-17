@@ -1,8 +1,10 @@
 import { Component, Inject } from '@angular/core';
-//import { Transfer, FileOpener } from 'ionic-native';
-import { NavController, NavParams } from 'ionic-angular';
+import { Transfer, FileOpener,File } from 'ionic-native';
+import { NavController, NavParams, ToastController } from 'ionic-angular';
 import { SelectedItem } from '../../../../../utils/selecteditem';
 import * as consts from '../../../../../utils/Consts';
+import { Loader } from '../../../../../utils/loader';
+import * as mimes from 'mime-types';
 
 declare var cordova:any;
 
@@ -15,8 +17,8 @@ export class Documents {
   Docs : Array<any>;
   fileTransfer :any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, @Inject(SelectedItem) public selectedItem : SelectedItem) {
-    //  this.fileTransfer = new Transfer();
+  constructor(public navCtrl: NavController, public navParams: NavParams,@Inject(Loader) public loaderctrl: Loader, @Inject(SelectedItem) public selectedItem : SelectedItem,public toastCtrl: ToastController) {
+      this.fileTransfer = new Transfer();
       selectedItem.getItemDocs()
        .then( docs => this.getDocuments(docs) )
   }
@@ -30,20 +32,48 @@ export class Documents {
   }
 
   public docClicked(doc) : void {
-    let docGet =`${consts.siteUrl}/_layouts/15/download.aspx?UniqueId=${doc.UniqueId}`;//5090dd89%2D2992%2D4779%2D8c20%2D4f6a328b863c`
-    console.log('doc',doc);
-    // this.fileTransfer && this.fileTransfer.download(docGet, (cordova.file.documentsDirectory || cordova.file.externalDataDirectory) + doc.Name,true,{headers:{'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
-    //      .then(data=>{
-    //         console.log('<Documents> file transfer success',data);
-    //         FileOpener.open(data.nativeURL,'text\\doc').then(data=>{console.log('opener data',data)}).catch(err=>{console.log('opener error',err)})
-    //      })
-    //      .catch(err=>{
-    //         console.log('<Documents> file transfer error',err);
-    //      })
+    let nativeURL = (cordova.file.documentsDirectory || cordova.file.externalDataDirectory);
+    this.loaderctrl.presentLoading();
+    File.checkFile(nativeURL,doc.Name).then(
+      data => {this.opendDocs(nativeURL+doc.Name,doc.Name)},
+      error => {this.downloadDoc(nativeURL,doc)}
+    )     
   }
 
-  public opendDocs() : void {
+  private downloadDoc(nativeURL : string, doc : any) : void {
+    let url =`${consts.siteUrl}/_layouts/15/download.aspx?UniqueId=${doc.UniqueId}`;
 
+    this.fileTransfer && this.fileTransfer.download(url, nativeURL + doc.Name,true,{headers:{'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
+         .then(data=>{
+            this.opendDocs(data.nativeURL,doc.Name);
+         })
+         .catch(err=>{
+            console.log('<Documents> file transfer error',err);
+            this.loaderctrl.stopLoading();
+            this.showToast('Can`t download or save this file');
+         })
+  }
+
+  public opendDocs(nativeURL,docName) : void {
+    
+    
+    FileOpener.open(nativeURL,mimes.lookup(docName))
+      .then(()=>{this.loaderctrl.stopLoading();})
+      .catch(err=>{
+        this.loaderctrl.stopLoading();
+        console.log('<Documents> cant open file:',nativeURL)
+        this.showToast('Can`t open this file');
+      })
+  }
+
+  private showToast(message: any){
+      let toast = this.toastCtrl.create({
+        message: (typeof message == 'string' )? message : message.toString().substring(0,( message.toString().indexOf('&#x') || message.toString().length)) ,
+        position: 'bottom',
+        showCloseButton : true,
+        duration: 9000
+      });
+      toast.present();
   }
 
 }

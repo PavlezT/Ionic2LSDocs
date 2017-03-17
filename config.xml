@@ -81,7 +81,6 @@
     <plugin name="cordova-plugin-network-information" spec="~1.3.1" />
     <plugin name="cordova-plugin-nativestorage" spec="~2.0.2" />
     <plugin name="cordova-plugin-file-transfer" spec="~1.6.2" />
-    <plugin name="cordova-plugin-file" />
     <icon src="resources\android\icon\drawable-xhdpi-icon.png" />
     <plugin name="cordova-plugin-file-opener2" spec="~2.0.8" />
 </widget>
