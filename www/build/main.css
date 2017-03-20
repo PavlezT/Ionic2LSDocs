@@ -7,10 +7,6 @@ ion-content, ion-list {
   z-index: -1;
 }
 
-.toolbar-ios {
-  min-height: 64px;
-}
-
 .scroll-content {
   overflow-y: auto !important;
 }

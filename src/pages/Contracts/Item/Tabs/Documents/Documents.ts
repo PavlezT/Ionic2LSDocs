@@ -5,7 +5,7 @@ import { SelectedItem } from '../../../../../utils/selecteditem';
 import * as consts from '../../../../../utils/Consts';
 import { Loader } from '../../../../../utils/loader';
 import * as mimes from 'mime-types';
-import { tr,slugify } from 'transliteration';
+import * as trans from 'transliteration.crh';
 
 declare var cordova:any;
 
@@ -35,10 +35,9 @@ export class Documents {
   public docClicked(doc) : void {
     let nativeURL = (cordova.file.documentsDirectory || cordova.file.externalDataDirectory);
     this.loaderctrl.presentLoading();
-    console.log('slugify doc.Name',slugify(doc.Name));
-    doc.localName = slugify(doc.Name,{lowercase:false,separator:'_'});//encodeURIComponent(doc.Name.replace(/ /g,'_'));
-    console.log('doc.newNAME:',doc.localName);
-    console.log('slugify',slugify);
+
+    doc.localName = this.getLocalName(doc.Name);
+
     File.checkFile(nativeURL,doc.localName).then(
       data => {this.opendDocs(nativeURL+doc.localName,doc.localName)},
       error => {this.downloadDoc(nativeURL,doc)}
@@ -47,10 +46,10 @@ export class Documents {
 
   private downloadDoc(nativeURL : string, doc : any) : void {
     let url =`${consts.siteUrl}/_layouts/15/download.aspx?UniqueId=${doc.UniqueId}`;
-    console.log('downloadDoc native urkl:',nativeURL+doc.localName);
+    console.log('downloadDoc native urkl:',nativeURL+doc.localName);/////////
     this.fileTransfer && this.fileTransfer.download(url, nativeURL + doc.localName,true,{headers:{'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
          .then(data=>{
-           console.log('downloadDoc success:',data.nativeURL);
+           console.log('downloadDoc success:',data.nativeURL);///////////
             this.opendDocs(data.nativeURL,doc.localName);
          })
          .catch(err=>{
@@ -68,6 +67,12 @@ export class Documents {
         console.log('<Documents> cant open file:',nativeURL)
         this.showToast('Can`t open this file');
       })
+  }
+
+  private getLocalName(name) : String {
+    let newName : string = trans.crh.fromCyrillic(name.toLowerCase().replace(/ы/g,'u'));
+    newName = newName.toLowerCase().replace(/ї/g,'i').replace(/є/g,'e').replace(/ /g,'_');
+    return newName;
   }
 
   private showToast(message: any){
