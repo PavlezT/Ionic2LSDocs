@@ -5,6 +5,7 @@ import { SelectedItem } from '../../../../../utils/selecteditem';
 import * as consts from '../../../../../utils/Consts';
 import { Loader } from '../../../../../utils/loader';
 import * as mimes from 'mime-types';
+import { tr,slugify } from 'transliteration';
 
 declare var cordova:any;
 
@@ -34,7 +35,10 @@ export class Documents {
   public docClicked(doc) : void {
     let nativeURL = (cordova.file.documentsDirectory || cordova.file.externalDataDirectory);
     this.loaderctrl.presentLoading();
-    doc.localName = encodeURIComponent(doc.Name.replace(/ /g,'_'));
+    console.log('slugify doc.Name',slugify(doc.Name));
+    doc.localName = slugify(doc.Name,{lowercase:false,separator:'_'});//encodeURIComponent(doc.Name.replace(/ /g,'_'));
+    console.log('doc.newNAME:',doc.localName);
+    console.log('slugify',slugify);
     File.checkFile(nativeURL,doc.localName).then(
       data => {this.opendDocs(nativeURL+doc.localName,doc.localName)},
       error => {this.downloadDoc(nativeURL,doc)}

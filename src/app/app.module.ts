@@ -34,6 +34,7 @@ import { TaskItem } from '../pages/MyTasks/TaskItem/TaskItem';
     IonicModule.forRoot(MyApp,{
       platforms:{
         ios:{
+          // menuType:'overlay',
           statusbarPadding:true
         }
       }
