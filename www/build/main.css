@@ -26819,12 +26819,12 @@ route ion-icon {
 
 route .left {
   display: inline-block;
-  width: 30%;
+  width: 35%;
 }
 
 route .right {
   display: inline-block;
-  width: 50%;
+  width: 55%;
 }
 
 LSActive .list-md .item-block .item-inner {

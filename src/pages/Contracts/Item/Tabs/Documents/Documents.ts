@@ -34,18 +34,20 @@ export class Documents {
   public docClicked(doc) : void {
     let nativeURL = (cordova.file.documentsDirectory || cordova.file.externalDataDirectory);
     this.loaderctrl.presentLoading();
-    File.checkFile(nativeURL,doc.Name).then(
-      data => {this.opendDocs(nativeURL+doc.Name,doc.Name)},
+    doc.localName = encodeURIComponent(doc.Name.replace(/ /g,'_'));
+    File.checkFile(nativeURL,doc.localName).then(
+      data => {this.opendDocs(nativeURL+doc.localName,doc.localName)},
       error => {this.downloadDoc(nativeURL,doc)}
     )     
   }
 
   private downloadDoc(nativeURL : string, doc : any) : void {
     let url =`${consts.siteUrl}/_layouts/15/download.aspx?UniqueId=${doc.UniqueId}`;
-
-    this.fileTransfer && this.fileTransfer.download(url, nativeURL + doc.Name,true,{headers:{'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
+    console.log('downloadDoc native urkl:',nativeURL+doc.localName);
+    this.fileTransfer && this.fileTransfer.download(url, nativeURL + doc.localName,true,{headers:{'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
          .then(data=>{
-            this.opendDocs(data.nativeURL,doc.Name);
+           console.log('downloadDoc success:',data.nativeURL);
+            this.opendDocs(data.nativeURL,doc.localName);
          })
          .catch(err=>{
             console.log('<Documents> file transfer error',err);

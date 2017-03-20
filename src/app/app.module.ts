@@ -31,7 +31,13 @@ import { TaskItem } from '../pages/MyTasks/TaskItem/TaskItem';
     LSNew , LSActive ,LSLate , LSEnded
   ],
   imports: [
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp,{
+      platforms:{
+        ios:{
+          statusbarPadding:true
+        }
+      }
+    },{})
   ],
   bootstrap: [IonicApp],
   entryComponents: [
