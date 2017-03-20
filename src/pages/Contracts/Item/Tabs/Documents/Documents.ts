@@ -35,7 +35,7 @@ export class Documents {
   public docClicked(doc) : void {
     let nativeURL = (cordova.file.documentsDirectory || cordova.file.externalDataDirectory);
     this.loaderctrl.presentLoading();
-
+    
     doc.localName = this.getLocalName(doc.Name);
 
     File.checkFile(nativeURL,doc.localName).then(
@@ -46,10 +46,9 @@ export class Documents {
 
   private downloadDoc(nativeURL : string, doc : any) : void {
     let url =`${consts.siteUrl}/_layouts/15/download.aspx?UniqueId=${doc.UniqueId}`;
-    console.log('downloadDoc native urkl:',nativeURL+doc.localName);/////////
+    
     this.fileTransfer && this.fileTransfer.download(url, nativeURL + doc.localName,true,{headers:{'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
          .then(data=>{
-           console.log('downloadDoc success:',data.nativeURL);///////////
             this.opendDocs(data.nativeURL,doc.localName);
          })
          .catch(err=>{
@@ -72,7 +71,7 @@ export class Documents {
   private getLocalName(name) : String {
     let newName : string = trans.crh.fromCyrillic(name.toLowerCase().replace(/ы/g,'u'));
     newName = newName.toLowerCase().replace(/ї/g,'i').replace(/є/g,'e').replace(/ /g,'_');
-    return newName;
+    return decodeURI(newName);
   }
 
   private showToast(message: any){
