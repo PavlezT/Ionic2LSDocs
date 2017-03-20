@@ -35,7 +35,7 @@ export class LSEnded {
             this.items = JSON.parse( (JSON.parse(tasks._body)).d.results[0].UserHistory || '[]');
             this.items = this.items.filter((item,i,arr)=> {
                if(!!item.TaskType){//if(item.EventType && (item.EventType.includes('EventDoneTask') ))//|| item.EventType.includes('Close')
-                  item.StartDate_view = moment.utc(item.StartDate.split('.').reverse().join('-')).format("dd, DD MMMM");
+                  item.StartDate_view = moment.utc(item.StartDate.split(' ')[0].split('.').reverse().join('-')).format("dd, DD MMMM");
                   item.DueDate_view = moment.utc(item.DueDate.split('.').reverse().join('-')).format("dd, DD MMMM");
                   return item;
                }

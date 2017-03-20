@@ -19,18 +19,7 @@ export class Contracts {
     this.listTitle = navParams.data.title;
     this.guid = navParams.data.guid;
 
-    this.getItems()
-      .then( res => {
-         this.items = res.json().d.results.filter( item => {
-            item.Created = item.Created? (new Date(item.Created).toLocaleString()) : null;
-            item.Modified = item.Modified? (new Date(item.Modified).toLocaleString()) : null;
-            return item.Title ? item : null;
-         });
-      })
-      .catch( error => {
-        console.error(`<Contracts> Error in getItems from ${this.listTitle}`,error);
-        this.items = [];
-      })
+    this.getItems();
   }
 
   itemTapped(event, item) {
@@ -49,26 +38,38 @@ export class Contracts {
      let options = new RequestOptions({ headers: headers });
 
      return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise()
+        .then( res => {
+            if(!loadNew)this.items=[];
+            res.json().d.results.map( item => {
+                item.Created = item.Created? (new Date(item.Created).toLocaleString()) : null;
+                item.Modified = item.Modified? (new Date(item.Modified).toLocaleString()) : null;
+                item.Title && this.items.push(item);
+            });
+          })
+        .catch( error => {
+            console.error(`<Contracts> Error in getItems from ${this.listTitle}`,error);
+            this.items = [];
+        })
   }
 
   searchItem(event :any){
       this.getItems(false,event.target.value)
-         .then( (res) => {
-            res = res.json().d.results;
-            this.items = res;
-         })
+        //  .then( (res) => {
+        //     res = res.json().d.results;
+        //     this.items = res;
+        //  })
   }
 
   doInfinite(infiniteScroll){
     this.getItems(true)
-      .then( res =>{
-        res.json().d.results.map( item =>{
-          if(item.Title){
-            item.Created = item.Created? (new Date(item.Created).toLocaleString()) : null;
-            item.Modified = item.Modified? (new Date(item.Modified).toLocaleString()) : null;
-            this.items.push(item);
-          }
-        })
+      .then( () =>{
+        // res.json().d.results.map( item =>{
+        //   if(item.Title){
+        //     item.Created = item.Created? (new Date(item.Created).toLocaleString()) : null;
+        //     item.Modified = item.Modified? (new Date(item.Modified).toLocaleString()) : null;
+        //     this.items.push(item);
+        //   }
+        // })
         infiniteScroll.complete();
       })
   }

@@ -31,7 +31,14 @@ import { TaskItem } from '../pages/MyTasks/TaskItem/TaskItem';
     LSNew , LSActive ,LSLate , LSEnded
   ],
   imports: [
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp,{
+      platforms:{
+        ios:{
+          // menuType:'overlay',
+          statusbarPadding:true
+        }
+      }
+    },{})
   ],
   bootstrap: [IonicApp],
   entryComponents: [
