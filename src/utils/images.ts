@@ -17,21 +17,23 @@ export class Images {
    public _init() : void {
      try{
       this.fileTransfer = new Transfer();
-     }catch(e){console.log('_initing error',e)};
-      console.log('_init this.fileTrasfer',this.fileTransfer)
+     }catch(e){console.log('<Iamges> FileTransfer _initing error',e)};
 
       this.imagesLoad().then(res => {
-        console.log('res',res);
         let first = res[Object.keys(res)[0]];
-        File.checkFile(first.substring(0,(first.lastIndexOf(`/`))),first.substring(first.lastIndexOf(`/`),first.length)).then(
-          data => {this.images = res;console.log('files okey')},
-          error => {this.images = {};console.log('there is no files')}
-        )
+        if(first){
+          File.checkFile(first.substring(0,first.lastIndexOf(`/`)+1),first.substring(first.lastIndexOf(`/`)+1,first.length)).then(
+            data => {this.images = res;},
+            error => {this.images = {};}
+          )
+        } else {
+          this.images = {};
+        }
       })
    }
 
    private imagesLoad() : Promise<any> {
-      return NativeStorage.getItem('images').catch(err=>{console.log('<Images> loading images error',err);return {};});
+      return NativeStorage.getItem('images').catch(err=>{console.log('<Images> imagesLoad error',err);return {};});
    }
 
    private saveImage() : Promise<any> {
@@ -43,9 +45,9 @@ export class Images {
       let endpointURI = cordova && cordova.file && cordova.file.dataDirectory ? cordova.file.dataDirectory : 'file:///android_asset/';
       
       try{
-            this.images[key] = !consts.OnPremise ? (cordova.file.applicationDirectory + 'www/assets/icon/favicon.ico') : listGet;
+          this.images[key] = !consts.OnPremise ? (cordova.file.applicationDirectory + 'www/assets/icon/favicon.ico') : listGet;
       }catch(e){
-        console.log('eror images load: this.image[key]= ',e);
+          console.error('<Images> loadImage: this.image[key]= ',e);
           this.images[key] = listGet;
       }
 
@@ -56,7 +58,7 @@ export class Images {
             this.saveImage();
          })
          .catch(err=>{
-            console.log('<Images> file transfer error',err);
+            console.error('<Images> file transfer error',err);
          })
 
       return this.images[key];
