@@ -35,7 +35,7 @@ export class Documents {
   public docClicked(doc) : void {
     let nativeURL = (cordova.file.documentsDirectory || cordova.file.externalDataDirectory || cordova.file.cacheDirectory );
     this.loaderctrl.presentLoading();
-
+    
     doc.localName = this.getLocalName(doc.Name);
     
     File.checkFile(nativeURL,doc.localName).then(
@@ -45,7 +45,7 @@ export class Documents {
   }
 
   private downloadDoc(nativeURL : string, doc : any) : void {
-    let url =`${consts.siteUrl}/_layouts/15/download.aspx?UniqueId=${doc.UniqueId}`;
+    let url =`${consts.siteUrl}/_layouts/15/download.aspx?`+(doc.UniqueId? ('UniqueId='+doc.UniqueId ) : ('SourceUrl='+encodeURI(doc.ServerRelativeUrl)) );
     
     this.fileTransfer && this.fileTransfer.download(url, nativeURL + doc.localName,true,{headers:{'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
          .then(data=>{
