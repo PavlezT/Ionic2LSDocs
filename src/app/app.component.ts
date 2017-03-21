@@ -95,7 +95,7 @@ export class MyApp {
       NativeStorage.remove('user');
       window.localStorage.removeItem(consts.siteUrl.substring(0,consts.siteUrl.indexOf('/sites/')));
     }
-    NativeStorage.getItem('user')
+    (manual ? Promise.reject('relogin user') : NativeStorage.getItem('user'))
      .then(
        user => {
           this.loaderctrl.stopLoading();

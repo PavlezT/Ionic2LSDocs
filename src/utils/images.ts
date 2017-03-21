@@ -1,4 +1,4 @@
-import { Transfer, NativeStorage } from 'ionic-native';
+import { Transfer, NativeStorage, File } from 'ionic-native';
 import { Injectable} from '@angular/core';
 import * as consts from './Consts';
 
@@ -11,26 +11,29 @@ export class Images {
    fileTransfer :any;
 
    constructor() {
-     this.images = {}; 
-     try{
-       console.log('transer',Transfer);
-       this.fileTransfer = new Transfer();
-     } catch(e){
-       console.log('trasfer error',e);
-      }
+     this.images = {};
    }
 
    public _init() : void {
      try{
       this.fileTransfer = new Transfer();
-     }catch(e){console.log('_initing error',e)};
-      console.log('_init this.fileTrasfer',this.fileTransfer)
+     }catch(e){console.log('<Iamges> FileTransfer _initing error',e)};
 
-      this.imagesLoad().then(res => {this.images = res})
+      this.imagesLoad().then(res => {
+        let first = res[Object.keys(res)[0]];
+        if(first){
+          File.checkFile(first.substring(0,first.lastIndexOf(`/`)+1),first.substring(first.lastIndexOf(`/`)+1,first.length)).then(
+            data => {this.images = res;},
+            error => {this.images = {};}
+          )
+        } else {
+          this.images = {};
+        }
+      })
    }
 
    private imagesLoad() : Promise<any> {
-      return NativeStorage.getItem('images').catch(err=>{console.log('<Images> loading images error',err);return {};});//.then(data=>{console.log('<Images> images loaded',data);return data;})
+      return NativeStorage.getItem('images').catch(err=>{console.log('<Images> imagesLoad error',err);return {};});
    }
 
    private saveImage() : Promise<any> {
@@ -39,28 +42,24 @@ export class Images {
 
    private loadImage(key : string) :  string {
       let listGet = `${consts.siteUrl}/_layouts/15/userphoto.aspx?size=S&accountname=${key}&mobile=0`;
-
+      let endpointURI = cordova && cordova.file && cordova.file.dataDirectory ? cordova.file.dataDirectory : 'file:///android_asset/';
+      
       try{
-            this.images[key] = consts.OnPremise?(cordova.file.applicationDirectory + 'www/assets/icon/favicon.ico') : listGet;
+          this.images[key] = !consts.OnPremise ? (cordova.file.applicationDirectory + 'www/assets/icon/favicon.ico') : listGet;
       }catch(e){
-        console.log('eror images load: this.image[key]= ',e);
+          console.error('<Images> loadImage: this.image[key]= ',e);
           this.images[key] = listGet;
       }
 
-      //console.log('fileTransfer', this.fileTransfer);
-      //cordova.file.dataDirectory &&  cordova.file.dataDirectory+
-      console.log('this.fileTrasfer',this.fileTransfer);
-      try{
-      this.fileTransfer && this.fileTransfer.download(listGet,key+'.png',true,{headers:{'Content-Type':`image/png`,'Accept':`image/webp`,'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
+      this.fileTransfer && this.fileTransfer.download(listGet,endpointURI+key+'.png',true,{headers:{'Content-Type':`image/png`,'Accept':`image/webp`,'Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`}})
          .then(data=>{
             console.log('<Image> file transfer success',data);
             this.images[key] = data.nativeURL;
             this.saveImage();
          })
          .catch(err=>{
-            console.log('<Images> file transfer error',err);
+            console.error('<Images> file transfer error',err);
          })
-      }catch(e){console.log('loadImage error',e)}
 
       return this.images[key];
    }

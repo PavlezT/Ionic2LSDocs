@@ -33,11 +33,11 @@ export class Documents {
   }
 
   public docClicked(doc) : void {
-    let nativeURL = (cordova.file.documentsDirectory || cordova.file.externalDataDirectory);
+    let nativeURL = (cordova.file.documentsDirectory || cordova.file.externalDataDirectory || cordova.file.cacheDirectory );
     this.loaderctrl.presentLoading();
-    
-    doc.localName = this.getLocalName(doc.Name);
 
+    doc.localName = this.getLocalName(doc.Name);
+    
     File.checkFile(nativeURL,doc.localName).then(
       data => {this.opendDocs(nativeURL+doc.localName,doc.localName)},
       error => {this.downloadDoc(nativeURL,doc)}
