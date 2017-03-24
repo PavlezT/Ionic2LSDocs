@@ -1,9 +1,9 @@
 
 <ion-content>
-  <ion-slides #mySlider>
+  <!--<ion-slides #mySlider>
   <ion-slide>
-    <ion-scroll>
-      <ion-list >
+    <ion-scroll>-->
+      <ion-list (swipe)="swiped($event)" >
         <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
           <ion-avatar item-left>
             <img src="{{images.getImage(item.TaskAuthore.EMail || 'undefined')}}" >
@@ -23,7 +23,7 @@
         <h1 ion-item *ngIf="items && items.length == 0">Тут пусто</h1>
         <h1 ion-item *ngIf="!items">Завантаження...</h1>
       </ion-list>
-  </ion-scroll>
+  <!--</ion-scroll>
   </ion-slide>
-  </ion-slides>
+  </ion-slides>-->
 </ion-content>

@@ -27024,7 +27024,7 @@ taskitem .task .input-wrapper {
 
 taskitem .scrollMy {
   overflow: auto;
-  height: 70%;
+  height: 55%;
 }
 
 taskitem div.marker {
