@@ -26,6 +26,7 @@ ionic state reset
 
 after confirming app rules, takes from redirected uri `code` paramentr <br>
 example of redirected uri: `https://www.lsdocsthebest.com/?code=IAAAAEfwWtIn0mt7lbgmrNKuyOvHjwOQ8Gy8Jb88b1vtqk4V5mqWHRor9eRkZspQRM9dPDhqltNpuqEOMaHmKcJK-isUVRbIwIsgSEX1a4FF388PeEHuQssuREQQs4AB4VJSCLYTFSa2mSilldfkMoP2nBNGwaAOmwanRO1JD1lKC5Llpu4ittQs7YbcKU2KtSJgMn2uy9kgEDQLc6jMzaMW4F_08A0zP9vCr3r1yZe-DS8sFeNEX1QaXvnXpTTJxhPA3gZ0GihyBRiiQLwqviCouzjKiJtX_5soHyZqHIBCs06OXhoRc_cxtvs04D-7oL_uIy11ZkZlYXTFYcagT4NDp2gUgNVrycYzcUjPHMPFzZZLKIPjm5GyrQnkPm5Sym5Qgg` 
+
 ##`step 3` getting access_token from accesscontrol
 ###find var `site_realm` :
 * watching installed apps  by <https://your_site.sharepoint.com/_layouts/15/AppPrincipals.aspx>
@@ -72,7 +73,8 @@ use Allow-Control-Allow-Origin: *  - chrome extention to awoid CORS restritions 
 npm install @ionic/app-scripts@latest --save-dev
 
 ###save session alive on IOS - change this in LSDocs/Classes/AppDelegate.m
-```objective-c
+```Objective-C
+
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
     NSData *cookiesData = [[NSUserDefaults standardUserDefaults] objectForKey:@"Cookies"];
