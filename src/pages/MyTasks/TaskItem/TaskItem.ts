@@ -40,6 +40,9 @@ export class TaskItem {
   taskAuthore : {EMail : string, Title: string};
 
   @ViewChild('coments') coments;
+  @ViewChild('myFooter') footer;
+  @ViewChild('middlelabel') middlelabel;
+  scrollHeight : any;
 
   constructor(public platform: Platform,public navCtrl: NavController,@Inject(Images) public images: Images ,@Inject(Loader) public loaderctrl: Loader,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams,@Inject(Http) public http : Http,@Inject(User) public user : User) {
     this.siteUrl = consts.siteUrl;
@@ -58,8 +61,12 @@ export class TaskItem {
     access.getToken().then(token => this.access_token = token);
   }
 
-  ionViewDidEnter(){
+  ionViewDidLoad(){
     this.platform.registerBackButtonAction((e)=>{this.dismiss();return false;},100);
+    if(this.footer)
+      this.scrollHeight = this.footer.nativeElement.offsetTop-this.footer.nativeElement.offsetHeight-this.middlelabel.nativeElement.offsetTop-this.middlelabel.nativeElement.offsetHeight + "px";
+    else 
+      this.scrollHeight = "60%";
   }
 
   ionViewCanLeave(){
@@ -361,13 +368,13 @@ export class TaskItem {
   }
 
 
-  private getTaskHistory() : void {
+  private getTaskHistory() : Promise<any> {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSHistory')/items?$filter=(ItemId eq '${this.task.sysIDItem || this.task.ItemId}') and (Title eq '${this.task.sysIDList || this.task.ListID}') and (ItemName eq 'Task')`;
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
     let options = new RequestOptions({ headers: headers });
 
-    this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
+    return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
         .toPromise()
         .then( res => {
           this.history = res.json().d.results[0] || {};

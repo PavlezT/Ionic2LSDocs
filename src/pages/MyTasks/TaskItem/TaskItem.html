@@ -54,12 +54,12 @@
        <div class="right">{{deadLine}}</div>
     </div>
 </ion-label>
-<ion-label class="middlelabel" >
+<ion-label #middlelabel class="middlelabel" >
   <!--<button ion-button color="primary" clear><ion-icon name="list"></ion-icon></button>-->
   <button ion-button color="primary" (click)="showHistory()" clear><ion-icon name="calendar"></ion-icon></button>
   <button *ngIf="connectedItem" ion-button color="primary" (click)="openConnecedItem()" clear><ion-icon name="document"></ion-icon>Пов'язаний елемент</button>
 </ion-label>
-<ion-scroll [ngClass]="'scrollMy'" scrollY="true">
+<ion-scroll #scrollMy [ngClass]="'scrollMy'" [style.height]="scrollHeight" scrollY="true">
   <ion-list *ngIf="historyToggle" no-lines class="history" [ngClass]="historyToggle? 'active' : '' " style="z-index: -1;padding-bottom: 20px;">
           <ion-item class="task" *ngFor="let task of taskHistory | arraySort:'-EvanteDate'" >
               <h3>
@@ -85,7 +85,7 @@
 </ion-scroll>
 </ion-content>
 
-<ion-footer *ngIf="Status != 'Done'">
+<ion-footer #myFooter *ngIf="Status != 'Done'">
   <ion-toolbar>
     <ion-buttons full>
       <ion-grid>
