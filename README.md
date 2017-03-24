@@ -70,3 +70,26 @@ use Allow-Control-Allow-Origin: *  - chrome extention to awoid CORS restritions 
 
 ###updating ionic-scripts (if webpack can`t load .json) //https://github.com/driftyco/ionic-app-scripts
 npm install @ionic/app-scripts@latest --save-dev
+
+###save session alive on IOS
+```objective-c
+- (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
+{
+    NSData *cookiesData = [[NSUserDefaults standardUserDefaults] objectForKey:@"Cookies"];
+    if ( [cookiesData length] )
+    {
+        NSArray *cookies = [NSKeyedUnarchiver unarchiveObjectWithData:cookiesData];
+        for ( NSHTTPCookie *cookie in cookies )
+            [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
+    }
+    self.viewController = [[MainViewController alloc] init];
+    return [super application:application didFinishLaunchingWithOptions:launchOptions];
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application
+{
+    NSArray *cookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+    NSData *cookieData = [NSKeyedArchiver archivedDataWithRootObject:cookies];
+    [[NSUserDefaults standardUserDefaults] setObject:cookieData forKey:@"Cookies"];
+}
+```
