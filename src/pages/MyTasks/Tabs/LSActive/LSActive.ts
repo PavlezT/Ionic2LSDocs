@@ -1,5 +1,5 @@
-import { Component , Inject } from '@angular/core';
-import { NavController, ModalController, Events } from 'ionic-angular';
+import { Component , Inject, ViewChild } from '@angular/core';
+import { NavController, ModalController, Events, Slides } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
 import 'moment/locale/uk';
@@ -14,6 +14,7 @@ import { Images } from '../../../../utils/images';
   templateUrl: 'LSActive.html'
 })
 export class LSActive {
+  @ViewChild('mySlider') slider: Slides;
   items : Array<any>;
   siteUrl : string;
 
@@ -28,6 +29,16 @@ export class LSActive {
             this.loadTasks();
      });
      this.loadTasks();
+  }
+
+  ionViewDidLoad(){
+      let self = this;
+      // this.slider.onTransitionEnd = function(swiper){
+      //     if(swiper.swipeDirection == 'next')
+      //         self.events.publish('slide:change',2);
+      //     else
+      //         self.events.publish('slide:change',0);
+      // }
   }
 
   private loadTasks() : void {
@@ -64,6 +75,16 @@ export class LSActive {
         item : item
       });
       modal.present();
+   }
+
+    public swiped(event){
+       console.log('slide drug',event);
+       // direction: 4 <-
+       // direction: 2 ->
+        if(event.direction == 2)
+              this.events.publish('slide:change',2);
+          else if (event.direction == 4)
+              this.events.publish('slide:change',0);
    }
 
 }

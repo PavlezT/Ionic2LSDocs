@@ -1,5 +1,5 @@
-import { Component , Inject } from '@angular/core';
-import { Platform , NavController ,ModalController, Events } from 'ionic-angular';
+import { Component , Inject, ViewChild  } from '@angular/core';
+import { Platform , NavController ,ModalController, Events, Slides } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
 import 'moment/locale/uk';
@@ -14,6 +14,7 @@ import { Images } from '../../../../utils/images';
   templateUrl: 'LSNew.html'
 })
 export class LSNew {
+@ViewChild('mySlider') slider: Slides;/////////////////     Gestures
 
    items : Array<any>;
    siteUrl : string;
@@ -31,6 +32,18 @@ export class LSNew {
         });
         this.loadTasks();
       });
+   }
+
+   ionViewDidLoad(){
+    //    let self = this;
+    //     this.slider.onTransitionEnd = function(swiper){
+    //         console.log('onTransitionEnd',swiper);
+    //         console.log('swiper move',swiper.swipeDirection);
+    //         if(swiper.swipeDirection == 'next'){
+    //            self.events.publish('slide:change',1);
+    //         }
+    //         //swiper.swipeDirection
+    //     }
    }
 
    loadTasks() : void {
@@ -65,6 +78,24 @@ export class LSNew {
    }
 
    itemTapped(event, item){
+       console.log('this.slider',this.slider);
+    //    this.slider.ionDrag.subscribe(
+    //        data=>{
+    //            const translate = data.translate;
+    //            console.log('ion ionDrag',translate)
+    //         },
+    //        error=>{console.log('ion drag error',error)},
+    //        comp=>{console.log('ion complete ionDrag',comp)}
+    //    )
+    //    let self = this;
+    //     this.slider.onTransitionEnd = function(swiper){
+    //         console.log('onTransitionEnd',swiper);
+    //         console.log('swiper move',swiper.swipeDirection);
+    //         if(swiper.swipeDirection == 'next'){
+    //            self.events.publish('slide:change',1);
+    //         }
+    //         //swiper.swipeDirection
+    //     }
       let modal = this.modalCtrl.create(TaskItem,{
         item : item
       });
@@ -83,6 +114,14 @@ export class LSNew {
          });
          infiniteScroll.complete();
        })
+   }
+
+   public swiped(event){
+       console.log('slide drug',event);
+       // direction: 4 <-
+       // direction: 2 ->
+       if(event.direction == 2)
+        this.events.publish('slide:change',1);
    }
 
 }
