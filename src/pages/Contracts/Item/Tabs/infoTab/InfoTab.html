@@ -1,16 +1,22 @@
 <ion-content margin-bottom style="z-index: -1">
-    <ion-list  no-lines margin-bottom style="z-index: -1">
-        <ion-item *ngFor="let key of itemKeys" >
-            <div margin-right>
-               <h2>{{key.Title}}</h2>
-               <h3>{{itemProps[key.StaticName]}}</h3>
-            </div>
-        </ion-item>
-        <ion-item *ngIf="itemKeys && itemKeys.length == 0">
-           <h2>Тут пусто</h2>
-        </ion-item>
-        <ion-item *ngIf="!itemKeys">
-           <h2> Завантаження...</h2>
-        </ion-item>
-    </ion-list>
+    <ion-slides #mySlider>
+        <ion-slide>
+            <ion-scroll>
+                <ion-list  no-lines margin-bottom style="z-index: -1">
+                    <ion-item *ngFor="let key of itemKeys" >
+                        <div margin-right>
+                        <h2>{{key.Title}}</h2>
+                        <h3>{{itemProps[key.StaticName]}}</h3>
+                        </div>
+                    </ion-item>
+                    <ion-item *ngIf="itemKeys && itemKeys.length == 0">
+                    <h2>Тут пусто</h2>
+                    </ion-item>
+                    <ion-item *ngIf="!itemKeys">
+                    <h2> Завантаження...</h2>
+                    </ion-item>
+                </ion-list>
+            </ion-scroll>
+        </ion-slide>
+  </ion-slides>
 </ion-content>

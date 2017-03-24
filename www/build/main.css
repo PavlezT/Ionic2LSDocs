@@ -26752,6 +26752,14 @@ contracts h2 {
   font-weight: 700 !important;
 }
 
+item .slide-zoom {
+  height: 100%;
+}
+
+item ion-scroll {
+  height: 100%;
+}
+
 documents h2 {
   font-weight: 700 !important;
 }
@@ -26825,6 +26833,26 @@ route .left {
 route .right {
   display: inline-block;
   width: 55%;
+}
+
+MyTasks ion-tabs .tabbar .tab-button {
+  padding-top: 18px !important;
+}
+
+MyTasks ion-tabs .tabbar .tab-button .tab-badge {
+  top: 12%;
+}
+
+MyTasks .has-icon .tab-badge {
+  right: calc(45% - 30px);
+}
+
+MyTasks .slide-zoom {
+  height: 100%;
+}
+
+MyTasks ion-scroll {
+  height: 100%;
 }
 
 LSActive .list-md .item-block .item-inner {

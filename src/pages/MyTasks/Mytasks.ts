@@ -1,5 +1,5 @@
-import { Component, Inject } from '@angular/core';
-import { NavController,NavParams,Events, Platform } from 'ionic-angular';
+import { Component, Inject, ViewChild } from '@angular/core';
+import { NavController,NavParams, Events, Platform, Tabs,MenuController } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 
 import { User } from '../../utils/user';
@@ -16,6 +16,7 @@ import { LSEnded } from './Tabs/LSEnded/LSEnded';
   templateUrl: 'MyTasks.html'
 })
 export class MyTasks {
+  @ViewChild('myTabs') tabRef: Tabs;
    tabNew : any;
    tabActive : any;
    tabLate : any;
@@ -26,7 +27,7 @@ export class MyTasks {
    Title: string;
    chatParams : any;
 
-  constructor(public navCtrl: NavController,public platform : Platform, public navParams: NavParams, @Inject(Loader) public loaderctrl: Loader,@Inject(Http) public http : Http, public events: Events, @Inject(User) public user : User) {
+  constructor(public menuCtrl: MenuController,public navCtrl: NavController,public platform : Platform, public navParams: NavParams, @Inject(Loader) public loaderctrl: Loader,@Inject(Http) public http : Http, public events: Events, @Inject(User) public user : User) {
      this.Title = navParams.data.title || "Мої завдання";
      this.tabNew =  LSNew;
      this.tabActive = LSActive;
@@ -44,6 +45,14 @@ export class MyTasks {
             this.setTasksCount()
         });
         this.setTasksCount();
+
+        events.subscribe('slide:change',(tab : number)=>{
+          this.tabRef.select(tab[0]);
+        });
+        events.subscribe('menu:open',()=>{
+          menuCtrl.open();
+        });
+
       })
 
       this.chatParams = {'d':'bb'};

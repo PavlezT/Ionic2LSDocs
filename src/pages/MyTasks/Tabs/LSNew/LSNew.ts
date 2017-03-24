@@ -1,5 +1,5 @@
-import { Component , Inject } from '@angular/core';
-import { Platform , NavController ,ModalController, Events } from 'ionic-angular';
+import { Component , Inject, ViewChild  } from '@angular/core';
+import { Platform , ModalController, Events, Slides } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
 import 'moment/locale/uk';
@@ -14,11 +14,12 @@ import { Images } from '../../../../utils/images';
   templateUrl: 'LSNew.html'
 })
 export class LSNew {
+@ViewChild('mySlider') slider: Slides;
 
    items : Array<any>;
    siteUrl : string;
 
-   constructor(public platform: Platform, public navCtrl: NavController, @Inject(Images) public images: Images ,public modalCtrl: ModalController, public events: Events, @Inject(Http) public http: Http, @Inject(User) public user : User) {
+   constructor(public platform: Platform, @Inject(Images) public images: Images ,public modalCtrl: ModalController, public events: Events, @Inject(Http) public http: Http, @Inject(User) public user : User) {
       this.platform.ready().then(()=> {
         this.siteUrl = consts.siteUrl;
         moment.locale('uk');
@@ -31,6 +32,27 @@ export class LSNew {
         });
         this.loadTasks();
       });
+   }
+
+   ionViewDidLoad(){
+        let self = this;
+        // this.slider.onTransitionEnd = function(swiper){
+        //     if(swiper.swipeDirection == 'next'){
+        //        self.events.publish('slide:change',1);
+        //     } else {
+        //       // self.events.publish('menu:open');
+        //     }
+        // }
+        this.slider.ionDrag.delay(100).subscribe(
+           data=>{
+               if(data.swipeDirection == "prev")
+                    self.events.publish('menu:open');
+               else if (data.swipeDirection == "next")
+                    self.events.publish('slide:change',1);
+            },
+           error=>{console.log('ion drag error',error)},
+           ()=>{console.log('ion complete ionDrag',)}
+       )
    }
 
    loadTasks() : void {
@@ -64,7 +86,7 @@ export class LSNew {
      return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise();
    }
 
-   itemTapped(event, item){
+   itemTapped(event, item){    
       let modal = this.modalCtrl.create(TaskItem,{
         item : item
       });
@@ -85,4 +107,14 @@ export class LSNew {
        })
    }
 
+   //   public swiped(event){
+  //      console.log('slide drug',event);
+  //      // direction: 4 <-
+  //      // direction: 2 ->
+  //       if(event.direction == 2)
+  //             this.events.publish('slide:change',2);
+  //         else if (event.direction == 4)
+  //             this.events.publish('slide:change',0);
+  //  }
+   
 }

@@ -69,6 +69,10 @@ export class TaskItem {
       this.scrollHeight = "60%";
   }
 
+  ionViewDidEnter(){
+    this.platform.registerBackButtonAction((e)=>{this.dismiss();return false;},100);
+  }
+  
   ionViewCanLeave(){
     this.platform.registerBackButtonAction((e)=>{this.platform.exitApp();return false;},100);
   }

@@ -1,5 +1,5 @@
-import { Component , Inject } from '@angular/core';
-import { NavController, ModalController,Events } from 'ionic-angular';
+import { Component , Inject, ViewChild } from '@angular/core';
+import { NavController, ModalController,Events, Slides } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
 import 'moment/locale/uk';
@@ -14,6 +14,7 @@ import { Images } from '../../../../utils/images';
   templateUrl: 'LSEnded.html'
 })
 export class LSEnded {
+  @ViewChild('mySlider') slider: Slides;
    items : Array<any>;
    siteUrl : string;
 
@@ -24,6 +25,17 @@ export class LSEnded {
             this.loadTasks();
       });
       this.loadTasks();
+   }
+
+   ionViewDidLoad(){
+      let self = this;
+      this.slider.ionDrag.delay(consts.swipeDelay).subscribe(
+        data=>{
+               if(data.swipeDirection == "prev")
+                    self.events.publish('slide:change',2);
+            },
+        error=>{console.log('ion drag error',error)}
+      )
    }
 
    private loadTasks() : void {

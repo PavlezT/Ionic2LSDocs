@@ -1,5 +1,5 @@
-import { Component , Inject } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { Component , Inject, ViewChild } from '@angular/core';
+import { NavController, NavParams,Events, Slides  } from 'ionic-angular';
 import { SelectedItem } from '../../../../../utils/selecteditem';
 
 @Component({
@@ -14,7 +14,9 @@ export class InfoTab {
   itemProps : any;
   itemKeys : Array<string>;
 
-  constructor( public navCtrl: NavController, public navParams: NavParams , @Inject(SelectedItem) public selectedItem : SelectedItem ) {
+  @ViewChild('mySlider') slider: Slides;
+
+  constructor( public navCtrl: NavController, public navParams: NavParams ,public events: Events, @Inject(SelectedItem) public selectedItem : SelectedItem ) {
       this.id  = selectedItem.getId();
       this.listGUID = selectedItem.getListGUID();
       
@@ -22,8 +24,22 @@ export class InfoTab {
          .then( (res) => this.getItemProps(res[0],res[1]));
   }
 
+  ionViewDidLoad(){
+        let self = this;
+        this.slider.ionDrag.delay(100).subscribe(
+           data=>{
+               if(data.swipeDirection == "prev")
+                    self.events.publish('itemsmenu:open');
+               else if (data.swipeDirection == "next")
+                    self.events.publish('itemslide:change',1);
+            },
+           error=>{console.log('ion drag error',error)},
+           ()=>{console.log('ion complete ionDrag',)}
+       )
+   }
+
   getItemProps(ItemFields,itemProps){
-     let keys = ItemFields;//this.keys(itemFields);
+     let keys = ItemFields;
      let props = {};
      keys.map( (key, i ,arr) => {
         if(itemProps[key.StaticName] && !key.StaticName.includes('_'))
@@ -33,9 +49,5 @@ export class InfoTab {
      this.itemProps = props;
      this.itemKeys = ItemFields;
   }
-
-  // keys(obj) : Array<string> {
-  //    return Object.keys(obj);
-  // }
 
 }

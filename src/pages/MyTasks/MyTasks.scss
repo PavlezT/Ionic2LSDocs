@@ -3,5 +3,27 @@ MyTasks {
       ion-icon{//:first-of-type
          //color: red;
       }
+
+      .tabbar{
+          .tab-button{
+              padding-top:18px !important;
+              .tab-badge{
+                  top:12%;
+              }
+          }
+
+      }
+   }
+
+   .has-icon .tab-badge {
+        right: calc(45% - 30px);
+    }
+
+   .slide-zoom {
+       height:100%;
+   }
+
+   ion-scroll{
+       height:100%;
    }
 }

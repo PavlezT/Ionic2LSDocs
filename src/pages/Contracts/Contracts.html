@@ -13,7 +13,7 @@
 
 </ion-header>
 
-<ion-content>
+<ion-content (swipe)="swiped($event)">
    <ion-searchbar (ionInput)="searchItem($event)"></ion-searchbar>
   <ion-list >
     <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">

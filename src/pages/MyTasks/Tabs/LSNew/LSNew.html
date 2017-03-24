@@ -1,28 +1,34 @@
 
 <ion-content >
-   <ion-list >
-     <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
-       <ion-avatar item-left>
-        <img src="{{images.getImage(item.TaskAuthore.EMail || 'undefined')}}" >
-        <!-- {{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{item.TaskAuthore.EMail || 'undefined'}}"> -->
-       </ion-avatar>
-       <div>
-         <h2>{{item.Title}}</h2>
-         <div class="description" >
-           <div class="descriptontext">{{item.TaskDueDate_view}}</div>
-         </div>
-       </div>
-       <div item-right>
-         <ion-icon name="pricetag"></ion-icon>
-         <div class="showId" >ID #{{item.sysIDItem}}</div>
-       </div>
-    </button>
-    <h1 ion-item *ngIf="items && items.length == 0">Тут пусто</h1>
-    <h1 ion-item *ngIf="!items">Завантаження...</h1>
-  </ion-list>
-  <!-- <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
-    <ion-infinite-scroll-content
-      loadingText="Loading more data...">
-    </ion-infinite-scroll-content>
-  </ion-infinite-scroll> -->
+  <ion-slides #mySlider>
+    <ion-slide>
+      <ion-scroll>
+        <ion-list >
+          <!--(swipe)="swiped($event)"-->
+          <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
+            <ion-avatar item-left>
+              <img src="{{images.getImage(item.TaskAuthore.EMail || 'undefined')}}" >
+            </ion-avatar>
+            <div>
+              <h2>{{item.Title}}</h2>
+              <div class="description" >
+                <div class="descriptontext">{{item.TaskDueDate_view}}</div>
+              </div>
+            </div>
+            <div item-right>
+              <ion-icon name="pricetag"></ion-icon>
+              <div class="showId" >ID #{{item.sysIDItem}}</div>
+            </div>
+          </button>
+          <h1 ion-item *ngIf="items && items.length == 0">Тут пусто</h1>
+          <h1 ion-item *ngIf="!items">Завантаження...</h1>
+        </ion-list>
+        <!-- <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+          <ion-infinite-scroll-content
+            loadingText="Loading more data...">
+          </ion-infinite-scroll-content>
+        </ion-infinite-scroll> -->
+      </ion-scroll>
+    </ion-slide>
+  </ion-slides>
 </ion-content>
