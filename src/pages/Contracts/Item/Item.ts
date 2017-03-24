@@ -1,5 +1,5 @@
-import { Component } from '@angular/core'; //, Inject
-import { NavController, NavParams, ViewController, Platform } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core'; //, Inject
+import { NavController, NavParams, Events, ViewController, Platform,Tabs,MenuController } from 'ionic-angular';
 
 import { InfoTab } from './Tabs/InfoTab/InfoTab';
 import { Documents } from './Tabs/Documents/Documents';
@@ -21,7 +21,9 @@ export class Item {
   history : any;
   routes : any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,public platform: Platform, public viewCtrl: ViewController) {
+  @ViewChild('myTabs') tabRef: Tabs;
+
+  constructor(public navCtrl: NavController, public navParams: NavParams,public menuCtrl: MenuController, public events: Events, public platform: Platform, public viewCtrl: ViewController) {
     this.title = navParams.data.item.Title || '---';
     this.id = navParams.data.item.Id;
     this.listGUID = navParams.data.listGUID;
@@ -31,6 +33,13 @@ export class Item {
     this.documents = Documents;
     this.history = History;
     this.routes = Route;
+
+    events.subscribe('itemslide:change',(tab : number)=>{
+          this.tabRef.select(tab[0]);
+    });
+    events.subscribe('itemsmenu:open',()=>{
+      menuCtrl.open();
+    });
   }
 
   ionViewDidEnter(){

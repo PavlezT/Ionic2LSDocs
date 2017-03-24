@@ -1,6 +1,6 @@
 import { Component , Inject , NgZone} from '@angular/core';
 import { Item } from './Item/Item';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, MenuController } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 
 import * as consts from '../../utils/Consts';
@@ -15,7 +15,7 @@ export class Contracts {
   listTitle: string;
   guid: string;
 
-  constructor(public navCtrl: NavController , public navParams: NavParams , @Inject(Http) public http: Http ,  @Inject(SelectedItem) public selectedItem : SelectedItem, private zone:NgZone ) {
+  constructor(public navCtrl: NavController , public navParams: NavParams ,public menuCtrl: MenuController, @Inject(Http) public http: Http ,  @Inject(SelectedItem) public selectedItem : SelectedItem, private zone:NgZone ) {
     this.listTitle = navParams.data.title;
     this.guid = navParams.data.guid;
 
@@ -54,23 +54,17 @@ export class Contracts {
 
   searchItem(event :any){
       this.getItems(false,event.target.value)
-        //  .then( (res) => {
-        //     res = res.json().d.results;
-        //     this.items = res;
-        //  })
   }
 
   doInfinite(infiniteScroll){
     this.getItems(true)
       .then( () =>{
-        // res.json().d.results.map( item =>{
-        //   if(item.Title){
-        //     item.Created = item.Created? (new Date(item.Created).toLocaleString()) : null;
-        //     item.Modified = item.Modified? (new Date(item.Modified).toLocaleString()) : null;
-        //     this.items.push(item);
-        //   }
-        // })
         infiniteScroll.complete();
       })
+  }
+
+  private swiped(event){
+    if(event.direction == 4)
+      this.menuCtrl.open();
   }
 }

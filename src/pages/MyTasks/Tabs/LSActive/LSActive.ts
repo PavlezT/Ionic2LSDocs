@@ -15,6 +15,7 @@ import { Images } from '../../../../utils/images';
 })
 export class LSActive {
   @ViewChild('mySlider') slider: Slides;
+
   items : Array<any>;
   siteUrl : string;
 
@@ -33,12 +34,15 @@ export class LSActive {
 
   ionViewDidLoad(){
       let self = this;
-      // this.slider.onTransitionEnd = function(swiper){
-      //     if(swiper.swipeDirection == 'next')
-      //         self.events.publish('slide:change',2);
-      //     else
-      //         self.events.publish('slide:change',0);
-      // }
+      this.slider.ionDrag.delay(consts.swipeDelay).subscribe(
+           data=>{
+               if(data.swipeDirection == "prev")
+                    self.events.publish('slide:change',0);
+                else
+                    self.events.publish('slide:change',2);
+            },
+           error=>{console.log('ion drag error',error)}
+      );
   }
 
   private loadTasks() : void {
@@ -75,16 +79,6 @@ export class LSActive {
         item : item
       });
       modal.present();
-   }
-
-    public swiped(event){
-       console.log('slide drug',event);
-       // direction: 4 <-
-       // direction: 2 ->
-        if(event.direction == 2)
-              this.events.publish('slide:change',2);
-          else if (event.direction == 4)
-              this.events.publish('slide:change',0);
    }
 
 }

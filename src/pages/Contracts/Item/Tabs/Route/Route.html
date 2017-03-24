@@ -1,36 +1,42 @@
 <ion-content style="z-index: -1">
-    <ion-list style="z-index: -1">
-        <ion-item *ngFor="let route of routesList" class="route_item" [attr.started]="route.StateStatus == 'InProgress' ? true : false" >
-            <div>
-                <div class="state_id">{{route.StateNumber}}</div>
-                <div class="state_name" [attr.done]="route.StateStatus == 'Completed' ? true : false" >{{route.StateName}}</div> 
-            </div>
-            <div>
-                <ion-icon name="ios-contacts-outline"></ion-icon>
-                <div class="left" >Призначено:</div>
-                <div class="right" >{{route.ExecutorType == 'DocAuthore'?'Автор документа': 'Нету еще перевода'}}</div>
-            </div>
-            <div>
-                <ion-icon name="ios-timer-outline"></ion-icon>
-                 <div class="left" >Термін:</div>
-                 <div class="right">{{route.StateEstimate}} {{route.StateEstimate == 1?'день': (route.StateEstimate > 4?'дней':'дня') }}</div>
-            </div>
-            <div *ngIf="route.StartDate">
-                <ion-icon name="play"></ion-icon>
-                <div class="left" >Дата початку:</div>
-                <div class="right" >{{route.StartDate}}</div>
-            </div>
-            <div *ngIf="route.EndDate">
-                <ion-icon name="square"></ion-icon>
-                <div class="left" >Завершено:</div>
-                <div class="right" >{{route.EndDate}}</div>
-            </div>
-        </ion-item>
-        <ion-item *ngIf="routesList && routesList.length == 0">
-           <h2>Тут пусто</h2>
-        </ion-item>
-        <ion-item *ngIf="!routesList">
-           <h2> Завантаження...</h2>
-        </ion-item>
-    </ion-list>
+    <ion-slides #mySlider>
+        <ion-slide>
+            <ion-scroll>
+                <ion-list style="z-index: -1">
+                    <ion-item *ngFor="let route of routesList" class="route_item" [attr.started]="route.StateStatus == 'InProgress' ? true : false" >
+                        <div>
+                            <div class="state_id">{{route.StateNumber}}</div>
+                            <div class="state_name" [attr.done]="route.StateStatus == 'Completed' ? true : false" >{{route.StateName}}</div> 
+                        </div>
+                        <div>
+                            <ion-icon name="ios-contacts-outline"></ion-icon>
+                            <div class="left" >Призначено:</div>
+                            <div class="right" >{{route.ExecutorType == 'DocAuthore'?'Автор документа': 'Нету еще перевода'}}</div>
+                        </div>
+                        <div>
+                            <ion-icon name="ios-timer-outline"></ion-icon>
+                            <div class="left" >Термін:</div>
+                            <div class="right">{{route.StateEstimate}} {{route.StateEstimate == 1?'день': (route.StateEstimate > 4?'дней':'дня') }}</div>
+                        </div>
+                        <div *ngIf="route.StartDate">
+                            <ion-icon name="play"></ion-icon>
+                            <div class="left" >Дата початку:</div>
+                            <div class="right" >{{route.StartDate}}</div>
+                        </div>
+                        <div *ngIf="route.EndDate">
+                            <ion-icon name="square"></ion-icon>
+                            <div class="left" >Завершено:</div>
+                            <div class="right" >{{route.EndDate}}</div>
+                        </div>
+                    </ion-item>
+                    <ion-item *ngIf="routesList && routesList.length == 0">
+                    <h2>Тут пусто</h2>
+                    </ion-item>
+                    <ion-item *ngIf="!routesList">
+                    <h2> Завантаження...</h2>
+                    </ion-item>
+                </ion-list>
+            </ion-scroll>
+         </ion-slide>
+    </ion-slides>
 </ion-content>

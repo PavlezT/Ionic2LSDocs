@@ -1,17 +1,23 @@
 <ion-content style="z-index: -1">
-    <ion-list  no-lines style="z-index: -1">
-        <ion-item (click)="docClicked(document)" *ngFor="let document of Docs" >
-            <div item-left>
-               <div margin-right class="file-icon file-icon-lg " [attr.data-type]="document.icon"></div>
-            </div>
-            <h2>{{document.Name}}</h2>
-            <p>Created: {{document.TimeCreated}}</p>
-        </ion-item>
-        <ion-item *ngIf="Docs && Docs.length == 0">
-           <h2> Тут пусто</h2>
-        </ion-item>
-        <ion-item *ngIf="!Docs">
-           <h2> Завантаження...</h2>
-        </ion-item>
-    </ion-list>
+    <ion-slides #mySlider>
+        <ion-slide>
+            <ion-scroll>
+                    <ion-list  no-lines style="z-index: -1">
+                        <ion-item (click)="docClicked(document)" *ngFor="let document of Docs" >
+                            <div item-left>
+                            <div margin-right class="file-icon file-icon-lg " [attr.data-type]="document.icon"></div>
+                            </div>
+                            <h2>{{document.Name}}</h2>
+                            <p>Created: {{document.TimeCreated}}</p>
+                        </ion-item>
+                        <ion-item *ngIf="Docs && Docs.length == 0">
+                        <h2> Тут пусто</h2>
+                        </ion-item>
+                        <ion-item *ngIf="!Docs">
+                        <h2> Завантаження...</h2>
+                        </ion-item>
+                    </ion-list>
+                </ion-scroll>
+        </ion-slide>
+    </ion-slides>
 </ion-content>

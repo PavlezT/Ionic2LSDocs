@@ -29,10 +29,13 @@ export class LSEnded {
 
    ionViewDidLoad(){
       let self = this;
-      this.slider.onTransitionEnd = function(swiper){
-          if(swiper.swipeDirection != 'next')
-              self.events.publish('slide:change',2);
-      }
+      this.slider.ionDrag.delay(consts.swipeDelay).subscribe(
+        data=>{
+               if(data.swipeDirection == "prev")
+                    self.events.publish('slide:change',2);
+            },
+        error=>{console.log('ion drag error',error)}
+      )
    }
 
    private loadTasks() : void {

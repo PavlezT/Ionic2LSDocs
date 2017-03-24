@@ -1,6 +1,6 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { Transfer, FileOpener,File } from 'ionic-native';
-import { NavController, NavParams, ToastController } from 'ionic-angular';
+import { NavController, NavParams, ToastController,Events, Slides  } from 'ionic-angular';
 import { SelectedItem } from '../../../../../utils/selecteditem';
 import * as consts from '../../../../../utils/Consts';
 import { Loader } from '../../../../../utils/loader';
@@ -14,15 +14,29 @@ declare var cordova:any;
    templateUrl: 'Documents.html'
 })
 export class Documents {
-
+  @ViewChild('mySlider') slider: Slides;
   Docs : Array<any>;
   fileTransfer :any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,@Inject(Loader) public loaderctrl: Loader, @Inject(SelectedItem) public selectedItem : SelectedItem,public toastCtrl: ToastController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,@Inject(Loader) public loaderctrl: Loader,public events: Events, @Inject(SelectedItem) public selectedItem : SelectedItem,public toastCtrl: ToastController) {
       this.fileTransfer = new Transfer();
       selectedItem.getItemDocs()
        .then( docs => this.getDocuments(docs) )
   }
+
+  ionViewDidLoad(){
+        let self = this;
+        this.slider.ionDrag.delay(consts.swipeDelay).subscribe(
+           data=>{
+               if(data.swipeDirection == "prev")
+                    self.events.publish('itemslide:change',0);
+               else if (data.swipeDirection == "next")
+                    self.events.publish('itemslide:change',2);
+            },
+           error=>{console.log('ion drag error',error)},
+           ()=>{console.log('ion complete ionDrag',)}
+       )
+   }
 
   private getDocuments(docs) : void {
      this.Docs = docs.map( (item, i , arr) => {

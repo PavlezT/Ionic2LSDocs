@@ -33,12 +33,15 @@ export class LSLate {
 
    ionViewDidLoad(){
         let self = this;
-        this.slider.onTransitionEnd = function(swiper){
-            if(swiper.swipeDirection == 'next')
-               self.events.publish('slide:change',3);
-            else
-               self.events.publish('slide:change',1);
-        }
+        this.slider.ionDrag.delay(consts.swipeDelay).subscribe(
+           data=>{
+               if(data.swipeDirection == "prev")
+                    self.events.publish('slide:change',1);
+                else
+                    self.events.publish('slide:change',3);
+            },
+           error=>{console.log('ion drag error',error)}
+        )
    }
 
    private loadTasks() : void {
