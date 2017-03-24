@@ -71,7 +71,7 @@ use Allow-Control-Allow-Origin: *  - chrome extention to awoid CORS restritions 
 ###updating ionic-scripts (if webpack can`t load .json) //https://github.com/driftyco/ionic-app-scripts
 npm install @ionic/app-scripts@latest --save-dev
 
-###save session alive on IOS
+###save session alive on IOS - change this in LSDocs/Classes/AppDelegate.m
 ```objective-c
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
