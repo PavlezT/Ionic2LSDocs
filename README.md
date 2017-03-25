@@ -95,5 +95,3 @@ npm install @ionic/app-scripts@latest --save-dev
     [[NSUserDefaults standardUserDefaults] setObject:cookieData forKey:@"Cookies"];
 }
 ```
-
-###startup mongo `mongod --dbpath=F:\Projects\Cordova\Reckon\nodeserver\data`
