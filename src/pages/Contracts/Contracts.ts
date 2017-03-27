@@ -63,7 +63,7 @@ export class Contracts {
       })
   }
 
-  private swiped(event){
+  public swiped(event){
     if(event.direction == 4)
       this.menuCtrl.open();
   }

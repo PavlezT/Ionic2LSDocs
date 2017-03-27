@@ -39,15 +39,11 @@ export class InfoTab {
    }
 
   getItemProps(ItemFields,itemProps){
-     let keys = ItemFields;
-     let props = {};
-     keys.map( (key, i ,arr) => {
-        if(itemProps[key.StaticName] && !key.StaticName.includes('_'))
-            props[key.StaticName] = itemProps[key.StaticName];
+     this.itemKeys = ItemFields.filter( (key, i ,arr) => {
+        if( itemProps[key.StaticName] && !key.StaticName.includes('_') && !key.Group.toLowerCase().includes('hidden'))
+            return key;
      })
-
-     this.itemProps = props;
-     this.itemKeys = ItemFields;
+     this.itemProps = itemProps;
   }
 
 }
