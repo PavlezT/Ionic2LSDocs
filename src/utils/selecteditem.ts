@@ -39,7 +39,7 @@ export class SelectedItem {
     }
 
     private getContentTypeFields() : Promise<any> {
-      let listGet = `${consts.siteUrl}/_api/Web/Lists('${this.listGUID}')/ContentTypes('${this.item.ContentTypeId}')/Fields?$select=StaticName,Title&$filter$filter=(Hidden nq 'true') and (Group nq 'Hidden')`;
+      let listGet = `${consts.siteUrl}/_api/Web/Lists('${this.listGUID}')/ContentTypes('${this.item.ContentTypeId}')/Fields?$select=StaticName,Group,Title&$filter$filter=(Hidden nq 'true') and (Group nq 'Hidden')`;
 
       let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
       let options = new RequestOptions({ headers: headers });
