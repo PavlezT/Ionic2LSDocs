@@ -37,8 +37,6 @@ export class Route {
        item.EndDate = item.EndDate? moment(item.EndDate).format('DD.MM.YYYY в HH:mm') : null;
        return item;
      })
-     //StateStatus:Completed
-     //StateStatus:InProgress
   }
 
 }
