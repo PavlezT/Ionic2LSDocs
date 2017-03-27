@@ -11,7 +11,7 @@
                         <div>
                             <ion-icon name="ios-contacts-outline"></ion-icon>
                             <div class="left" >Призначено:</div>
-                            <div class="right" >{{route.ExecutorType == 'DocAuthore'?'Автор документа': 'Нету еще перевода'}}</div>
+                            <div class="right" >{{route.ExecutorType == 'DocAuthore'?'Автор документа': route.StateExecutore.results[0].Title}}</div>
                         </div>
                         <div>
                             <ion-icon name="ios-timer-outline"></ion-icon>
