@@ -4,6 +4,7 @@ import { Http, Headers, RequestOptions  } from '@angular/http';
 
 import { User } from '../../utils/user';
 import { Loader } from '../../utils/loader';
+import { Localization } from '../../utils/localization';
 import * as consts from '../../utils/Consts';
 
 import { LSNew } from './Tabs/LSNew/LSNew';
@@ -27,8 +28,8 @@ export class MyTasks {
    Title: string;
    chatParams : any;
 
-  constructor(public menuCtrl: MenuController,public navCtrl: NavController,public platform : Platform, public navParams: NavParams, @Inject(Loader) public loaderctrl: Loader,@Inject(Http) public http : Http, public events: Events, @Inject(User) public user : User) {
-     this.Title = navParams.data.title || "Мої завдання";
+  constructor(public menuCtrl: MenuController,public navCtrl: NavController,public platform : Platform, public navParams: NavParams, @Inject(Localization) public loc : Localization,@Inject(Loader) public loaderctrl: Loader,@Inject(Http) public http : Http, public events: Events, @Inject(User) public user : User) {
+     //this.Title = navParams.data.title || this.loc.dictionary.MyRoom;
      this.tabNew =  LSNew;
      this.tabActive = LSActive;
      this.tabLate = LSLate;

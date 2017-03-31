@@ -1,9 +1,11 @@
 import { Component, ViewChild , Inject} from '@angular/core';//NgZone,
-import { Nav, Platform , AlertController , ToastController, Events } from 'ionic-angular';
+import { Nav, Platform ,AlertController ,  ToastController, Events } from 'ionic-angular';
 import { StatusBar, Splashscreen, NativeStorage , Network } from 'ionic-native';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 
 import * as consts from '../utils/Consts';
+import { Localization } from '../utils/localization';
+
 import { Auth } from '../utils/auth';
 import { Access } from '../utils/access';
 import { User } from '../utils/user';
@@ -28,11 +30,11 @@ export class MyApp {
   loader : any;
   toast : any;
   // private zone:NgZone,
-  constructor(public platform: Platform, public alertCtrl: AlertController,@Inject(Loader) public loaderctrl: Loader,@Inject(Images) public images: Images ,public toastCtrl: ToastController, public auth: Auth,@Inject(Access) public access : Access,@Inject(Http) public http: Http, public events: Events,@Inject(User) public user : User) {
+  constructor(public platform: Platform, public alertCtrl: AlertController,@Inject(Localization) public loc : Localization,@Inject(Loader) public loaderctrl: Loader,@Inject(Images) public images: Images ,public toastCtrl: ToastController, public auth: Auth,@Inject(Access) public access : Access,@Inject(Http) public http: Http, public events: Events,@Inject(User) public user : User) {
     this.initializeApp();
     this.errorCounter = 0;
     this.pages = [
-      { title: 'Мої завдання', icon:"home", component: MyTasks , listGUID : 'none'}
+      { title: this.loc.dictionary.MyRoom, icon:"home", component: MyTasks , listGUID : 'none'}
     ];
 
   }
@@ -114,16 +116,19 @@ export class MyApp {
      this.loaderctrl.presentLoading();
       return Promise.all([this.user.init(),this.getLists()])
         .then( res => {
+             this.events.publish('user:loaded');
              this.access._init();
              this.images._init();
-             this.pages.splice(1);
+             //this.pages.splice(1);
+             this.pages.length=0;
+             this.pages.push({ title: this.loc.dictionary.MyRoom, icon:"home", component: MyTasks , listGUID : 'none'});
              res[1].map((list,i,mass) => {
                if(!list)return;
                list.then(item=>{
                   this.pages.push({ title: item.Title , icon:"folder", component: Contracts , listGUID : item.Id})
                })
              });
-             this.events.publish('user:loaded');
+             
              this.loaderctrl.stopLoading();
         })
         .catch( error => {

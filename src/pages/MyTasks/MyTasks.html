@@ -3,16 +3,16 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title>{{Title}}</ion-title>
+    <ion-title>{{loc.dictionary.MyRoom}}</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
    <ion-tabs #myTabs tabsPlacement="top" >
       <!-- //tabBadge="3" -->
-       <ion-tab tabTitle="Нові" tabIcon="medical" tabBadge="{{this.counts.new}}" tabBadgeStyle="new" [root]="tabNew"  [rootParams]="chatParams"></ion-tab>
-       <ion-tab tabTitle="В роботі" tabIcon="play"   tabBadge="{{this.counts.active}}"  tabBadgeStyle="primary" [root]="tabActive"></ion-tab>
-       <ion-tab tabTitle="Протерміновано" tabIcon="warning" tabBadge="{{this.counts.late}}"  tabBadgeStyle="danger" [root]="tabLate" ></ion-tab>
-       <ion-tab tabTitle="Завершено" tabIcon="checkmark" tabBadge="{{this.counts.done}}"  tabBadgeStyle="background" [root]="tabEnded" ></ion-tab>
+       <ion-tab tabTitle="{{loc.dictionary.StateInMyRoom1}}" tabIcon="medical" tabBadge="{{this.counts.new}}" tabBadgeStyle="new" [root]="tabNew"  [rootParams]="chatParams"></ion-tab>
+       <ion-tab tabTitle="{{loc.dictionary.StateInMyRoom2}}" tabIcon="play"   tabBadge="{{this.counts.active}}"  tabBadgeStyle="primary" [root]="tabActive"></ion-tab>
+       <ion-tab tabTitle="{{loc.dictionary.StateInMyRoom3}}" tabIcon="warning" tabBadge="{{this.counts.late}}"  tabBadgeStyle="danger" [root]="tabLate" ></ion-tab>
+       <ion-tab tabTitle="{{loc.dictionary.StateInMyRoom4}}" tabIcon="checkmark" tabBadge="{{this.counts.done}}"  tabBadgeStyle="background" [root]="tabEnded" ></ion-tab>
      </ion-tabs>
 </ion-content>

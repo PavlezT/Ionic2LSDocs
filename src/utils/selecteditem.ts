@@ -2,6 +2,7 @@
 import { Injectable , Inject } from '@angular/core';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as consts from './Consts';
+import { Localization } from './localization'
 
 @Injectable()
 export class SelectedItem {
@@ -15,7 +16,7 @@ export class SelectedItem {
    itemHistoryLoaded : Promise<any>;
    itemRoutesLoaded : Promise<any>;
 
-    constructor(@Inject(Http) public http: Http ){
+    constructor(@Inject(Http) public http: Http,@Inject(Localization) public loc : Localization ){
       this.item = {title:'none',Id:'000'};
       this.listGUID = "000";
     }
@@ -34,7 +35,7 @@ export class SelectedItem {
          })
          .catch( error =>{
            console.error('<SelectedItem> Loading Props error!',error);
-           return {'Ошибка':'Загрузка данных неуспешна'};
+           return {'Error':this.loc.dictionary.Alert100};
          })
     }
 

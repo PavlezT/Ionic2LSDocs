@@ -1,12 +1,9 @@
-//import { Transfer, File } from 'ionic-native';
 import { Injectable , Inject } from '@angular/core';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import 'rxjs/add/operator/retry';
 import 'rxjs/add/operator/timeout';
 import 'rxjs/add/operator/delay';
 import * as consts from './Consts';
-
-//declare var cordova:any;
 
 @Injectable()
 export class User{
@@ -17,17 +14,13 @@ export class User{
    user : any;
 
    itemPropsLoaded : Promise<any>;
-   //langLoaded : Promise<any>;
-   //fileTransfer :any;
 
-    constructor(@Inject(Http) public http: Http ){
+    constructor(@Inject(Http) public http: Http ){ 
       this.email = 'e@e';
-      this.locale = 'en';
+      this.locale = 'ru';
       this.user = {};
       this.user.Title = 'Bob';
       this.itemPropsLoaded = Promise.resolve();
-      //this.langLoaded = Promise.resolve(false);
-      //this.fileTransfer = new Transfer();
     }
 
     private getProps() : Promise<any> {
