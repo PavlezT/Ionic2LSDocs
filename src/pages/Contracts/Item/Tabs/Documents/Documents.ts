@@ -83,8 +83,8 @@ export class Documents {
   }
 
   private getLocalName(name) : String {
-    let newName : string = trans.crh.fromCyrillic(name.toLowerCase().replace(/ы/g,'u'));
-    newName = newName.toLowerCase().replace(/ї/g,'i').replace(/ч/g,'ch').replace(/ь/g,'').replace(/ъ/g,'').replace(/ш/g,'sch').replace(/щ/g,'sch').replace(/ю/g,'u').replace(/є/g,'e').replace(/ /g,'_');
+    let newName : string = trans.crh.fromCyrillic(name.toLowerCase().replace(/ы/g,'u').replace(/ї/g,'i').replace(/я/g,'ya').replace(/ч/g,'ch').replace(/ь/g,'').replace(/ъ/g,'').replace(/ш/g,'sch').replace(/щ/g,'sch').replace(/ю/g,'u').replace(/є/g,'e'));
+    newName = newName.toLowerCase().replace(/ /g,'_');
     return decodeURI(newName);
   }
 
