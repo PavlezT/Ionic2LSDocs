@@ -27,7 +27,7 @@ export class Route {
                     self.events.publish('itemslide:change',2);
             },
            error=>{console.log('ion drag error',error)},
-           ()=>{console.log('ion complete ionDrag',)}
+           ()=>{console.log('ion complete ionDrag')}
        )
    }
 
