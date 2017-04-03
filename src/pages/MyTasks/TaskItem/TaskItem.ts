@@ -67,7 +67,7 @@ export class TaskItem {
     if(this.footer)
       this.scrollHeight = this.footer.nativeElement.offsetTop-this.footer.nativeElement.offsetHeight-this.middlelabel.nativeElement.offsetTop-this.middlelabel.nativeElement.offsetHeight + "px";
     else 
-      this.scrollHeight = this.middlelabel.nativeElement.parentNode.offSetHeight-this.middlelabel.nativeElement.offsetTop;
+      this.scrollHeight = this.middlelabel.nativeElement.offsetParent.offsetHeight-this.middlelabel.nativeElement.offsetTop-this.middlelabel.nativeElement.offsetHeight-56+"px";
   }
 
   ionViewDidEnter(){
