@@ -5,6 +5,7 @@ import { Http, Headers, RequestOptions  } from '@angular/http';
 
 import * as consts from '../../utils/Consts';
 import { SelectedItem } from '../../utils/selecteditem';
+import { Localization } from '../../utils/localization';
 
 @Component({
   selector: 'contracts',
@@ -15,7 +16,7 @@ export class Contracts {
   listTitle: string;
   guid: string;
 
-  constructor(public navCtrl: NavController , public navParams: NavParams ,public menuCtrl: MenuController, @Inject(Http) public http: Http ,  @Inject(SelectedItem) public selectedItem : SelectedItem, private zone:NgZone ) {
+  constructor(public navCtrl: NavController , public navParams: NavParams , private zone:NgZone,public menuCtrl: MenuController, @Inject(Http) public http: Http , @Inject(Localization) public loc : Localization, @Inject(SelectedItem) public selectedItem : SelectedItem ) {
     this.listTitle = navParams.data.title;
     this.guid = navParams.data.guid;
 
