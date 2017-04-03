@@ -33,7 +33,7 @@ export class Localization {
             case 'ru':
                 this.dic = transru;
                 break;
-            case 'ua':
+            case 'uk':
                 this.dic = transua;
                 break;
             case 'en-gb':
