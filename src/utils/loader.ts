@@ -1,12 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable,Inject } from '@angular/core';
 import { LoadingController, Loading } from 'ionic-angular';
+import { Localization } from './localization';
 
 @Injectable()
 export class Loader {
     loader : Loading;
     calls : Array<number>;
 
-    constructor(public loadingCtrl: LoadingController){
+    constructor(public loadingCtrl: LoadingController,@Inject(Localization) public loc : Localization){
         this.calls =[];
     }
 
@@ -16,7 +17,7 @@ export class Loader {
       if(this.calls.length>1){return Promise.resolve();};
 
       this.loader = this.loadingCtrl.create({
-        content: "Подождите...",
+        content: this.loc.dic.mobile.Wait,
       });
 
       return this.loader.present();

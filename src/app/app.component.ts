@@ -34,7 +34,7 @@ export class MyApp {
     this.initializeApp();
     this.errorCounter = 0;
     this.pages = [
-      { title: this.loc.dictionary.MyRoom, icon:"home", component: MyTasks , listGUID : 'none'}
+      { title: this.loc.dic.MyRoom, icon:"home", component: MyTasks , listGUID : 'none'}
     ];
 
   }
@@ -119,9 +119,8 @@ export class MyApp {
              this.events.publish('user:loaded');
              this.access._init();
              this.images._init();
-             //this.pages.splice(1);
              this.pages.length=0;
-             this.pages.push({ title: this.loc.dictionary.MyRoom, icon:"home", component: MyTasks , listGUID : 'none'});
+             this.pages.push({ title: this.loc.dic.MyRoom, icon:"home", component: MyTasks , listGUID : 'none'});
              res[1].map((list,i,mass) => {
                if(!list)return;
                list.then(item=>{
@@ -178,18 +177,18 @@ export class MyApp {
 
   public userTapped() : void {
     let prompt = this.alertCtrl.create({
-      title: 'Вийти',
-      message: "Вийти із даного облікового запису і зайти під іншим",
+      title: this.loc.dic.mobile.ChangeUser+"?",//'Вийти',
+      message: this.loc.dic.mobile.ChangeUser +this.loc.dic.mobile.and+this.loc.dic.mobile.enterAnotherUser ,//"Вийти із даного облікового запису і зайти під іншим",
       enableBackdropDismiss: true,
       buttons: [
         {
-          text: 'Скасувати',
+          text: this.loc.dic.Cencel,
           handler: data => {
             prompt.dismiss();
           }
         },
         {
-          text: 'Підтвердити',
+          text: this.loc.dic.Accept,
           handler: data => {
             this.reLogin(true);
           }
@@ -203,8 +202,8 @@ export class MyApp {
   private showPrompt() : void {
     this.platform.registerBackButtonAction((e)=>{return false;},100); // e.preventDefault();
     let prompt = this.alertCtrl.create({
-      title: 'Вхід',
-      message: "Введіть свій email и пароль для входу",
+      title: this.loc.dic.mobile.Login,
+      message: this.loc.dic.mobile.EnterMessage,
       enableBackdropDismiss: false,
       inputs: [
         {
@@ -219,7 +218,7 @@ export class MyApp {
       ],
       buttons: [
         {
-          text: 'Підтвердити',
+          text: this.loc.dic.Accept,
           handler: data => {
             this.getLogin(data.Email,data.Password);
           }

@@ -29,7 +29,7 @@ export class MyTasks {
    chatParams : any;
 
   constructor(public menuCtrl: MenuController,public navCtrl: NavController,public platform : Platform, public navParams: NavParams, @Inject(Localization) public loc : Localization,@Inject(Loader) public loaderctrl: Loader,@Inject(Http) public http : Http, public events: Events, @Inject(User) public user : User) {
-     //this.Title = navParams.data.title || this.loc.dictionary.MyRoom;
+     //this.Title = navParams.data.title || this.loc.dic.MyRoom;
      this.tabNew =  LSNew;
      this.tabActive = LSActive;
      this.tabLate = LSLate;

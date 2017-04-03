@@ -8,6 +8,7 @@ import * as consts from '../../../../utils/Consts';
 import { User } from '../../../../utils/user';
 import { TaskItem } from '../../TaskItem/TaskItem';
 import { Images } from '../../../../utils/images';
+import { Localization } from '../../../../utils/localization';
 
 @Component({
   selector: 'LSLate',
@@ -18,17 +19,18 @@ export class LSLate {
    items : Array<any>;
    siteUrl : string;
 
-   constructor(public navCtrl: NavController, public modalCtrl: ModalController,@Inject(Images) public images: Images, public events: Events, @Inject(Http) public http: Http, @Inject(User) public user : User) {
+   constructor(public navCtrl: NavController, public modalCtrl: ModalController,@Inject(Images) public images: Images, public events: Events,@Inject(Localization) public loc : Localization, @Inject(Http) public http: Http, @Inject(User) public user : User) {
        this.siteUrl = consts.siteUrl;
-       moment.locale('uk');
        events.subscribe('task:doneTask',()=>{
             this.loadTasks();
        });
        events.subscribe('task:towork',()=>{
             this.loadTasks();
        });
+       events.subscribe('user:loaded',()=>{
+            this.loadTasks();
+       })
        this.loadTasks();
-
    }
 
    ionViewDidLoad(){
@@ -47,7 +49,8 @@ export class LSLate {
    private loadTasks() : void {
      this.user.getUserProps()
           .then(() => {
-              return this.getNewTasks()
+              moment.locale(this.loc.localization);
+              return this.getNewTasks();
           })
           .then( tasks => {
               this.items = (JSON.parse(tasks._body)).d.results;

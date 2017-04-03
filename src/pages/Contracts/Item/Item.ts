@@ -1,10 +1,12 @@
-import { Component, ViewChild } from '@angular/core'; //, Inject
+import { Component, ViewChild, Inject } from '@angular/core'; //, Inject
 import { NavController, NavParams, Events, ViewController, Platform,Tabs,MenuController } from 'ionic-angular';
 
 import { InfoTab } from './Tabs/InfoTab/InfoTab';
 import { Documents } from './Tabs/Documents/Documents';
 import { History } from './Tabs/History/History';
 import { Route } from './Tabs/Route/Route';
+
+import { Localization } from '../../../utils/localization';
 
 @Component({
    selector: 'item',
@@ -23,7 +25,7 @@ export class Item {
 
   @ViewChild('myTabs') tabRef: Tabs;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,public menuCtrl: MenuController, public events: Events, public platform: Platform, public viewCtrl: ViewController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,public menuCtrl: MenuController, public events: Events, public platform: Platform, public viewCtrl: ViewController, @Inject(Localization) public loc : Localization) {
     this.title = navParams.data.item.Title || '---';
     this.id = navParams.data.item.Id;
     this.listGUID = navParams.data.listGUID;

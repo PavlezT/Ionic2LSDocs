@@ -3,6 +3,7 @@ import { Transfer, FileOpener,File } from 'ionic-native';
 import { NavController, NavParams, ToastController,Events, Slides  } from 'ionic-angular';
 import { SelectedItem } from '../../../../../utils/selecteditem';
 import * as consts from '../../../../../utils/Consts';
+import { Localization } from '../../../../../utils/localization';
 import { Loader } from '../../../../../utils/loader';
 import * as mimes from 'mime-types';
 import * as trans from 'transliteration.crh';
@@ -18,7 +19,7 @@ export class Documents {
   Docs : Array<any>;
   fileTransfer :any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,@Inject(Loader) public loaderctrl: Loader,public events: Events, @Inject(SelectedItem) public selectedItem : SelectedItem,public toastCtrl: ToastController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,@Inject(Loader) public loaderctrl: Loader,public events: Events, @Inject(Localization) public loc : Localization, @Inject(SelectedItem) public selectedItem : SelectedItem,public toastCtrl: ToastController) {
       this.fileTransfer = new Transfer();
       selectedItem.getItemDocs()
        .then( docs => this.getDocuments(docs) )

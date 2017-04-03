@@ -10,22 +10,18 @@ import * as transua from '../assets/i18n/ua';
 export class Localization {
 
     localization : string ;
-    dictionary : any;
+    dic : any;
 
     constructor(@Inject(User) public user : User,public events: Events ,public plat : Platform){ 
         this.localization = 'ru';
         this.loadDictionary();
         events.subscribe('user:loaded',()=>{
-            this.user.getUserProps().then(()=>{
-                console.log('fired user locale:',this.user.locale)
-                this.localization = this.user.locale;
+                this.localization = this.transformLocale(this.user.locale);
                 this.loadDictionary();
-            })
         });
         this.plat.ready().then(()=>{
             this.user.getUserProps().then(()=>{
-                console.log('fired user locale:',this.user.locale)
-                this.localization = this.user.locale;
+                this.localization = this.transformLocale(this.user.locale);
                 this.loadDictionary();
             })
         })
@@ -35,16 +31,27 @@ export class Localization {
     private loadDictionary() : void {
         switch(this.localization){
             case 'ru':
-                this.dictionary = transru;
+                this.dic = transru;
                 break;
             case 'ua':
-                this.dictionary = transua;
+                this.dic = transua;
                 break;
-            case 'us':
-                this.dictionary = transus;
+            case 'en-gb':
+                this.dic = transus;
                 break;
             default :
-                this.dictionary = transru;
+                this.dic = transru;
+        }
+    }
+
+    private transformLocale(locale : string) : string{
+        switch(locale){
+            case 'us':
+                return 'en-gb';
+            case 'ua':
+                return 'uk';
+            default:
+                return locale;
         }
     }
 

@@ -12,6 +12,7 @@ import { Access } from '../../../utils/access';
 import { SelectedItem } from '../../../utils/selecteditem';
 import { Loader } from '../../../utils/loader';
 import { Images } from '../../../utils/images';
+import { Localization } from '../../../utils/localization';
 
 @Component({
   selector: 'TaskItem',
@@ -44,7 +45,7 @@ export class TaskItem {
   @ViewChild('middlelabel') middlelabel;
   scrollHeight : any;
 
-  constructor(public platform: Platform,public navCtrl: NavController,@Inject(Images) public images: Images ,@Inject(Loader) public loaderctrl: Loader,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams,@Inject(Http) public http : Http,@Inject(User) public user : User) {
+  constructor(public platform: Platform,public navCtrl: NavController,@Inject(Images) public images: Images ,@Inject(Localization) public loc : Localization,@Inject(Loader) public loaderctrl: Loader,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams,@Inject(Http) public http : Http,@Inject(User) public user : User) {
     this.siteUrl = consts.siteUrl;
     this.task = navParams.data.item;
     this.Status = navParams.data.item.OData__Status || 'Done';
@@ -66,7 +67,7 @@ export class TaskItem {
     if(this.footer)
       this.scrollHeight = this.footer.nativeElement.offsetTop-this.footer.nativeElement.offsetHeight-this.middlelabel.nativeElement.offsetTop-this.middlelabel.nativeElement.offsetHeight + "px";
     else 
-      this.scrollHeight = "60%";
+      this.scrollHeight = this.middlelabel.nativeElement.parentNode.offSetHeight-this.middlelabel.nativeElement.offsetTop;
   }
 
   ionViewDidEnter(){
@@ -103,7 +104,7 @@ export class TaskItem {
         })
         .catch(err=> {
           console.log('<TaskItem> toWorkTask error',err);
-          this.showToast('Операция неуспешна.Произошла ошибка');
+          this.showToast(this.loc.dic.mobile.OperationError);
           this.loaderctrl.stopLoading().then(()=>{this.dismiss();});
         })
   }
@@ -122,7 +123,7 @@ export class TaskItem {
           if (res.json().d.results.length !== 0) {
               this.doneTask('Done');
           } else {
-              this.showToast('Вы не наложили не одной резолюции');
+              this.showToast(this.loc.dic.Alert28);
               this.loaderctrl.stopLoading();
           }
         })
@@ -150,7 +151,7 @@ export class TaskItem {
         })
         .catch(err=>{
           console.log('<TaskItem> doneTask error',err);
-          this.showToast('Операция неуспешна.Произошла ошибка');
+          this.showToast(this.loc.dic.mobile.OperationError);
           this.loaderctrl.stopLoading().then(()=>{this.dismiss();});
         })
   }
@@ -160,22 +161,22 @@ export class TaskItem {
         let StartDate = moment.utc(this.task.startDate).format("DD.MM.YYYY HH:mm:ss");
         let DueDate = moment.utc(this.task.TaskDueDate).format("DD.MM.YYYY")
 
-        let Event = 'Завершена задача';//LSLang.Alert60
+        let Event = this.loc.dic.EventType4;
         let EventType = 'EventDoneTask';
 
         if (this.ContentType == 'LSTaskAppruve') {
             if (this.task.TaskResults == 'Back') {
-              Event = 'Получен отказ по задаче';//LSLang.Alert66
+              Event = this.loc.dic.Alert66;
               EventType = 'EventBackTask';
             } else {
-              Event = 'Получено согласие по задаче';//LSLang.Alert62
+              Event = this.loc.dic.Alert62;
             }
         }
         if (this.ContentType == 'LSSTaskAdd') {
             EventType = 'EventDoneTask EventAddTask';
         }
         if (this.task.TaskResults == 'Delegate') {
-            Event = `${this.user.getUserName()} делегировал задачу`;//LSLang.Alert67
+            Event = this.user.getUserName()+" "+this.loc.dic.Alert67;
             EventType = 'EventDelegateTask';
         }
 
@@ -224,7 +225,7 @@ export class TaskItem {
               CurentTaskID: this.task.Id,
               RelateListId: this.task.sysIDList,
               RelateItem: this.task.sysIDItem,
-              Alert58: "Автоматически закрыта задача",//LSLang.Alert58
+              Alert58: this.loc.dic.Alert58,
               StateID: this.task.StateID
             }
          }
@@ -257,7 +258,7 @@ export class TaskItem {
             },
             HistoryArray : [{
               EventType: 'EventInWorkTask',
-              Event: "Задача взята в работу",
+              Event: "Task in progress",
               NameExecutor: this.user.getUserName(),
               NameAuthore: this.taskAuthore.Title,
               TaskTitle: this.Title,
@@ -321,11 +322,11 @@ export class TaskItem {
   }
 
   private updateTransitTask(taskData) : Promise<any> {
-    taskData.DataSource.Alert57 = "Назначена задача";
-    taskData.DataSource.Alert58 = "Автоматически закрыта задача";
-    taskData.DataSource.Alert60 = "Завершена задача";
-    taskData.DataSource.Alert62 = "Получено согласие по задаче";
-    taskData.DataSource.Alert66 = "Получен отказ по задаче";
+    taskData.DataSource.Alert57 = this.loc.dic.Alert57;
+    taskData.DataSource.Alert58 = this.loc.dic.Alert58;
+    taskData.DataSource.Alert60 = this.loc.dic.Alert60;
+    taskData.DataSource.Alert62 = this.loc.dic.Alert62;
+    taskData.DataSource.Alert66 = this.loc.dic.Alert66;
 
     taskData.DataSource = JSON.stringify(taskData.DataSource);
 

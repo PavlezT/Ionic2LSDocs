@@ -19,7 +19,7 @@
   <ion-label [ngClass]="typingComment? 'inactive' : 'active'">
     <div class="line" >
        <ion-icon name="ios-return-left"></ion-icon>
-       <div class="left">Автор</div>
+       <div class="left">{{loc.dic.HistoryTaskAuthor}}</div>
        <div class="right">
          <div class="userTag">
            <ion-avatar item-left>
@@ -32,7 +32,7 @@
     </div>
     <div class="line">
        <ion-icon name="ios-return-right"></ion-icon>
-       <div class="left">Призначено</div>
+       <div class="left">{{loc.dic.HistoryTaskExecutor}}</div>
        <div class="right">
          <div class="userTag">
            <ion-avatar item-left>
@@ -45,12 +45,12 @@
     </div>
     <div class="line">
        <ion-icon name="ios-calendar-outline"></ion-icon>
-       <div class="left">Дата початку</div>
+       <div class="left">{{loc.dic.HistoryTaskStart}}</div>
        <div class="right">{{startDate}}</div>
     </div>
     <div class="line">
        <ion-icon name="ios-timer-outline"></ion-icon>
-       <div class="left">Термін</div>
+       <div class="left">{{loc.dic.HistoryTaskDuet}}</div>
        <div class="right">{{deadLine}}</div>
     </div>
 </ion-label>
@@ -60,26 +60,26 @@
   <button *ngIf="connectedItem" ion-button color="primary" (click)="openConnecedItem()" clear><ion-icon name="document"></ion-icon>Пов'язаний елемент</button>
 </ion-label>
 <ion-scroll #scrollMy [ngClass]="'scrollMy'" [style.height]="scrollHeight" scrollY="true">
-  <ion-list *ngIf="historyToggle" no-lines class="history" [ngClass]="historyToggle? 'active' : '' " style="z-index: -1;padding-bottom: 20px;">
+  <ion-list *ngIf="historyToggle" no-lines class="history" [ngClass]="historyToggle? 'active' : '' " style="z-index: -1;padding-bottom: 5px;">
           <ion-item class="task" *ngFor="let task of taskHistory | arraySort:'-EvanteDate'" >
               <h3>
                   <div class="marker"></div>
-                  <span>{{task.Event}}</span> <span>{{task.TaskTitle}}</span> для
-                  <span class="user">{{task.NameExecutor}}</span> від <span class="user">{{task.NameAuthore}}</span>
-                  <span> з терміном до </span>
+                  <span>{{task.Event}}</span> <span>{{task.TaskTitle}}</span> {{loc.dic.Alert38}}
+                  <span class="user">{{task.NameExecutor}}</span> {{loc.dic.Alert39}} <span class="user">{{task.NameAuthore}}</span>
+                  <span> {{loc.dic.Alert40}} </span>
                   <span>{{task.DueDate}}</span>
               </h3>
               <p>{{task.EvanteDate}}</p>
           </ion-item>
           <ion-item *ngIf="history && !taskHistory">
-            <h2> Тут пусто</h2>
+            <h2>{{loc.dic.mobile.Empty}}</h2>
           </ion-item>
           <ion-item *ngIf="!history">
-            <h2> Завантаження...</h2>
+            <h2>{{loc.dic.mobile.Downloading}}</h2>
           </ion-item>
   </ion-list>
   <ion-item *ngIf="(Status != 'Done')" [ngClass]="historyToggle? 'inactive' : 'active'">
-      <ion-label floating>Введіть коментар до виконання задачі</ion-label>
+      <ion-label floating>{{loc.dic.Alert37}}</ion-label>
       <ion-textarea #coments rows="6" (blur)="onBlur()" (focus)="onFocus()" ></ion-textarea>
   </ion-item>
 </ion-scroll>
@@ -93,17 +93,17 @@
           <ion-col *ngIf="Status == 'Not Started'" >
              <button  clear ion-button (click)="toWorkTask()">
                 <ion-icon name="md-arrow-down"></ion-icon>
-                <div>В роботу</div>
+                <div>{{loc.dic.Alert31}}</div>
             </button>
          </ion-col>
          <ion-col *ngIf="task.sysTaskLevel == 1 && (ContentType == 'LSTaskPreparetion' || ContentType == 'LSTaskAppruve' || ContentType =='LSTaskAgreement' ) ">
             <button  clear ion-button (click)="cancelTask()">
                <ion-icon name="md-close"></ion-icon>
                <div *ngIf="ContentType == 'LSTaskPreparetion'">
-                  Відмінити
+                  {{loc.dic.Alert32}}
                </div>
                <div *ngIf="ContentType == 'LSTaskAppruve' || ContentType == 'LSTaskAgreement'">
-                  Відхилити
+                  {{loc.dic.Alert32}}
                </div>
                <!-- <div *ngIf="ContentType != 'LSTaskToRegistrate' && assignetTo.Email == user.getEmail() ">
                   Делегировать
@@ -120,10 +120,10 @@
             <button  clear ion-button (click)="executeTask()">
                <ion-icon name="md-checkmark"></ion-icon>
                <div *ngIf="ContentType == 'LSTaskAppruve'">
-                  Узгодити
+                  {{loc.dic.Approve}}
                </div>
                <div *ngIf="ContentType != 'LSTaskAppruve'">
-                  Виконати
+                  {{loc.dic.Alert35}}
                </div>
             </button>
          </ion-col>

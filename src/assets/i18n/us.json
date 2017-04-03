@@ -1,4 +1,16 @@
 {
+    "mobile":{
+        "ChangeUser":"Change user",
+        "and":" and ",
+        "Login":"Login",
+        "enterAnotherUser":" login as another user.",
+        "anotherUser":"another user",
+        "EnterMessage":"Enter your email and password to login.",
+        "Wait":"Wait...",
+        "Downloading":"Downloading...",
+        "Empty":"Is empty",
+        "OperationError":"Operation failed. Error has occurred"
+    },
     "MStep1":"User Directory",
     "MStep2":"Lists",
     "MStep3":"Reports",

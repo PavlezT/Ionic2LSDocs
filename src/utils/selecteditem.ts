@@ -35,7 +35,7 @@ export class SelectedItem {
          })
          .catch( error =>{
            console.error('<SelectedItem> Loading Props error!',error);
-           return {'Error':this.loc.dictionary.Alert100};
+           return {'Error':this.loc.dic.Alert100};
          })
     }
 

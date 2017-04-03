@@ -10,10 +10,10 @@
                         </div>
                     </ion-item>
                     <ion-item *ngIf="itemKeys && itemKeys.length == 0">
-                    <h2>Тут пусто</h2>
+                    <h2>{{loc.dic.mobile.Empty}}</h2>
                     </ion-item>
                     <ion-item *ngIf="!itemKeys">
-                    <h2> Завантаження...</h2>
+                    <h2>{{loc.dic.mobile.Downloading}}</h2>
                     </ion-item>
                 </ion-list>
             </ion-scroll>
