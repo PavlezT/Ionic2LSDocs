@@ -3,6 +3,7 @@ import { NavController, NavParams,Events, Slides } from 'ionic-angular';
 import { SelectedItem } from '../../../../../utils/selecteditem';
 import { ArraySortPipe } from '../../../../../utils/arraySort';
 import * as consts from '../../../../../utils/Consts';
+import { Localization } from '../../../../../utils/localization';
 
 @Component({
    selector: 'history',
@@ -16,7 +17,7 @@ export class History {
 
   @ViewChild('mySlider') slider: Slides;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,public events: Events, @Inject(SelectedItem) public selectedItem : SelectedItem) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,public events: Events, @Inject(Localization) public loc : Localization, @Inject(SelectedItem) public selectedItem : SelectedItem) {
       selectedItem.getItemHistory()
        .then( history => this.getHistory(history) )
   }

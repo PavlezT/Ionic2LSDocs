@@ -15,6 +15,7 @@ import { Loader } from '../utils/loader';
 import { Images } from '../utils/images';
 import { ArraySortPipe } from '../utils/arraySort';
 import { User } from '../utils/user';
+import { Localization } from '../utils/localization';
 import { LSNew } from '../pages/MyTasks/Tabs/LSNew/LSNew';
 import { LSActive } from '../pages/MyTasks/Tabs/LSActive/LSActive';
 import { LSLate } from '../pages/MyTasks/Tabs/LSLate/LSLate';
@@ -39,7 +40,8 @@ import { TaskItem } from '../pages/MyTasks/TaskItem/TaskItem';
         }
       }
     },{})
-  ],
+    // ,TranslateModule.forRoot()
+    ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
@@ -55,7 +57,8 @@ import { TaskItem } from '../pages/MyTasks/TaskItem/TaskItem';
       {provide: SelectedItem , useClass: SelectedItem},
       {provide: User , useClass: User},
       {provide: Loader, useClass: Loader},
-      {provide: Images, useClass: Images}
+      {provide: Images, useClass: Images},
+      {provide: Localization, useClass: Localization}
    ]
 })
 export class AppModule {}

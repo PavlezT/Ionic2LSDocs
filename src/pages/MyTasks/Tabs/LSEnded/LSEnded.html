@@ -20,8 +20,8 @@
          <div class="showId">ID #{{item.sysIDItem || item.ItemId}}</div>
        </div>
     </button>
-    <h1 ion-item *ngIf="items && items.length == 0">Тут пусто</h1>
-    <h1 ion-item *ngIf="!items">Завантаження...</h1>
+    <h1 ion-item *ngIf="items && items.length == 0">{{loc.dic.mobile.Empty}}</h1>
+    <h1 ion-item *ngIf="!items">{{loc.dic.mobile.Downloading}}</h1>
   </ion-list>
   </ion-scroll>
   </ion-slide>

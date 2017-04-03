@@ -187,7 +187,7 @@ export class Auth {
        let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded'});
        let options = new RequestOptions({ headers: headers });
 
-       return  Promise.all([diffSeconds,self.http.post(spFormsEndPoint,tokenResponse.token,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
+       return  Promise.all([diffSeconds,self.http.post(spFormsEndPoint,tokenResponse.token,options).timeout(consts.timeoutDelay+10000).retry(consts.retryCount+3)
         .toPromise()])
    }
 

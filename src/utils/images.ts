@@ -1,5 +1,5 @@
 import { Transfer, NativeStorage, File } from 'ionic-native';
-import { Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import * as consts from './Consts';
 
 declare var cordova:any;

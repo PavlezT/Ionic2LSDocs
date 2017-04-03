@@ -1,6 +1,7 @@
 import { Component , Inject, ViewChild } from '@angular/core';
 import { NavController, NavParams,Events, Slides  } from 'ionic-angular';
 import { SelectedItem } from '../../../../../utils/selecteditem';
+import { Localization } from '../../../../../utils/localization';
 
 @Component({
    selector: 'infotab',
@@ -16,7 +17,7 @@ export class InfoTab {
 
   @ViewChild('mySlider') slider: Slides;
 
-  constructor( public navCtrl: NavController, public navParams: NavParams ,public events: Events, @Inject(SelectedItem) public selectedItem : SelectedItem ) {
+  constructor( public navCtrl: NavController, public navParams: NavParams ,public events: Events,  @Inject(Localization) public loc : Localization,@Inject(SelectedItem) public selectedItem : SelectedItem ) {
       this.id  = selectedItem.getId();
       this.listGUID = selectedItem.getListGUID();
       
