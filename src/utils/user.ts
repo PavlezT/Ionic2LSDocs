@@ -47,6 +47,7 @@ export class User{
          })
          .catch( error => {
            console.error('<User> Loading Props error!',error);
+           throw new Object(error);
          })
    }
 
