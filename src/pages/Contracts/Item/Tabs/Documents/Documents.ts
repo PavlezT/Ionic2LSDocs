@@ -74,7 +74,7 @@ export class Documents {
   }
 
   public opendDocs(nativeURL,docName) : void {
-    FileOpener.open(decodeURI(nativeURL),mimes.lookup(decodeURI(docName)))
+    FileOpener.open(decodeURIComponent(nativeURL),mimes.lookup(decodeURIComponent(docName)))
       .then((data)=>{this.loaderctrl.stopLoading();})
       .catch(err=>{
         this.loaderctrl.stopLoading();
