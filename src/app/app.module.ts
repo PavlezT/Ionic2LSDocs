@@ -21,7 +21,7 @@ import { LSActive } from '../pages/MyTasks/Tabs/LSActive/LSActive';
 import { LSLate } from '../pages/MyTasks/Tabs/LSLate/LSLate';
 import { LSEnded } from '../pages/MyTasks/Tabs/LSEnded/LSEnded';
 import { TaskItem } from '../pages/MyTasks/TaskItem/TaskItem';
-
+//import { SuperTabsModule } from 'ionic2-super-tabs';
 @NgModule({
   declarations: [
     MyApp,
@@ -40,6 +40,7 @@ import { TaskItem } from '../pages/MyTasks/TaskItem/TaskItem';
         }
       }
     },{})
+    //,SuperTabsModule.forRoot()
     // ,TranslateModule.forRoot()
     ],
   bootstrap: [IonicApp],
