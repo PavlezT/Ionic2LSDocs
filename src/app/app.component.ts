@@ -114,14 +114,14 @@ export class MyApp {
 
   startApp() : Promise<any>{
      this.loaderctrl.presentLoading();
-      return Promise.all([this.user.init(),this.getLists()])
+      return Promise.all([this.getLists(),this.user.init()])
         .then( res => {
              this.events.publish('user:loaded');
              this.access._init();
              this.images._init();
              this.pages.length=0;
              this.pages.push({ title: this.loc.dic.MyRoom, icon:"home", component: MyTasks , listGUID : 'none'});
-             res[1].map((list,i,mass) => {
+             res[0].map((list,i,mass) => {
                if(!list)return;
                list.then(item=>{
                   this.pages.push({ title: item.Title , icon:"folder", component: Contracts , listGUID : item.Id})
@@ -132,11 +132,11 @@ export class MyApp {
         })
         .catch( error => {
             console.log(`<App> Error in making Burger Menu`,error);
-            if(this.errorCounter < 3 && error.status == '403'){
+            if(this.errorCounter <= 1 && error.status == '403'){
                this.errorCounter++;
                this.loaderctrl.stopLoading();
                this.reLogin();
-            } else if(this.errorCounter < 3 && error.status == '401'){
+            } else if((this.errorCounter <= 1 && error.status == '401') || (this.errorCounter > 1 && error.status == '403')){
                this.errorCounter++;
                this.showPrompt();
                this.loaderctrl.stopLoading();
@@ -156,13 +156,16 @@ export class MyApp {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/getByTitle('LSListInLSDocs')/Items?$select=ListTitle,ListURL,ListGUID`;
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
-    let options = new RequestOptions({ headers: headers });//,withCredentials: true});
+    let options = new RequestOptions({ headers: headers ,withCredentials: true});
 
-    return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise()
+    return this.http.get(listGet,options).timeout(consts.timeoutDelay).toPromise()//.retry(consts.retryCount)
       .then( response =>{
           return response.json().d.results.map(item => {
             return (item.ListGUID && !item.ListTitle) ? this.getListProps(item.ListGUID) : null;
           })
+      })
+      .catch(error=>{
+        throw new Object(error);
       })
   }
 
