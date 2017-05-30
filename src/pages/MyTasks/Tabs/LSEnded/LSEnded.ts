@@ -48,7 +48,7 @@ export class LSEnded {
             return this.getEndedTasks()
          })
          .then( tasks => {
-            this.items = JSON.parse( (JSON.parse(tasks._body)).d.results[0].UserHistory || '[]');
+            this.items = JSON.parse( (JSON.parse(tasks._body)).d.results[0] && (JSON.parse(tasks._body)).d.results[0].UserHistory || '[]');
             this.items = this.items.filter((item,i,arr)=> {
                if(!!item.TaskType){//if(item.EventType && (item.EventType.includes('EventDoneTask') ))//|| item.EventType.includes('Close')
                   item.StartDate_view = moment.utc(item.StartDate.split(' ')[0].split('.').reverse().join('-')).format("dd, DD MMMM");
