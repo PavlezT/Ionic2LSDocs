@@ -94,7 +94,7 @@ export class TaskItem {
         AssignetToTitle : this.user.getUserName(),
         AssignedToId : this.user.getId()
       }
-
+      
       Promise.all([ this.writeToHistoryAfterTaskGet(),this.updateTaskData(this.task.Id,data)])
         .then( (resdata)=> {
           console.log('<TaskItem> toWorkTask')
@@ -141,8 +141,12 @@ export class TaskItem {
         OData__Comments : this.coments.value,
         TaskResults : taskResult
       }
-
-      Promise.all([this.writeToHistoryAfterTaskDone(),this.updateTaskData(this.task.Id,data)])
+      this.task.TaskResults = taskResult;
+      
+      Promise.all([this.updateTaskData(this.task.Id,data)])
+        .then(()=>{
+          return this.writeToHistoryAfterTaskDone();
+        })
         .then( ()=>{
           console.log('<TaskItem> done Task')
           this.events.publish('task:checked');
@@ -157,26 +161,26 @@ export class TaskItem {
   }
 
   private writeToHistoryAfterTaskDone() : Promise<any> {
-        let EvanteDate = moment.utc().format("DD.MM.YYYY HH:mm:ss");
+        let EvanteDate = moment.utc().format("YYYY-MM-DD HH:mm:ss");
         let StartDate = moment.utc(this.task.startDate).format("DD.MM.YYYY HH:mm:ss");
         let DueDate = moment.utc(this.task.TaskDueDate).format("DD.MM.YYYY")
 
-        let Event = this.loc.dic.EventType4;
+        let taskEvent = this.loc.dic.Alert60;
         let EventType = 'EventDoneTask';
 
         if (this.ContentType == 'LSTaskAppruve') {
             if (this.task.TaskResults == 'Back') {
-              Event = this.loc.dic.Alert66;
+              taskEvent = this.loc.dic.Alert66;
               EventType = 'EventBackTask';
             } else {
-              Event = this.loc.dic.Alert62;
+              taskEvent = this.loc.dic.Alert62;
             }
         }
         if (this.ContentType == 'LSSTaskAdd') {
             EventType = 'EventDoneTask EventAddTask';
         }
         if (this.task.TaskResults == 'Delegate') {
-            Event = this.user.getUserName()+" "+this.loc.dic.Alert67;
+            taskEvent = this.user.getUserName()+" "+this.loc.dic.Alert67;
             EventType = 'EventDelegateTask';
         }
 
@@ -193,7 +197,7 @@ export class TaskItem {
           },
         HistoryArray : [{
             EventType: EventType,
-            Event: Event,
+            Event: taskEvent,
             NameExecutor: this.user.getUserName(),
             NameAuthore: this.taskAuthore.Title,
             TaskTitle: this.Title,
@@ -203,8 +207,8 @@ export class TaskItem {
             DueDateSort: moment.utc(this.task.TaskDueDate).format("YYYYMMDD"),
             EvanteDate: EvanteDate,
             Comments: this.coments.value,
-            TaskType: this.task.TaskType,
-            TaskResult: this.ContentType,
+            TaskType: this.ContentType,//this.task.TaskType,
+            TaskResult: this.task.TaskResults,
             EndTask: '',
             ExecutorEmail: this.user.getEmail(),
             AthoreEmail: this.taskAuthore.EMail,
@@ -216,12 +220,12 @@ export class TaskItem {
         }
 
         let transitTaskData = {
-            Title: 'TaskDone',
+            Action: 'TaskDone',
             ListID: this.task.sysIDList,
             ItemID: this.task.sysIDItem,
             Type: 'Task',
             DataSource: {
-              TaskResults: this.ContentType,
+              TaskResults: this.task.TaskResults,
               CurentTaskID: this.task.Id,
               RelateListId: this.task.sysIDList,
               RelateItem: this.task.sysIDItem,
@@ -229,10 +233,10 @@ export class TaskItem {
               StateID: this.task.StateID
             }
          }
-
+         
         return Promise.all([this.updateTransitTask(transitTaskData),this.updateTransitHistory(StateInRouteData),this.updateTransitHistory(StateInRouteData,'TaskAndDocHistory')])
           .then(()=>{
-            return this.startWriteToHistory();
+           // return this.startWriteToHistory();
           })
           .catch(err=>{
               console.log('<TaskItem> writeToHistoryAfterTaskDone error',err);
@@ -241,7 +245,7 @@ export class TaskItem {
   }
 
   private writeToHistoryAfterTaskGet() : Promise<any> {
-          let EvanteDate = moment.utc().format("DD.MM.YYYY HH:mm:ss");
+          let EvanteDate = moment.utc().format("YYYY-MM-DD HH:mm:ss");//2017-06-01 04:32:35
           let StartDate = moment.utc(this.task.StartDate).format("DD.MM.YYYY HH:mm:ss");
           let DueDate = moment.utc(this.task.TaskDueDate).format("DD.MM.YYYY");
 
@@ -250,21 +254,21 @@ export class TaskItem {
             sysIDItem : this.task.sysIDItem,
             EventTypeUser : 'TaskInWork',
             itemData : {
-              ItemId: this.task.sysIDList,
-              ListID: this.task.sysIDItem,
+              ItemId: this.task.sysIDItem,
+              ListID: this.task.sysIDList,
               ItemTitle: "-",
               ListTitle: "-",
               EventType: 'Task'
             },
             HistoryArray : [{
               EventType: 'EventInWorkTask',
-              Event: "Task in progress",
+              Event: this.loc.dic.Alert59,//"Task in progress",
               NameExecutor: this.user.getUserName(),
               NameAuthore: this.taskAuthore.Title,
               TaskTitle: this.Title,
               StartDate: StartDate,
               DueDate: DueDate,
-              EvanteDate: EvanteDate,
+              EvanteDate: EvanteDate,//2017-06-01 04:32:35
               Comments: this.coments.value,
               ExecutorEmail: this.user.getEmail(),
               AthoreEmail: this.taskAuthore.EMail,
@@ -272,44 +276,15 @@ export class TaskItem {
             }],
             HistoryType : 'HistoryDataForUser'
           };
-
+          
          return Promise.all([this.updateTransitHistory(StateInRouteData),this.updateTransitHistory(StateInRouteData,'TaskAndDocHistory')])
             .then(()=>{
-              return this.startWriteToHistory();
+              //return this.startWriteToHistory("WriteHistory");
             })
             .catch(err=>{
               console.log('<TaskItem> writeToHistory error',err);
               throw new Error('writeToHistory error');
             })
-  }
-
-  private startWriteToHistory() : Promise<any> {
-     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSMainTransit')/items`;
-
-     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
-     let options = new RequestOptions({ headers: headers });
-
-     return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise()
-         .then( res =>{
-           return res.json().d.results.map(item => {
-               if(item.DataSource != 'true'){
-                  let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSMainTransit')/items(${item.Id})`;
-                  let body = {
-                     __metadata : {
-                        type : 'SP.Data.LSMainTransitItem'
-                     },
-                     DataSource : 'true'
-                  }
-                  let headers = new Headers({"Authorization":(consts.OnPremise? `Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}` : `Bearer ${this.access_token}`),"X-RequestDigest":this.digest, "X-HTTP-Method":"MERGE","IF-MATCH": "*",'Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
-                  let options = new RequestOptions({ headers: headers });
-                  return this.http.post(url,JSON.stringify(body),options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise().catch(err=>{console.log('post maint trasit error',err)});
-               }
-            })
-         })
-         .catch(err=>{
-           console.log(`<TaskItem> Error startWtriteToHistory 'LSMainTransit'`,err);
-           throw new Error('startWriteToHistory error');
-         })
   }
 
   private сheckResolution() : Promise<any>{
@@ -322,24 +297,30 @@ export class TaskItem {
   }
 
   private updateTransitTask(taskData) : Promise<any> {
+    taskData.DataSource.UserLang = 'LS'+ this.user.locale.toUpperCase();
     taskData.DataSource.Alert57 = this.loc.dic.Alert57;
     taskData.DataSource.Alert58 = this.loc.dic.Alert58;
     taskData.DataSource.Alert60 = this.loc.dic.Alert60;
     taskData.DataSource.Alert62 = this.loc.dic.Alert62;
     taskData.DataSource.Alert66 = this.loc.dic.Alert66;
 
-    taskData.DataSource = JSON.stringify(taskData.DataSource);
-
-    taskData.__metadata = {
-      type: "SP.Data.LSDocsListTransitTasksItem"
+    let body = {
+      '__metadata': {
+        type: "SP.Data.LSDocsListTransitTasksItem"
+      },
+      Title :  taskData.Action,
+      ListID : taskData.ListID,
+      ItemID: taskData.ItemID,
+      Type: taskData.Type,
+      DataSource : JSON.stringify(taskData.DataSource)
     }
-
+    
     let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSDocsListTransitTasks')/Items`;
 
     let headers = new Headers({"Authorization":(consts.OnPremise?`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}` : `Bearer ${this.access_token}`),"X-RequestDigest": this.digest,'X-HTTP-Method':'POST','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
     let options = new RequestOptions({ headers: headers });
 
-    return this.http.post(url,JSON.stringify(taskData),options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise();
+    return this.http.post(url,JSON.stringify(body),options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise();
   }
 
   private updateTransitHistory(routeData : any, historyType? : string) : Promise <any> {
@@ -356,11 +337,11 @@ export class TaskItem {
       historyData : JSON.stringify(routeData.HistoryArray),
       itemData : JSON.stringify(routeData.itemData)
     }
+    
+    let headers = new Headers({"Authorization":(consts.OnPremise?`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`:`Bearer ${this.access_token}`),"X-RequestDigest": this.digest,'X-HTTP-Method':'POST','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+    let options = new RequestOptions({ headers: headers });
 
-      let headers = new Headers({"Authorization":(consts.OnPremise?`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`:`Bearer ${this.access_token}`),"X-RequestDigest": this.digest,'X-HTTP-Method':'POST','IF-MATCH': '*','Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
-      let options = new RequestOptions({ headers: headers });
-
-      return this.http.post(url,JSON.stringify(body),options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise();
+    return this.http.post(url,JSON.stringify(body),options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise();
   }
 
   private updateTaskData(id : number, data : any) : Promise<any> {
@@ -371,7 +352,6 @@ export class TaskItem {
 
     return this.http.post(url,JSON.stringify(data),options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise();
   }
-
 
   private getTaskHistory() : Promise<any> {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSHistory')/items?$filter=(ItemId eq '${this.task.sysIDItem || this.task.ItemId}') and (Title eq '${this.task.sysIDList || this.task.ListID}') and (ItemName eq 'Task')`;
@@ -446,5 +426,34 @@ export class TaskItem {
   onBlur(){
     this.typingComment = false;
   }
+
+  // private startWriteToHistory(nameReciver? : string) : Promise<any> {
+  //    let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSMainTransit')/items?$select=Id,Title,DataSource${nameReciver? "&$filter=Title eq '"+nameReciver+"'" : ""}`;
+
+  //    let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
+  //    let options = new RequestOptions({ headers: headers });
+
+  //    return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise()
+  //        .then( res =>{
+  //          return res.json().d.results.map(item => {
+  //              if(item.DataSource != 'true'){
+  //                 let url = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSMainTransit')/items(${item.Id})`;
+  //                 let body = {
+  //                    __metadata : {
+  //                       type : 'SP.Data.LSMainTransitItem'
+  //                    },
+  //                    DataSource : 'true'
+  //                 }
+  //                 let headers = new Headers({"Authorization":(consts.OnPremise? `Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}` : `Bearer ${this.access_token}`),"X-RequestDigest":this.digest, "X-HTTP-Method":"MERGE","IF-MATCH": "*",'Accept': 'application/json;odata=verbose',"Content-Type": "application/json;odata=verbose"});
+  //                 let options = new RequestOptions({ headers: headers });
+  //                 return this.http.post(url,JSON.stringify(body),options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise().catch(err=>{console.log('post maint trasit error',err)});
+  //              }
+  //           })
+  //        })
+  //        .catch(err=>{
+  //          console.log(`<TaskItem> Error startWtriteToHistory 'LSMainTransit'`,err);
+  //          throw new Error('startWriteToHistory error');
+  //        })
+  // }
 
 }

@@ -25,7 +25,7 @@ export class MyTasks {
 
    counts : any;
 
-   Title: string;
+   //Title: string;
    chatParams : any;
 
   constructor(public menuCtrl: MenuController,public navCtrl: NavController,public platform : Platform, public navParams: NavParams, @Inject(Localization) public loc : Localization,@Inject(Loader) public loaderctrl: Loader,@Inject(Http) public http : Http, public events: Events, @Inject(User) public user : User) {
