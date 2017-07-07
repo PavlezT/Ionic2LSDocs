@@ -95,3 +95,5 @@ npm install @ionic/app-scripts@latest --save-dev
     [[NSUserDefaults standardUserDefaults] setObject:cookieData forKey:@"Cookies"];
 }
 ```
+### ios: xcode-select: cant find tool xcodebuild
+sudo xcode-select -s /Applications/Xcode.app/Contents/Develope
