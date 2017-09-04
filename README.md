@@ -97,3 +97,6 @@ npm install @ionic/app-scripts@latest --save-dev
 ```
 ### ios: xcode-select: cant find tool xcodebuild
 sudo xcode-select -s /Applications/Xcode.app/Contents/Develope
+
+### find site_realm 
+<https://login.microsoftonline.com/lizardsoftcom.onmicrosoft.com/.well-known/openid-configuration>
