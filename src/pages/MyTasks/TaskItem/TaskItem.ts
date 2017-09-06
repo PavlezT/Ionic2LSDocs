@@ -155,7 +155,7 @@ export class TaskItem {
         .then( ()=>{
           console.log('<TaskItem> done Task')
           this.events.publish('task:checked');
-          this.events.publish('task:doneTask');
+          this.events.publish('task:doneTask',this.task);
           this.loaderctrl.stopLoading().then(()=>{this.dismiss();});
         })
         .catch(err=>{

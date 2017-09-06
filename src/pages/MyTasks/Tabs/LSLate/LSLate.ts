@@ -46,8 +46,8 @@ export class LSLate {
         )
    }
 
-   private loadTasks() : void {
-     this.user.getUserProps()
+   private loadTasks() : Promise<any> {
+     return this.user.getUserProps()
           .then(() => {
               moment.locale(this.loc.localization);
               return this.getNewTasks();
@@ -81,4 +81,13 @@ export class LSLate {
       });
       modal.present();
    }
+
+   doRefresh(refresher){
+    this.events.publish('task:checked');
+    this.loadTasks()
+     .then(()=>{
+         refresher.complete();
+     })
+}
+
 }

@@ -32,6 +32,10 @@ export class LSNew {
             console.log('<LSNew> task:towork')
             this.loadTasks();
         });
+        events.subscribe('task:doneTask',(item)=>{
+            console.log('<LSNew> task:doneTask',item);
+            this.loadTasks();
+        });
         this.loadTasks();
       });
    }
@@ -57,8 +61,8 @@ export class LSNew {
        )
    }
 
-   loadTasks() : void {
-     this.user.getUserProps()
+   loadTasks() : Promise<any> {
+     return this.user.getUserProps()
             .then((status) => {
                 moment.locale(this.loc.localization);
                 if(status)
@@ -108,6 +112,14 @@ export class LSNew {
          });
          infiniteScroll.complete();
        })
+   }
+
+   doRefresh(refresher){
+       this.events.publish('task:checked');
+       this.loadTasks()
+        .then(()=>{
+            refresher.complete();
+        })
    }
 
    //   public swiped(event){

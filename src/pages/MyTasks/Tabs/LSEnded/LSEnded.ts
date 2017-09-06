@@ -21,6 +21,7 @@ export class LSEnded {
 
    constructor(public navCtrl: NavController,public modalCtrl: ModalController,public events: Events,@Inject(Localization) public loc : Localization,@Inject(Images) public images: Images, @Inject(Http) public http: Http, @Inject(User) public user : User) {
       this.siteUrl = consts.siteUrl;
+      
       events.subscribe('task:doneTask',()=>{
             this.loadTasks();
       });
@@ -41,8 +42,8 @@ export class LSEnded {
       )
    }
 
-   private loadTasks() : void {
-     this.user.getUserProps()
+   private loadTasks() : Promise<any> {
+     return this.user.getUserProps()
          .then(() => {
             moment.locale(this.loc.localization);
             return this.getEndedTasks()
@@ -78,5 +79,13 @@ export class LSEnded {
       });
       modal.present();
    }
+
+   doRefresh(refresher){
+    this.events.publish('task:checked');
+    this.loadTasks()
+     .then(()=>{
+         refresher.complete();
+     })
+  }
 
 }

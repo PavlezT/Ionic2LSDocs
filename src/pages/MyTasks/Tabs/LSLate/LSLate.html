@@ -1,29 +1,33 @@
 
 <ion-content >
+  <!-- <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content>
+    </ion-refresher-content>
+  </ion-refresher> -->
   <ion-slides #mySlider>
-  <ion-slide>
-    <ion-scroll>
-   <ion-list #Image>
-      <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
-          <ion-avatar item-left>
-            <img #Image{{item.Id}} src="{{images.getImage(item.TaskAuthore.EMail)}}">
-            <!-- {{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{item.TaskAuthore.EMail}}"> -->
-          </ion-avatar>
-          <ion-label>
-            <h2>{{item.Title}}</h2>
-            <div class="description" >
-              <div class="descriptontext">{{item.TaskDueDate_view}}</div>
-            </div>
-            </ion-label>
-            <div item-right>
-              <ion-icon name="pricetag"></ion-icon>
-              <div class="showId" >ID #{{item.sysIDItem}}</div>
-            </div>
-      </button>
-      <h1 ion-item *ngIf="items && items.length == 0">{{loc.dic.mobile.Empty}}</h1>
-      <h1 ion-item *ngIf="!items">{{loc.dic.mobile.Downloading}}</h1>
-   </ion-list>
-   </ion-scroll>
-  </ion-slide>
+    <ion-slide>
+      <ion-scroll>
+        <ion-list #Image>
+            <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
+                <ion-avatar item-left>
+                  <img #Image{{item.Id}} src="{{images.getImage(item.TaskAuthore.EMail)}}">
+                  <!-- {{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{item.TaskAuthore.EMail}}"> -->
+                </ion-avatar>
+                <ion-label>
+                  <h2>{{item.Title}}</h2>
+                  <div class="description" >
+                    <div class="descriptontext">{{item.TaskDueDate_view}}</div>
+                  </div>
+                  </ion-label>
+                  <div item-right>
+                    <ion-icon name="pricetag"></ion-icon>
+                    <div class="showId" >ID #{{item.sysIDItem}}</div>
+                  </div>
+            </button>
+            <h1 ion-item *ngIf="items && items.length == 0">{{loc.dic.mobile.Empty}}</h1>
+            <h1 ion-item *ngIf="!items">{{loc.dic.mobile.Downloading}}</h1>
+        </ion-list>
+      </ion-scroll>
+    </ion-slide>
   </ion-slides>
 </ion-content>

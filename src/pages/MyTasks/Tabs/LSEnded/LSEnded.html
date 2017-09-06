@@ -1,29 +1,29 @@
 
 <ion-content >
   <ion-slides #mySlider>
-  <ion-slide>
-    <ion-scroll>
-   <ion-list >
-      <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
-       <ion-avatar item-left>
-         <img src="{{images.getImage(item.AthoreEmail)}}">
-         <!-- {{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{item.AthoreEmail}}"> -->
-       </ion-avatar>
-       <ion-label>
-        <h2>{{item.TaskTitle}}</h2>
-        <div class="description" >
-            <div class="descriptontext">{{item.DueDate_view}}</div>
-        </div>
-       </ion-label>
-       <div item-right>
-         <ion-icon name="pricetag"></ion-icon>
-         <div class="showId">ID #{{item.sysIDItem || item.ItemId}}</div>
-       </div>
-    </button>
-    <h1 ion-item *ngIf="items && items.length == 0">{{loc.dic.mobile.Empty}}</h1>
-    <h1 ion-item *ngIf="!items">{{loc.dic.mobile.Downloading}}</h1>
-  </ion-list>
-  </ion-scroll>
-  </ion-slide>
+    <ion-slide>
+      <ion-scroll>
+        <ion-list>
+            <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
+            <ion-avatar item-left>
+              <img src="{{images.getImage(item.AthoreEmail)}}">
+              <!-- {{siteUrl}}//_layouts/15/userphoto.aspx?size=S&accountname={{item.AthoreEmail}}"> -->
+            </ion-avatar>
+            <ion-label>
+              <h2>{{item.TaskTitle}}</h2>
+              <div class="description" >
+                  <div class="descriptontext">{{item.DueDate_view}}</div>
+              </div>
+            </ion-label>
+            <div item-right>
+              <ion-icon name="pricetag"></ion-icon>
+              <div class="showId">ID #{{item.sysIDItem || item.ItemId}}</div>
+            </div>
+          </button>
+          <h1 ion-item *ngIf="items && items.length == 0">{{loc.dic.mobile.Empty}}</h1>
+          <h1 ion-item *ngIf="!items">{{loc.dic.mobile.Downloading}}</h1>
+        </ion-list>
+      </ion-scroll>
+    </ion-slide>
   </ion-slides>
 </ion-content>

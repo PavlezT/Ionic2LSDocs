@@ -23,10 +23,11 @@ export class LSActive {
   constructor(public navCtrl: NavController,public modalCtrl: ModalController,public events: Events, @Inject(Localization) public loc : Localization,@Inject(Images) public images: Images,@Inject(User) public user : User, @Inject(Http) public http: Http, ) {
      this.siteUrl = consts.siteUrl;
      events.subscribe('task:towork',()=>{
-       console.log('<LSActive> task:towork')
+       console.log('<LSActive> task:towork');
             this.loadTasks();
      });
-     events.subscribe('task:doneTask',()=>{
+     events.subscribe('task:doneTask',(item)=>{
+      console.log('<LSActive> task:doneTask',item);
             this.loadTasks();
      });
      events.subscribe('user:loaded',()=>{
@@ -48,8 +49,8 @@ export class LSActive {
       );
   }
 
-  private loadTasks() : void {
-    this.user.getUserProps()
+  private loadTasks() : Promise<any> {
+    return this.user.getUserProps()
       .then(() => {
         moment.locale(this.loc.localization);
         return this.getActiveTasks()
@@ -75,7 +76,7 @@ export class LSActive {
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
     let options = new RequestOptions({ headers: headers ,withCredentials: true});
 
-   return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise();
+    return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise();
   }
 
   itemTapped(event, item){
@@ -83,6 +84,14 @@ export class LSActive {
         item : item
       });
       modal.present();
+   }
+
+   doRefresh(refresher){
+    this.events.publish('task:checked');
+    this.loadTasks()
+     .then(()=>{
+         refresher.complete();
+     })
    }
 
 }
