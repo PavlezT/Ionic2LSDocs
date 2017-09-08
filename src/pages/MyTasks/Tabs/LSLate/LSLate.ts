@@ -33,18 +33,18 @@ export class LSLate {
        this.loadTasks();
    }
 
-   ionViewDidLoad(){
-        let self = this;
-        this.slider.ionDrag.delay(consts.swipeDelay).subscribe(
-           data=>{
-               if(data.swipeDirection == "prev")
-                    self.events.publish('slide:change',1);
-                else
-                    self.events.publish('slide:change',3);
-            },
-           error=>{console.log('ion drag error',error)}
-        )
-   }
+//    ionViewDidLoad(){
+//         let self = this;
+//         this.slider.ionDrag.delay(consts.swipeDelay).subscribe(
+//            data=>{
+//                if(data.swipeDirection == "prev")
+//                     self.events.publish('slide:change',1);
+//                 else
+//                     self.events.publish('slide:change',3);
+//             },
+//            error=>{console.log('ion drag error',error)}
+//         )
+//    }
 
    private loadTasks() : Promise<any> {
      return this.user.getUserProps()

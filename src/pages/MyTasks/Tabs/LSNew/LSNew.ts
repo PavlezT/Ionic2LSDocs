@@ -40,26 +40,26 @@ export class LSNew {
       });
    }
 
-   ionViewDidLoad(){
-        let self = this;
-        // this.slider.onTransitionEnd = function(swiper){
-        //     if(swiper.swipeDirection == 'next'){
-        //        self.events.publish('slide:change',1);
-        //     } else {
-        //       // self.events.publish('menu:open');
-        //     }
-        // }
-        this.slider.ionDrag.delay(100).subscribe(
-           data=>{
-               if(data.swipeDirection == "prev")
-                    self.events.publish('menu:open');
-               else if (data.swipeDirection == "next")
-                    self.events.publish('slide:change',1);
-            },
-           error=>{console.log('ion drag error',error)},
-           ()=>{console.log('ion complete ionDrag',)}
-       )
-   }
+//    ionViewDidLoad(){
+//         let self = this;
+//         // this.slider.onTransitionEnd = function(swiper){
+//         //     if(swiper.swipeDirection == 'next'){
+//         //        self.events.publish('slide:change',1);
+//         //     } else {
+//         //       // self.events.publish('menu:open');
+//         //     }
+//         // }
+//         this.slider.ionDrag.delay(100).subscribe(
+//            data=>{
+//                if(data.swipeDirection == "prev")
+//                     self.events.publish('menu:open');
+//                else if (data.swipeDirection == "next")
+//                     self.events.publish('slide:change',1);
+//             },
+//            error=>{console.log('ion drag error',error)},
+//            ()=>{console.log('ion complete ionDrag',)}
+//        )
+//    }
 
    loadTasks() : Promise<any> {
      return this.user.getUserProps()
@@ -121,15 +121,5 @@ export class LSNew {
             refresher.complete();
         })
    }
-
-   //   public swiped(event){
-  //      console.log('slide drug',event);
-  //      // direction: 4 <-
-  //      // direction: 2 ->
-  //       if(event.direction == 2)
-  //             this.events.publish('slide:change',2);
-  //         else if (event.direction == 4)
-  //             this.events.publish('slide:change',0);
-  //  }
-   
+      
 }

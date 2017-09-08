@@ -1,12 +1,12 @@
 
 <ion-content >
-  <!-- <ion-refresher (ionRefresh)="doRefresh($event)">
+  <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content>
     </ion-refresher-content>
-  </ion-refresher> -->
-  <ion-slides #mySlider>
+  </ion-refresher>
+  <!-- <ion-slides #mySlider>
     <ion-slide>
-      <ion-scroll>
+      <ion-scroll> -->
         <ion-list >
           <!--(swipe)="swiped($event)"-->
           <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
@@ -32,7 +32,7 @@
             loadingText="Loading more data...">
           </ion-infinite-scroll-content>
         </ion-infinite-scroll> -->
-      </ion-scroll>
+      <!-- </ion-scroll>
     </ion-slide>
-  </ion-slides>
+  </ion-slides> -->
 </ion-content>

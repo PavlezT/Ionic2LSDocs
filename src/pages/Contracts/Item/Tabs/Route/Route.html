@@ -6,7 +6,7 @@
                     <ion-item *ngFor="let route of routesList" class="route_item" [attr.started]="route.StateStatus == 'InProgress' ? true : false" >
                         <div>
                             <div class="state_id">{{route.StateNumber}}</div>
-                            <div class="state_name" [attr.done]="route.StateStatus == 'Completed' ? true : false" >{{route.StateName}}</div> 
+                            <div class="state_name" [attr.done]="route.StateStatus == 'Completed' ? true : false" [innerHTML]="route.StateName"></div> 
                         </div>
                         <div>
                             <ion-icon name="ios-contacts-outline"></ion-icon>

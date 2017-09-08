@@ -1,12 +1,12 @@
 
 <ion-content >
-  <!-- <ion-refresher (ionRefresh)="doRefresh($event)">
+  <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content>
     </ion-refresher-content>
-  </ion-refresher> -->
-  <ion-slides #mySlider>
+  </ion-refresher>
+  <!-- <ion-slides #mySlider>
     <ion-slide>
-      <ion-scroll>
+      <ion-scroll> -->
         <ion-list #Image>
             <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
                 <ion-avatar item-left>
@@ -27,7 +27,7 @@
             <h1 ion-item *ngIf="items && items.length == 0">{{loc.dic.mobile.Empty}}</h1>
             <h1 ion-item *ngIf="!items">{{loc.dic.mobile.Downloading}}</h1>
         </ion-list>
-      </ion-scroll>
+      <!-- </ion-scroll>
     </ion-slide>
-  </ion-slides>
+  </ion-slides> -->
 </ion-content>
