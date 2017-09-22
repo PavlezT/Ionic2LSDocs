@@ -216,7 +216,7 @@ export class MyApp {
           name: 'Email',
           type:'text',
           placeholder: 'Email',
-          value: this.user.getEmail() || window.localStorage.getItem('tempuserEmail') || ''
+          value: window.localStorage.getItem('tempuserEmail') || this.user.getEmail() || ''
         },
         {
           name: 'Password',
