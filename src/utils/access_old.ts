@@ -9,6 +9,7 @@ export class Access{
     digest : any;
     access_token : string;
     access_expiry : string;
+    site_realm : string;
    // refresh_token : string;
     itemId : number;
 
@@ -81,15 +82,15 @@ export class Access{
         //     .catch(err =>{
         //         console.log('<Access> getAccessToken error',err);
         //     })
-        let url = `https://accounts.accesscontrol.windows.net/${consts.site_realm}/tokens/OAuth/2`;
+        let url = `https://accounts.accesscontrol.windows.net/${this.site_realm}/tokens/OAuth/2`;
 
         let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded'});
         let options = new RequestOptions({ headers: headers });
 
         let data = `grant_type=client_credentials&
-            client_id=${consts.client_id}@${consts.site_realm}&
+            client_id=${consts.client_id}@${this.site_realm}&
             client_secret=${encodeURIComponent(consts.secret)}&
-            resource=${consts.resource}/${consts.siteUrl.substring('https://'.length,consts.siteUrl.indexOf('/sites'))}@${consts.site_realm}`   
+            resource=${consts.resource}/${consts.siteUrl.substring('https://'.length,consts.siteUrl.indexOf('/sites'))}@${this.site_realm}`   
 
         return this.http.post(url,data,options).toPromise()
             .then(res=>{
@@ -102,15 +103,15 @@ export class Access{
     }
 
     refreshAccessToken() : Promise<any>{
-        let url = `https://accounts.accesscontrol.windows.net/${consts.site_realm}/tokens/OAuth/2`;
+        let url = `https://accounts.accesscontrol.windows.net/${this.site_realm}/tokens/OAuth/2`;
 
         let data = {
             grant_type : '',//consts.grant_type_refresh,
-            client_id : consts.client_id+'@'+consts.site_realm,
+            client_id : consts.client_id+'@'+this.site_realm,
             client_secret : consts.secret,
           //  refresh_token : this.refresh_token,
             //redirect_uri : consts.redirected_uri,
-            resource : consts.resource +'/'+ consts.siteUrl.substring('https://'.length,consts.siteUrl.indexOf('/sites')) +'@'+ consts.site_realm
+            resource : consts.resource +'/'+ consts.siteUrl.substring('https://'.length,consts.siteUrl.indexOf('/sites')) +'@'+ this.site_realm
         }
 
         let headers = new Headers({'Accept': 'application/json;odata=verbose',"Content-Type": "application/x-www-form-urlencoded"});

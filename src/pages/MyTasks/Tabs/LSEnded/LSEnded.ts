@@ -49,14 +49,18 @@ export class LSEnded {
             return this.getEndedTasks()
          })
          .then( tasks => {
-            this.items = JSON.parse( (JSON.parse(tasks._body)).d.results[0] && (JSON.parse(tasks._body)).d.results[0].UserHistory || '[]');
-            this.items = this.items.filter((item,i,arr)=> {
-               if(!!item.TaskType){//if(item.EventType && (item.EventType.includes('EventDoneTask') ))//|| item.EventType.includes('Close')
-                  item.StartDate_view = moment.utc(item.StartDate.split(' ')[0].split('.').reverse().join('-')).format("dd, DD MMMM");
-                  item.DueDate_view = moment.utc(item.DueDate.split('.').reverse().join('-')).format("dd, DD MMMM");
-                  return item;
-               }
-            });
+            tasks = tasks.json().d.results;//JSON.parse(tasks._body)
+            this.items = [];
+            tasks.map((task,i)=>{
+              task = JSON.parse( task.UserHistory || '[]');
+              task.filter((item,i,arr)=> {
+                if(!!item.TaskType){//if(item.EventType && (item.EventType.includes('EventDoneTask') ))//|| item.EventType.includes('Close')
+                    item.StartDate_view = moment.utc(item.StartDate.split(' ')[0].split('.').reverse().join('-')).format("dd, DD MMMM");
+                    item.DueDate_view = moment.utc(item.DueDate.split('.').reverse().join('-')).format("dd, DD MMMM");
+                    this.items.push(item);
+                }
+              });
+            })
          })
          .catch( error => {
             console.error('<LSEnded> Fail loading ',error);

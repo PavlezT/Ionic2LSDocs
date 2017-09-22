@@ -24,7 +24,7 @@ export class MyApp {
   errorCounter : number;
   // secureStorage: SecureStorage;
   siteUrl = consts.siteUrl;
-  onPremise = consts.OnPremise;
+  onPremise = window.localStorage.getItem('OnPremise');
   rootPage: any = MyTasks;
   pages: Array<{title: string, icon:string, component: any , listGUID  : string }>;
   loader : any;
@@ -53,7 +53,7 @@ export class MyApp {
 
       this.checkNetwork().then(()=>{
          this.loaderctrl.stopLoading();
-         if(!(this.auth.checkAuthAlready(consts.siteUrl))){
+         if(!(this.auth.checkAuthAlready())){
             this.showPrompt();
          } else if(!(this.auth.checkAuthActive(consts.siteUrl))){
             this.reLogin();
@@ -74,12 +74,15 @@ export class MyApp {
     return Promise.reject('There is no internet connection');
   }
 
-  getLogin(userName : string , userPassword : string) : void {
+  getLogin(userName : string , userPassword : string, url? : string) : void {
      this.loaderctrl.presentLoading();
+     url && consts.setUrl(url);
+     window.localStorage.setItem('tempuserEmail',userName);
      this.auth.init(consts.siteUrl,{username : userName, password : userPassword});//'oleg.dub@lsdocs30.onmicrosoft.com'  'Ljrevtyn0'
      this.auth.getAuth().then(
         result => {
            this.loaderctrl.stopLoading();
+           url && window.localStorage.setItem('siteUrl',url);
            this.startApp();
         },
         errorMessage => {
@@ -211,19 +214,28 @@ export class MyApp {
       inputs: [
         {
           name: 'Email',
-          placeholder: 'Email'
+          type:'text',
+          placeholder: 'Email',
+          value: this.user.getEmail() || window.localStorage.getItem('tempuserEmail') || ''
         },
         {
           name: 'Password',
           type: 'password',
           placeholder: 'Password'
+        },
+        {
+          name: 'URL',
+          type:'text',
+          label:'URL',
+          value: consts.siteUrl? consts.siteUrl : '',
+          placeholder:'https://example.sharepoint.com/sites/exampleintranet'
         }
       ],
       buttons: [
         {
           text: this.loc.dic.Accept,
           handler: data => {
-            this.getLogin(data.Email,data.Password);
+            this.getLogin(data.Email,data.Password,data.URL);
           }
         }
       ]
