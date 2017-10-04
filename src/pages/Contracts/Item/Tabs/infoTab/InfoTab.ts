@@ -11,6 +11,7 @@ export class InfoTab {
   id :number;
   listGUID: string;
   ContentTypeId: string;
+  Except : Object;
 
   itemProps : any;
   itemKeys : Array<string>;
@@ -20,6 +21,21 @@ export class InfoTab {
   constructor( public navCtrl: NavController, public navParams: NavParams ,public events: Events,  @Inject(Localization) public loc : Localization,@Inject(SelectedItem) public selectedItem : SelectedItem ) {
       this.id  = selectedItem.getId();
       this.listGUID = selectedItem.getListGUID();
+
+      this.Except = {
+          'FileLeafRef' : true,
+          'Title' : true,
+          'FolderChildCount' : true,
+          'ItemChildCount' : true,
+          'TaxCatchAll' : true,
+          '_dlc_DocIdPersistId' : true,
+          '_dlc_DocIdUrl' : true,
+          '_dlc_DocId' : true,
+          'OrderType_0': true ,
+          'IntDocType_0' : true,
+          'Source_0' : true,
+          'ContractType_0' : true,
+      }
       
       Promise.all([selectedItem.getItemFileds(),selectedItem.getItemProps()])
          .then( (res) => this.getItemProps(res[0],res[1]));
@@ -41,7 +57,7 @@ export class InfoTab {
 
   getItemProps(ItemFields,itemProps){
      this.itemKeys = ItemFields.filter( (key, i ,arr) => {
-        if( itemProps[key.StaticName] && !key.StaticName.includes('_') && !key.Group.toLowerCase().includes('hidden'))
+        if( itemProps[key.StaticName] && !key.StaticName.includes('_') && !key.Group.toLowerCase().includes('hidden') && !this.Except[key.StaticName] && !this.Except[key.Title])
             return key;
      })
      this.itemProps = itemProps;

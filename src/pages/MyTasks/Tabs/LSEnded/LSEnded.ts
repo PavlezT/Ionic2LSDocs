@@ -61,6 +61,11 @@ export class LSEnded {
                 }
               });
             })
+            this.items.sort((a,b)=>{
+                var a1 = a.DueDateSort,b1 = b.DueDateSort;
+                if (a1 === b1) return -1;
+                return a1 > b1 ? 1 : -1;
+            });
          })
          .catch( error => {
             console.error('<LSEnded> Fail loading ',error);

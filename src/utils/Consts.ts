@@ -6,8 +6,9 @@ export const MSOnlineSts = 'https://login.microsoftonline.com/extSTS.srf';
 export const FormsPath = '_forms/default.aspx?wa=wsignin1.0';
 export const Online_saml = 'online_saml.tmpl';
 export const Online_saml_path = 'www/assets/templates/';
-export const client_id = '042a3cb4-c140-4455-ab2f-e46f149311dc';
-export const secret = 'uHR0hglMdSGYWhkr1UlykNf0BOzmHIeGa6+7vIrlPTI=';
+export const client_id = '6cb98da8-34b6-41cc-8730-e7453078376c';
+export const secret = '6yaXSnbZT7YAohlhZxZFHHW2rA+lpxzJOlfsmg0iBb0=';
+export const redirect_uri = 'https://lsdocs.azurewebsites.net';
 export const resource = '00000003-0000-0ff1-ce00-000000000000';
 //On Premise
 export const OnPremise_keyPath = 'www/assets/templates/';
@@ -22,7 +23,7 @@ export let siteUrl ;//= 'https://qalizard.sharepoint.com/sites/LSDocs';//'https:
 // export const OnPremise = false;
 
 export function setUrl(url:string): void {
-    siteUrl = url;
+    siteUrl = url.trim();
 }
 
 // export const AdfsOnlineRealm = 'urn:federation:MicrosoftOnline';

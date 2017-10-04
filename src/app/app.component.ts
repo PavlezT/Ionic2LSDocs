@@ -74,21 +74,22 @@ export class MyApp {
     return Promise.reject('There is no internet connection');
   }
 
-  getLogin(userName : string , userPassword : string, url? : string) : void {
+  getLogin(userName : string , userPassword : string, url? : string) : Promise<any> {
      this.loaderctrl.presentLoading();
      url && consts.setUrl(url);
      window.localStorage.setItem('tempuserEmail',userName);
      this.auth.init(consts.siteUrl,{username : userName, password : userPassword});//'oleg.dub@lsdocs30.onmicrosoft.com'  'Ljrevtyn0'
-     this.auth.getAuth().then(
+     return this.auth.getAuth().then(
         result => {
            this.loaderctrl.stopLoading();
            url && window.localStorage.setItem('siteUrl',url);
-           this.startApp();
+           return this.startApp();
         },
         errorMessage => {
            this.showPrompt();
            this.showToast(errorMessage);
            this.loaderctrl.stopLoading();
+           return true;
         })
   }
 
@@ -139,7 +140,7 @@ export class MyApp {
                this.errorCounter++;
                this.loaderctrl.stopLoading();
                this.reLogin();
-            } else if((this.errorCounter <= 1 && error.status == '401') || (this.errorCounter > 1 && error.status == '403')){
+            } else if((this.errorCounter <= 1 && error.status == '401') || (this.errorCounter > 1 && error.status == '403') || (error.status == '404')){
                this.errorCounter++;
                this.showPrompt();
                this.loaderctrl.stopLoading();
@@ -235,8 +236,8 @@ export class MyApp {
         {
           text: this.loc.dic.Accept,
           handler: data => {
-            data.URL && this.getLogin(data.Email,data.Password,data.URL);
-            !data.URL && this.showPrompt();
+            data.URL && this.getLogin(data.Email,data.Password,data.URL) && window.localStorage.removeItem('tempuserEmail');
+            !data.URL && this.showToast("Fields should not be empty.") && this.showPrompt();
           }
         }
       ]

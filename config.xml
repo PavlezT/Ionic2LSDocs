@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.lizard_soft.lsdocs" version="1.1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.lizard_soft.lsdocs" version="1.1.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>LSDocs</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
@@ -98,7 +98,7 @@
     <preference name="SplashScreenDelay" value="10000" />
     <preference name="KeepRunning" value="false" />
     <preference name="LoadUrlTimeoutValue" value="87000" />
-    <engine name="android" spec="^5.2.2" />
+    <engine name="android" spec="^6.2.3" />
     <engine name="browser" spec="~4.1.0" />
     <plugin name="cordova-plugin-device" spec="~1.1.5" />
     <plugin name="cordova-plugin-file-opener2" spec="~2.0.8" />

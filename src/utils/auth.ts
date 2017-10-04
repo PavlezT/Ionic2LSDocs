@@ -95,6 +95,10 @@ export class Auth {
                                                       let now = new Date();
                                                       now.setSeconds(now.getSeconds() + diffSeconds);
                                                       
+                                                      let authPage : string = (response[1] && response[1].text) ? response[1].text() : " ";
+                                                      if(authPage.includes('Correlation ID:') || authPage.includes('<div id="errordisplay-mainDiv">'))
+                                                        throw new Error(`Error in login user in sharepoint:${authPage.slice( authPage.indexOf('id="errordisplay-IssueTypeValue">')+'id="errordisplay-IssueTypeValue">'.length,authPage.lastIndexOf('</span>') )}`)
+
                                                       self.setCookieExpiry(host, now);
                                                       return true;
                                                    })
@@ -105,7 +109,7 @@ export class Auth {
 
      private checkOnPremise() : Promise<any> {
       return this.http.get(consts.siteUrl).toPromise()
-        .then(()=>{return [60*60*24*365]})
+        .then(()=>{return [60*60*24*365,{}]})
         .catch(err=>{
           console.log('<Auth> error checking onPremise:',err);
           throw new Error('Url is invalid or site is unreachable.')
@@ -129,28 +133,31 @@ export class Auth {
    }
 
    public getTokenWithOnline(): Promise<any> {
-        let self = this;
-        let host = self.url.substring(0,self.url.indexOf('/sites/'));
-        let spFormsEndPoint =  host + "/" + consts.FormsPath;
+      let self = this;
+      let host = self.url.substring(0,self.url.indexOf('/sites/'));
+      let spFormsEndPoint =  host + "/" + consts.FormsPath;
 
-        return self.readFile(consts.Online_saml_path ,consts.Online_saml)
-               .then( (text:string) => {
-                  let samlBody = text.replace('<%= username %>',self.options.username).replace('<%= password %>',self.options.password).replace('<%= endpoint %>',spFormsEndPoint);
-                  let url = consts.MSOnlineSts;
+      if(!host.includes('https://'))
+        return Promise.reject("The URL should support the HTTPS protocol.");
 
-                  let headers = new Headers({'Content-Type': 'application/soap+xml; charset=utf-8'});
-                  let options = new RequestOptions({ headers: headers });
+      return self.readFile(consts.Online_saml_path ,consts.Online_saml)
+            .then( (text:string) => {
+                let samlBody = text.replace('<%= username %>',self.options.username).replace('<%= password %>',self.options.password).replace('<%= endpoint %>',spFormsEndPoint);
+                let url = consts.MSOnlineSts;
 
-                  return self.http.post(url,samlBody,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
-                     .toPromise()
-               })
-               .then( response => {
-                  return response.text()
-               })
-               .catch( error => {
-                  throw new Error(`Error in posting XML to loginmicrosoft:\n${JSON.stringify(error)}`);
-               })
-    }
+                let headers = new Headers({'Content-Type': 'application/soap+xml; charset=utf-8'});
+                let options = new RequestOptions({ headers: headers });
+                
+                return self.http.post(url,samlBody,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
+                  .toPromise()
+            })
+            .then( response => {
+                return response.text()
+            })
+            .catch( error => {
+                throw new Error(`Error in posting XML to loginmicrosoft:\n${JSON.stringify(error)}`);
+            })
+  }
 
    public readFile(path,filename):Promise <any>{
       if(Device.device.uuid)//this is device

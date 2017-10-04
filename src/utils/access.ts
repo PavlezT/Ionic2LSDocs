@@ -12,8 +12,10 @@ export class Access{
     private access_expiry : string;
     private site_realm : string;
 
-    constructor(@Inject(Http) public http: Http){
+    private error_counter : number;
 
+    constructor(@Inject(Http) public http: Http){
+        this.error_counter = 0;
     }
 
     public _init() : void {
@@ -37,7 +39,8 @@ export class Access{
             })
             .catch( err =>{
                 console.log('<Access> getDigest error',err);
-                if(err.status == '500' && !window.localStorage.getItem('OnPremise')){
+                if(err.status == '500' && !window.localStorage.getItem('OnPremise') && this.error_counter < 4){
+                    this.error_counter ++;
                     return this.getAccessToken().then(()=>{ return this.getDigest()});
                 }
                 return {FormDigestValue:''};
