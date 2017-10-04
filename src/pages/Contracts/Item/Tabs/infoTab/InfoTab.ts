@@ -28,12 +28,15 @@ export class InfoTab {
           'FolderChildCount' : true,
           'ItemChildCount' : true,
           'TaxCatchAll' : true,
+          'TaxCatchAllLabel' : true,
           '_dlc_DocIdPersistId' : true,
           '_dlc_DocIdUrl' : true,
           '_dlc_DocId' : true,
+          'LSiIdeaMetaCategory_0' : true,
           'OrderType_0': true ,
           'IntDocType_0' : true,
           'Source_0' : true,
+          'RequestType_0' : true,
           'ContractType_0' : true,
       }
       
