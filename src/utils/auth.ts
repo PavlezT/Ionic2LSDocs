@@ -1,18 +1,20 @@
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 import { Injectable, Inject } from '@angular/core';
-import { File , Device, NativeStorage } from 'ionic-native';
-import * as consts from './Consts';
+import { NativeStorage } from '@ionic-native/native-storage';
+import { Device } from '@ionic-native/device';
+import { File } from '@ionic-native/file';
+import * as consts from './consts';
 
 declare var cordova:any;
 
 @Injectable()
 export class Auth {
-   url:string;
+   url : string;
    options: { username : string, password : string};
    http: Http;
 
-   constructor(@Inject(Http) http: Http){
+   constructor(@Inject(Http) http: Http, public file : File, public device: Device, public nativeStorage: NativeStorage){
       this.http = http;
    }
 
@@ -39,7 +41,7 @@ export class Auth {
          window.localStorage.setItem('username',this.options.username);
          window.localStorage.setItem('password',this.options.password);
       }
-      NativeStorage.setItem('user',{username:this.options.username,password: this.options.password})
+      this.nativeStorage.setItem('user',{username:this.options.username,password: this.options.password})
       .then(
          //()=>{
          // Promise.all([this.secureStorage.set('username', 'ddd'),
@@ -66,14 +68,14 @@ export class Auth {
    }
 
    checkAuthAlready(){
-    let host = window.localStorage.getItem('siteUrl');
-    if(!host) return false;
-    consts.setUrl(host);
-    host = host.substring(0,host.indexOf('/sites/'));
-    let expiry= window.localStorage.getItem(host);
-    if(expiry)
-       return true;
-    return false;
+      let host = window.localStorage.getItem('siteUrl');
+      if(!host) return false;
+      consts.setUrl(host);
+      host = host.substring(0,host.indexOf('/sites/'));
+      let expiry= window.localStorage.getItem(host);
+      if(expiry)
+         return true;
+      return false;
    }
 
    setCookieExpiry(host : string, expiry : Date){
@@ -86,10 +88,10 @@ export class Auth {
       let host = self.url.substring(0,self.url.indexOf('/sites/'));
 
       return (!window.localStorage.getItem('OnPremise') ?  this.getTokenWithOnline().then( (res : string) => {return this.XmlParse(res)})
-                                                      .then( tokenResponse => {
-                                                          return self.postToken(tokenResponse)
-                                                      })
-                                                : this.checkOnPremise())
+                                                          .then( tokenResponse => {
+                                                              return self.postToken(tokenResponse)
+                                                           })
+                                            : this.checkOnPremise())
                                                    .then( response => {
                                                       let diffSeconds = response[0];
                                                       let now = new Date();
@@ -103,24 +105,25 @@ export class Auth {
                                                       return true;
                                                    })
                                                    .catch(error => {
-                                                      throw new Error(error.message);
+                                                      throw new Error(error.message || error);
                                                    })
      }
 
-     private checkOnPremise() : Promise<any> {
-      return this.http.get(consts.siteUrl).toPromise()
-        .then(()=>{return [60*60*24*365,{}]})
-        .catch(err=>{
-          console.log('<Auth> error checking onPremise:',err);
-          throw new Error('Url is invalid or site is unreachable.')
-        });
-    }
+  private checkOnPremise() : Promise<any> {
+    return this.http.get(consts.siteUrl).toPromise()
+      .then(()=>{return [60*60*24*365,{}]})
+      .catch(err=>{
+        console.log('<Auth> error checking onPremise:',err);
+        throw new Error('Url is invalid or site is unreachable.')
+      });
+  }
 
    public XmlParse(res) : Object {
       if(res.includes('<S:Fault>') || res.startsWith('Error')){
          let reason = res.substring(res.indexOf('<S:Detail>'),res.indexOf('</S:Detail>'));
          reason = reason.substring(reason.indexOf('<psf:text>') + '<psf:text>'.length,reason.indexOf('</psf:text>'));
-         throw new Error(`Fail in loggin!\n ${reason}`);
+         console.error(`<Auth> Fail in loggin: ${reason}`);
+         throw new Error(`Fail in loggin!\n The email or password you entered is incorrect.`);//${reason}
       } else {
          let token = res.substring(res.indexOf('<wsse:BinarySecurityToken Id="Compact0">') + '<wsse:BinarySecurityToken Id="Compact0">'.length,res.indexOf('</wsse:BinarySecurityToken>'));
          let expires = res.substring(res.indexOf('<wst:Lifetime>'),res.indexOf('</wst:Lifetime>'));
@@ -133,35 +136,35 @@ export class Auth {
    }
 
    public getTokenWithOnline(): Promise<any> {
-      let self = this;
-      let host = self.url.substring(0,self.url.indexOf('/sites/'));
-      let spFormsEndPoint =  host + "/" + consts.FormsPath;
+        let self = this;
+        let host = self.url.substring(0,self.url.indexOf('/sites/'));
+        let spFormsEndPoint =  host + "/" + consts.FormsPath;
 
-      if(!host.includes('https://'))
-        return Promise.reject("The URL should support the HTTPS protocol.");
+        if(!host.includes('https://'))
+          return Promise.reject("The URL should support the HTTPS protocol.");
 
-      return self.readFile(consts.Online_saml_path ,consts.Online_saml)
-            .then( (text:string) => {
-                let samlBody = text.replace('<%= username %>',self.options.username).replace('<%= password %>',self.options.password).replace('<%= endpoint %>',spFormsEndPoint);
-                let url = consts.MSOnlineSts;
+        return self.readFile(consts.Online_saml_path ,consts.Online_saml)
+               .then( (text:string) => {
+                  let samlBody = text.replace('<%= username %>',self.options.username).replace('<%= password %>',self.options.password).replace('<%= endpoint %>',spFormsEndPoint);
+                  let url = consts.MSOnlineSts;
 
-                let headers = new Headers({'Content-Type': 'application/soap+xml; charset=utf-8'});
-                let options = new RequestOptions({ headers: headers });
-                
-                return self.http.post(url,samlBody,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
-                  .toPromise()
-            })
-            .then( response => {
-                return response.text()
-            })
-            .catch( error => {
-                throw new Error(`Error in posting XML to loginmicrosoft:\n${JSON.stringify(error)}`);
-            })
-  }
+                  let headers = new Headers({'Content-Type': 'application/soap+xml; charset=utf-8'});
+                  let options = new RequestOptions({ headers: headers });
+                  
+                  return self.http.post(url,samlBody,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
+                     .toPromise()
+               })
+               .then( response => {
+                  return response.text()
+               })
+               .catch( error => {
+                  throw new Error(`Error while connecting "loginmicrosoft"`);//`Error in posting XML to loginmicrosoft:\n${JSON.stringify(error)}`);
+               })
+    }
 
    public readFile(path,filename):Promise <any>{
-      if(Device.device.uuid)//this is device
-         return File.readAsText(cordova.file.applicationDirectory + path,filename);
+      if(this.device.uuid)//this is device
+         return this.file.readAsText(cordova.file.applicationDirectory + path,filename).catch(error=>{throw new Error('Read SAML file error!');})
       else if(filename.includes('online_saml.tmpl')){
          console.log('In browser reading file');
          return Promise.resolve(`<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:a="http://www.w3.org/2005/08/addressing" xmlns:u="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
@@ -198,12 +201,12 @@ export class Auth {
    public postToken(tokenResponse):Promise <any>{
        let self = this;
        let host = self.url.substring(0,self.url.indexOf('/sites/'));
-       let spFormsEndPoint =  host + "/" + consts.FormsPath;//(Device.device.uuid) ? ( host + "/" + consts.FormsPath) : ('/api?'+ "/" + consts.FormsPath);
+       let spFormsEndPoint =  host + "/" + consts.FormsPath;
        let now = new Date().getTime();
        let expires = new Date(tokenResponse.expires).getTime();
        let diff = (expires - now) / 1000;
        let diffSeconds = parseInt(diff.toString(), 10);
-
+       
        let headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded'});
        let options = new RequestOptions({ headers: headers });
 

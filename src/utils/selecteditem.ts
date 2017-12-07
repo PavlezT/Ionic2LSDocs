@@ -1,7 +1,7 @@
 
 import { Injectable , Inject } from '@angular/core';
 import { Http, Headers, RequestOptions  } from '@angular/http';
-import * as consts from './Consts';
+import * as consts from './consts';
 import { Localization } from './localization'
 
 @Injectable()

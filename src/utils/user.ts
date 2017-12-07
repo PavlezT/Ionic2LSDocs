@@ -3,7 +3,7 @@ import { Http, Headers, RequestOptions  } from '@angular/http';
 import 'rxjs/add/operator/retry';
 import 'rxjs/add/operator/timeout';
 import 'rxjs/add/operator/delay';
-import * as consts from './Consts';
+import * as consts from './consts';
 
 @Injectable()
 export class User{

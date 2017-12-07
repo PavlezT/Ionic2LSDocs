@@ -1,7 +1,7 @@
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import 'rxjs/add/operator/toPromise';
 import { Injectable, Inject } from '@angular/core';
-import * as consts from './Consts';
+import * as consts from './consts';
 
 @Injectable()
 export class Access{
@@ -85,11 +85,11 @@ export class Access{
     }
 
     public getToken() : Promise<string> {
-        return ((new Date(this.access_expiry)) <= (new Date())) && !window.localStorage.getItem('OnPremise') ? this.getAccessToken().then(()=>{return this.access_token}) : Promise.resolve(window.localStorage.getItem('OnPremise')?consts.access_tokenOnPremise :this.access_token);
+        return ((new Date(this.access_expiry)) <= (new Date(Date.now()))) && !window.localStorage.getItem('OnPremise') ? this.getAccessToken().then(()=>{return this.access_token}) : Promise.resolve(window.localStorage.getItem('OnPremise')?consts.access_tokenOnPremise :this.access_token);
     }
 
     public getDigestValue() : Promise<string> {
-        return ((new Date(this.digest_expiry)) <= (new Date())) ? this.getDigest().then(()=>{return this.digest}) : Promise.resolve(this.digest);
+        return ((new Date(this.digest_expiry)) <= (new Date(Date.now()))) ? this.getDigest().then(()=>{return this.digest}) : Promise.resolve(this.digest);
     }
 
    //  public getAccessTokenOnPremise() : Promise<any> {

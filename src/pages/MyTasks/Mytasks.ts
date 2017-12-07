@@ -5,7 +5,7 @@ import { Http, Headers, RequestOptions  } from '@angular/http';
 import { User } from '../../utils/user';
 import { Loader } from '../../utils/loader';
 import { Localization } from '../../utils/localization';
-import * as consts from '../../utils/Consts';
+import * as consts from '../../utils/consts';
 
 import { LSNew } from './Tabs/LSNew/LSNew';
 import { LSActive } from './Tabs/LSActive/LSActive';

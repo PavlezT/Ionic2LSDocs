@@ -1,5 +1,8 @@
-import { NgModule, ErrorHandler } from '@angular/core';
-import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
+import { BrowserModule } from '@angular/platform-browser';
+import { ErrorHandler, NgModule } from '@angular/core';
+import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
+import { HttpModule } from '@angular/http';
+
 import { MyApp } from './app.component';
 import { MyTasks } from '../pages/MyTasks/MyTasks';
 import { Contracts } from '../pages/Contracts/Contracts';
@@ -22,6 +25,17 @@ import { LSLate } from '../pages/MyTasks/Tabs/LSLate/LSLate';
 import { LSEnded } from '../pages/MyTasks/Tabs/LSEnded/LSEnded';
 import { TaskItem } from '../pages/MyTasks/TaskItem/TaskItem';
 //import { SuperTabsModule } from 'ionic2-super-tabs';
+
+import { StatusBar } from '@ionic-native/status-bar';
+import { SplashScreen } from '@ionic-native/splash-screen';
+import { Network } from '@ionic-native/network';
+import { NativeStorage } from '@ionic-native/native-storage';
+import { File } from '@ionic-native/file';
+import { Device } from '@ionic-native/device';
+import { Transfer } from '@ionic-native/transfer';
+import { FileOpener } from '@ionic-native/file-opener';
+import { FilePath } from '@ionic-native/file-path';
+
 @NgModule({
   declarations: [
     MyApp,
@@ -32,14 +46,8 @@ import { TaskItem } from '../pages/MyTasks/TaskItem/TaskItem';
     LSNew , LSActive ,LSLate , LSEnded
   ],
   imports: [
-    IonicModule.forRoot(MyApp,{
-      platforms:{
-        ios:{
-          // menuType:'overlay',
-          statusbarPadding:true
-        }
-      }
-    },{})
+    HttpModule,BrowserModule,
+    IonicModule.forRoot(MyApp)
     //,SuperTabsModule.forRoot()
     // ,TranslateModule.forRoot()
     ],
@@ -52,7 +60,10 @@ import { TaskItem } from '../pages/MyTasks/TaskItem/TaskItem';
     InfoTab, Documents, History, Route,
     LSNew , LSActive ,LSLate , LSEnded
   ],
-  providers: [{provide: ErrorHandler, useClass: IonicErrorHandler},
+  providers: [
+      StatusBar,FileOpener,FilePath,
+      SplashScreen,Network,NativeStorage,File,Device,Transfer,
+      {provide: ErrorHandler, useClass: IonicErrorHandler},
       {provide: Auth , useClass: Auth},
       {provide: Access, useClass: Access},
       {provide: SelectedItem , useClass: SelectedItem},

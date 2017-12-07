@@ -4,7 +4,7 @@ import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
 import 'moment/locale/uk';
 
-import * as consts from '../../../../utils/Consts';
+import * as consts from '../../../../utils/consts';
 import { User } from '../../../../utils/user';
 import { TaskItem } from '../../TaskItem/TaskItem';
 import { Images } from '../../../../utils/images';

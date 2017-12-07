@@ -1,12 +1,17 @@
 import { Component, Inject, ViewChild } from '@angular/core';
-import { Transfer, FileOpener,File } from 'ionic-native';
 import { NavController, NavParams, ToastController,Events, Slides  } from 'ionic-angular';
 import { SelectedItem } from '../../../../../utils/selecteditem';
-import * as consts from '../../../../../utils/Consts';
+import * as consts from '../../../../../utils/consts';
 import { Localization } from '../../../../../utils/localization';
 import { Loader } from '../../../../../utils/loader';
 import * as mimes from 'mime-types';
 import * as trans from 'transliteration.crh';
+
+import { File } from '@ionic-native/file';
+import { FileOpener } from '@ionic-native/file-opener';
+import { Transfer, TransferObject } from '@ionic-native/transfer';
+import { Device } from '@ionic-native/device';
+import { FilePath } from '@ionic-native/file-path';
 
 declare var cordova:any;
 
@@ -17,26 +22,31 @@ declare var cordova:any;
 export class Documents {
   @ViewChild('mySlider') slider: Slides;
   Docs : Array<any>;
-  fileTransfer :any;
+  fileTransfer : TransferObject;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,@Inject(Loader) public loaderctrl: Loader,public events: Events, @Inject(Localization) public loc : Localization, @Inject(SelectedItem) public selectedItem : SelectedItem,public toastCtrl: ToastController) {
-      this.fileTransfer = new Transfer();
-      selectedItem.getItemDocs()
-       .then( docs => this.getDocuments(docs) )
+  constructor(public navCtrl: NavController, public navParams: NavParams,private filePath: FilePath,
+    @Inject(Loader) public loaderctrl: Loader, public device: Device,public events: Events, @Inject(Localization) public loc : Localization, 
+    @Inject(SelectedItem) public selectedItem : SelectedItem,public toastCtrl: ToastController,private transfer: Transfer,public file : File,
+    private fileOpener: FileOpener
+  ) {
+    try{
+      this.fileTransfer = this.transfer.create();
+    }catch(e){console.error('<Documents> FileTransfer create error:',e)};
+      selectedItem.getItemDocs().then( docs => this.getDocuments(docs) )
   }
 
   ionViewDidLoad(){
-        let self = this;
-        this.slider.ionDrag.delay(consts.swipeDelay).subscribe(
-           data=>{
-               if(data.swipeDirection == "prev")
-                    self.events.publish('itemslide:change',0);
-               else if (data.swipeDirection == "next")
-                    self.events.publish('itemslide:change',2);
-            },
-           error=>{console.log('ion drag error',error)},
-           ()=>{console.log('ion complete ionDrag',)}
-       )
+        // let self = this;
+      //   this.slider.ionSlideDrag.delay(consts.swipeDelay).subscribe(
+      //      data=>{
+      //          if(data.swipeDirection == "prev")
+      //               self.events.publish('itemslide:change',0);
+      //          else if (data.swipeDirection == "next")
+      //               self.events.publish('itemslide:change',2);
+      //       },
+      //      error=>{console.log('ion drag error',error)},
+      //      ()=>{console.log('ion complete ionDrag',)}
+      //  )
    }
 
   private getDocuments(docs) : void {
@@ -53,7 +63,7 @@ export class Documents {
     
     doc.localName = this.getLocalName(doc.Name);
     
-    File.checkFile(nativeURL,doc.localName).then(
+    this.file.checkFile(nativeURL,doc.localName).then(
       data => {this.opendDocs(nativeURL+doc.localName,doc.localName)},
       error => {this.downloadDoc(nativeURL,doc)}
     )     
@@ -74,13 +84,16 @@ export class Documents {
   }
 
   public opendDocs(nativeURL,docName) : void {
-    FileOpener.open(decodeURIComponent(nativeURL),mimes.lookup(decodeURIComponent(docName)))
-      .then((data)=>{this.loaderctrl.stopLoading();})
-      .catch(err=>{
-        this.loaderctrl.stopLoading();
-        console.log('<Documents> cant open file:',nativeURL)
-        this.showToast('Can`t open this file');
-      })
+    (this.device.platform == "Android" ?  this.filePath.resolveNativePath(nativeURL) : Promise.resolve(''))
+    .then((filePath)=>{
+      return this.fileOpener.open(decodeURIComponent(nativeURL), (mimes.lookup(decodeURIComponent(docName)) || 'application/msword'))
+    })
+    .then((data)=>{this.loaderctrl.stopLoading();})
+    .catch(err=>{
+      this.loaderctrl.stopLoading();
+      console.log('<Documents> cant open file:',nativeURL)
+      this.showToast('Can`t open this file');
+    })
   }
 
   private getLocalName(name) : String {

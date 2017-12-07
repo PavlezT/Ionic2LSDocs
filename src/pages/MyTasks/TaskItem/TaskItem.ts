@@ -6,7 +6,7 @@ import * as moment from 'moment';
 import { Item } from '../../Contracts/Item/Item';
 
 import { ArraySortPipe } from '../../../utils/arraySort';
-import * as consts from '../../../utils/Consts';
+import * as consts from '../../../utils/consts';
 import { User } from '../../../utils/user';
 import { Access } from '../../../utils/access';
 import { SelectedItem } from '../../../utils/selecteditem';
@@ -111,7 +111,11 @@ export class TaskItem {
 
   public cancelTask() : void {
      this.loaderctrl.presentLoading();
-     this.doneTask('RefuseTask');
+     
+     if(this.ContentType == 'LSTaskAppruve' || this.ContentType == 'LSTaskAgreement')
+        this.doneTask('Back');
+     if(this.ContentType == 'LSTaskPreparetion')
+        this.doneTask('RefuseTask');
   }
 
   public executeTask() : void {

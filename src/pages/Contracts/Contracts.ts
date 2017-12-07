@@ -3,7 +3,7 @@ import { Item } from './Item/Item';
 import { NavController, NavParams, MenuController } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 
-import * as consts from '../../utils/Consts';
+import * as consts from '../../utils/consts';
 import { SelectedItem } from '../../utils/selecteditem';
 import { Localization } from '../../utils/localization';
 

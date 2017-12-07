@@ -2,7 +2,7 @@ import { Component, Inject,  ViewChild } from '@angular/core';
 import { NavController, NavParams,Events, Slides } from 'ionic-angular';
 import { SelectedItem } from '../../../../../utils/selecteditem';
 import { ArraySortPipe } from '../../../../../utils/arraySort';
-import * as consts from '../../../../../utils/Consts';
+// import * as consts from '../../../../../utils/consts';
 import { Localization } from '../../../../../utils/localization';
 
 @Component({
@@ -23,17 +23,17 @@ export class History {
   }
 
   ionViewDidLoad(){
-        let self = this;
-        this.slider.ionDrag.delay(consts.swipeDelay).subscribe(
-           data=>{
-               if(data.swipeDirection == "prev")
-                    self.events.publish('itemslide:change',1);
-               else if (data.swipeDirection == "next")
-                    self.events.publish('itemslide:change',3);
-            },
-           error=>{console.log('ion drag error',error)},
-           ()=>{console.log('ion complete ionDrag',)}
-       )
+        // let self = this;
+      //   this.slider.ionDrag.delay(consts.swipeDelay).subscribe(
+      //      data=>{
+      //          if(data.swipeDirection == "prev")
+      //               self.events.publish('itemslide:change',1);
+      //          else if (data.swipeDirection == "next")
+      //               self.events.publish('itemslide:change',3);
+      //       },
+      //      error=>{console.log('ion drag error',error)},
+      //      ()=>{console.log('ion complete ionDrag',)}
+      //  )
    }
 
   getHistory(history) : void {

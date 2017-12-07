@@ -45,17 +45,17 @@ export class InfoTab {
   }
 
   ionViewDidLoad(){
-        let self = this;
-        this.slider.ionDrag.delay(100).subscribe(
-           data=>{
-               if(data.swipeDirection == "prev")
-                    self.events.publish('itemsmenu:open');
-               else if (data.swipeDirection == "next")
-                    self.events.publish('itemslide:change',1);
-            },
-           error=>{console.log('ion drag error',error)},
-           ()=>{console.log('ion complete ionDrag',)}
-       )
+        // let self = this;
+    //     this.slider.ionDrag.delay(100).subscribe(
+    //        data=>{
+    //            if(data.swipeDirection == "prev")
+    //                 self.events.publish('itemsmenu:open');
+    //            else if (data.swipeDirection == "next")
+    //                 self.events.publish('itemslide:change',1);
+    //         },
+    //        error=>{console.log('ion drag error',error)},
+    //        ()=>{console.log('ion complete ionDrag',)}
+    //    )
    }
 
   getItemProps(ItemFields,itemProps){

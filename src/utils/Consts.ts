@@ -6,6 +6,7 @@ export const MSOnlineSts = 'https://login.microsoftonline.com/extSTS.srf';
 export const FormsPath = '_forms/default.aspx?wa=wsignin1.0';
 export const Online_saml = 'online_saml.tmpl';
 export const Online_saml_path = 'www/assets/templates/';
+
 export const client_id = '6cb98da8-34b6-41cc-8730-e7453078376c';
 export const secret = '6yaXSnbZT7YAohlhZxZFHHW2rA+lpxzJOlfsmg0iBb0=';
 export const redirect_uri = 'https://lsdocs.azurewebsites.net';

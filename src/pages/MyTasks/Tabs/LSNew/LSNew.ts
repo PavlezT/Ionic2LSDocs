@@ -6,7 +6,7 @@ import 'moment/locale/uk';
 import 'moment/locale/ru';
 import 'moment/locale/en-gb';
 
-import * as consts from '../../../../utils/Consts';
+import * as consts from '../../../../utils/consts';
 import { User } from '../../../../utils/user';
 import { TaskItem } from '../../TaskItem/TaskItem';
 import { Images } from '../../../../utils/images';

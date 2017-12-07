@@ -2,7 +2,7 @@ import { Component, Inject, ViewChild } from '@angular/core';
 import { NavController, NavParams,Events, Slides } from 'ionic-angular';
 import { SelectedItem } from '../../../../../utils/selecteditem';
 import { Localization } from '../../../../../utils/localization';
-import * as consts from '../../../../../utils/Consts';
+// import * as consts from '../../../../../utils/consts';
 import * as moment from 'moment';
 import 'moment/locale/uk';
 
@@ -21,15 +21,15 @@ export class Route {
   }
 
   ionViewDidLoad(){
-        let self = this;
-        this.slider.ionDrag.delay(consts.swipeDelay).subscribe(
-           data=>{
-               if(data.swipeDirection == "prev")
-                    self.events.publish('itemslide:change',2);
-            },
-           error=>{console.log('ion drag error',error)},
-           ()=>{console.log('ion complete ionDrag')}
-       )
+        // let self = this;
+      //   this.slider.ionDrag.delay(consts.swipeDelay).subscribe(
+      //      data=>{
+      //          if(data.swipeDirection == "prev")
+      //               self.events.publish('itemslide:change',2);
+      //       },
+      //      error=>{console.log('ion drag error',error)},
+      //      ()=>{console.log('ion complete ionDrag')}
+      //  )
    }
 
   getRoutes(routes) : void {
