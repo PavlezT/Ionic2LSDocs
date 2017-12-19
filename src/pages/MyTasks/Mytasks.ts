@@ -1,6 +1,7 @@
 import { Component, Inject, ViewChild } from '@angular/core';
 import { NavController,NavParams, Events, Platform, Tabs,MenuController } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
+import { Badge } from '@ionic-native/badge';
 
 import { User } from '../../utils/user';
 import { Loader } from '../../utils/loader';
@@ -28,7 +29,9 @@ export class MyTasks {
    //Title: string;
    chatParams : any;
 
-  constructor(public menuCtrl: MenuController,public navCtrl: NavController,public platform : Platform, public navParams: NavParams, @Inject(Localization) public loc : Localization,@Inject(Loader) public loaderctrl: Loader,@Inject(Http) public http : Http, public events: Events, @Inject(User) public user : User) {
+  constructor(public menuCtrl: MenuController,public navCtrl: NavController,public platform : Platform,
+     public navParams: NavParams, @Inject(Localization) public loc : Localization,@Inject(Loader) public loaderctrl: Loader,
+     @Inject(Http) public http : Http, public events: Events, @Inject(User) public user : User,public badge: Badge) {
      //this.Title = navParams.data.title || this.loc.dic.MyRoom;
      this.tabNew =  LSNew;
      this.tabActive = LSActive;
@@ -86,7 +89,10 @@ export class MyTasks {
                this.counts.done += item.CountTasks;
          })
       })
-      .then(()=>this.loaderctrl.stopLoading())
+      .then(()=>{
+        this.loaderctrl.stopLoading();
+        this.counts.new > 0 ? this.badge.set(this.counts.new) : this.badge.clear();
+      })
       .catch( error => {
          console.log('<MyTasks> setting Count Tasks error',error);
          this.loaderctrl.stopLoading();

@@ -35,6 +35,7 @@ import { Device } from '@ionic-native/device';
 import { Transfer } from '@ionic-native/transfer';
 import { FileOpener } from '@ionic-native/file-opener';
 import { FilePath } from '@ionic-native/file-path';
+import { Badge } from '@ionic-native/badge';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,7 @@ import { FilePath } from '@ionic-native/file-path';
     LSNew , LSActive ,LSLate , LSEnded
   ],
   providers: [
-      StatusBar,FileOpener,FilePath,
+      StatusBar,FileOpener,FilePath,Badge,
       SplashScreen,Network,NativeStorage,File,Device,Transfer,
       {provide: ErrorHandler, useClass: IonicErrorHandler},
       {provide: Auth , useClass: Auth},
