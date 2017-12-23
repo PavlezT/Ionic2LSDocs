@@ -91,7 +91,9 @@ export class MyTasks {
       })
       .then(()=>{
         this.loaderctrl.stopLoading();
-        this.counts.new > 0 ? this.badge.set(this.counts.new) : this.badge.clear();
+        this.badge.hasPermission().then(pers=>{console.log('pers:',pers)});
+        this.badge.registerPermission().then(res=>console.log('res:',res));
+        this.counts.new > 0 ? this.badge.set(this.counts.new).then(val=>{console.log('badge val:'+val)}) : this.badge.clear();
       })
       .catch( error => {
          console.log('<MyTasks> setting Count Tasks error',error);

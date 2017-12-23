@@ -47,7 +47,8 @@ import { Badge } from '@ionic-native/badge';
     LSNew , LSActive ,LSLate , LSEnded
   ],
   imports: [
-    HttpModule,BrowserModule,
+    HttpModule,
+    BrowserModule,
     IonicModule.forRoot(MyApp)
     //,SuperTabsModule.forRoot()
     // ,TranslateModule.forRoot()
