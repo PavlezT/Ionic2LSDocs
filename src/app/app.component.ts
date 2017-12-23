@@ -54,7 +54,7 @@ export class MyApp {
     this.platform.ready().then(() => {
       this.loaderctrl.presentLoading();
       this.statusBar.styleDefault();
-      this.statusBar.overlaysWebView(false);
+      // this.statusBar.overlaysWebView(false);
       this.splashScreen.hide();
       this.ionViewDidEnter();
 

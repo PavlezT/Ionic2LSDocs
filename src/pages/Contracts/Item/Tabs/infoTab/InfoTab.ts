@@ -38,6 +38,7 @@ export class InfoTab {
           'Source_0' : true,
           'RequestType_0' : true,
           'ContractType_0' : true,
+          'AgreementRoute_1' : true
       }
       
       Promise.all([selectedItem.getItemFileds(),selectedItem.getItemProps()])

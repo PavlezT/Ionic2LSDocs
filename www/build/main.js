@@ -716,9 +716,8 @@ var MyTasks = (function () {
         })
             .then(function () {
             _this.loaderctrl.stopLoading();
-            _this.badge.hasPermission().then(function (pers) { console.log('pers:', pers); });
-            _this.badge.registerPermission().then(function (res) { return console.log('res:', res); });
-            _this.counts.new > 0 ? _this.badge.set(_this.counts.new).then(function (val) { console.log('badge val:' + val); }) : _this.badge.clear();
+            cordova.plugins.notification.badge.requestPermission(function (text) { });
+            _this.counts.new > 0 ? _this.badge.set(_this.counts.new) : _this.badge.clear();
         })
             .catch(function (error) {
             console.log('<MyTasks> setting Count Tasks error', error);
@@ -1080,6 +1079,7 @@ var InfoTab = (function () {
             'Source_0': true,
             'RequestType_0': true,
             'ContractType_0': true,
+            'AgreementRoute_1': true
         };
         Promise.all([selectedItem.getItemFileds(), selectedItem.getItemProps()])
             .then(function (res) { return _this.getItemProps(res[0], res[1]); });
@@ -2416,7 +2416,7 @@ var MyApp = (function () {
         this.platform.ready().then(function () {
             _this.loaderctrl.presentLoading();
             _this.statusBar.styleDefault();
-            _this.statusBar.overlaysWebView(false);
+            // this.statusBar.overlaysWebView(false);
             _this.splashScreen.hide();
             _this.ionViewDidEnter();
             _this.checkNetwork().then(function () {

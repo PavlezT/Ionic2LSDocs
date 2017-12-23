@@ -57,7 +57,7 @@ in `XML-request permissions` paste <br>
 </AppPermissionRequests>
 ```
 
-##`step 5` refreshing token
+## `step 5` refreshing token
 similar to step 3, but need to change:
 * grant_type = refresh_token
 * delete `code`
@@ -69,10 +69,15 @@ use Allow-Control-Allow-Origin: *  - chrome extention to awoid CORS restritions 
 (Device.device.uuid) ? (consts.MSOnlineSts) : ('/api' + consts.MSOnlineSts);
 //cheking diveci or browser is this
 
-###updating ionic-scripts (if webpack can't load .json) //https://github.com/driftyco/ionic-app-scripts
+### override User-Agent
+```XML
+    <preference name="OverrideUserAgent" value="Mozilla/5.0 My Browser" />
+```
+
+### updating ionic-scripts (if webpack can't load .json) //https://github.com/driftyco/ionic-app-scripts
 npm install @ionic/app-scripts@latest --save-dev
 
-###save session alive on IOS - change this in LSDocs/Classes/AppDelegate.m
+### save session alive on IOS - change this in LSDocs/Classes/AppDelegate.m
 ```Objective-C
 
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions

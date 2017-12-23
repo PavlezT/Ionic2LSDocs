@@ -46,6 +46,12 @@ ion-content, ion-list {
 .scroll-content{
    overflow-y: auto !important;
 }
+
+.toolbar-ios, .title-ios{
+  padding-top:0px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+}
 // App iOS Variables
 // --------------------------------------------------
 // iOS only Sass variables can go here

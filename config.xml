@@ -88,13 +88,12 @@
     <preference name="FadeSplashScreenDuration" value="550" />
     <preference name="SplashScreen" value="screen" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
-    <preference name="OverrideUserAgent" value="Mozilla/5.0 My Browser" />
     <preference name="SplashScreenDelay" value="10000" />
     <preference name="KeepRunning" value="false" />
     <preference name="LoadUrlTimeoutValue" value="87000" />
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <allow-navigation href="http://192.168.1.141:8100" />
-    <engine name="android" spec="^6.1.2" />
+    <engine name="android" spec="6.1.0" />
     <engine name="ios" spec="^4.4.0" />
     <plugin name="cordova-plugin-badge" spec="^0.8.5" />
     <plugin name="cordova-plugin-device" spec="^1.1.6" />
