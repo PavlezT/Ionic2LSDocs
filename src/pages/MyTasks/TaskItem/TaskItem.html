@@ -64,10 +64,11 @@
           <ion-item class="task" *ngFor="let task of taskHistory | arraySort:'-EvanteDate'" >
               <h3>
                   <div class="marker"></div>
-                  <span>{{task.Event}}</span> <span>{{task.TaskTitle}}</span> {{loc.dic.Alert38}}
+                  <span>{{task.EventTitle}}</span> <span>"{{task.TaskTitle}}"</span> {{loc.dic.Alert38}}
                   <span class="user">{{task.NameExecutor}}</span> {{loc.dic.Alert39}} <span class="user">{{task.NameAuthore}}</span>
                   <span> {{loc.dic.Alert40}} </span>
                   <span>{{task.DueDate}}</span>
+                  <span class="comment" *ngIf="task.Comments && task.Comments.length > 0" >{{loc.dic.Alert41}}: "{{task.Comments}}"</span> 
               </h3>
               <p>{{task.EvanteDate}}</p>
           </ion-item>

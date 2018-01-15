@@ -4,6 +4,7 @@ import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
 
 import { Item } from '../../Contracts/Item/Item';
+import { History } from '../../Contracts/Item/Tabs/History/History';
 
 import { ArraySortPipe } from '../../../utils/arraySort';
 import * as consts from '../../../utils/consts';
@@ -45,6 +46,9 @@ export class TaskItem {
   @ViewChild('middlelabel') middlelabel;
   scrollHeight : any;
 
+  getTaskHistory = History.prototype.getHistory;
+
+
   constructor(public platform: Platform,public navCtrl: NavController,@Inject(Images) public images: Images ,@Inject(Localization) public loc : Localization,@Inject(Loader) public loaderctrl: Loader,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams,@Inject(Http) public http : Http,@Inject(User) public user : User) {
     this.siteUrl = consts.siteUrl;
     this.task = navParams.data.item;
@@ -56,8 +60,20 @@ export class TaskItem {
     this.assignetTo = navParams.data.item.AssignetToEmail ? {Email: navParams.data.item.AssignetToEmail, Title: navParams.data.item.AssignetToTitle } : {Email: navParams.data.item.ExecutorEmail ,Title: navParams.data.item.NameExecutor};
     this.taskAuthore = navParams.data.item.TaskAuthore || {EMail :navParams.data.item.AthoreEmail,Title : navParams.data.item.NameAuthore };
 
-    this.getTaskHistory();
-    this.getConnectedDoc();
+    this.getConnectedDoc()
+      .then(()=>{
+        if(this.connectedItem){
+          selectedItem.set(this.connectedItem, this.task.sysIDList || this.task.ListID);
+          return selectedItem.getItemHistory();
+        }
+        return Promise.reject('There is not connected document');
+      })
+      .then( history => this.getTaskHistory(history) )
+      .catch(error => {
+        console.log('<Get Connected doc and Hostory> error:',error);
+        this.history = [];
+      })
+
     access.getDigestValue().then(digest => this.digest = digest);
     access.getToken().then(token => this.access_token = token);
   }
@@ -110,12 +126,15 @@ export class TaskItem {
   }
 
   public cancelTask() : void {
-     this.loaderctrl.presentLoading();
-     
-     if(this.ContentType == 'LSTaskAppruve' || this.ContentType == 'LSTaskAgreement')
+    if(this.coments.value.length > 0){
+      this.loaderctrl.presentLoading();
+      if(this.ContentType == 'LSTaskAppruve' || this.ContentType == 'LSTaskAgreement')
         this.doneTask('Back');
-     if(this.ContentType == 'LSTaskPreparetion')
+      if(this.ContentType == 'LSTaskPreparetion')
         this.doneTask('RefuseTask');
+    } else {
+      this.showToast(this.loc.dic.Alert14);
+    }
   }
 
   public executeTask() : void {
@@ -362,37 +381,13 @@ export class TaskItem {
     return this.http.post(url,JSON.stringify(data),options).timeout(consts.timeoutDelay).retry(consts.retryCount).toPromise();
   }
 
-  private getTaskHistory() : Promise<any> {
-    let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSHistory')/items?$filter=(ItemId eq '${this.task.sysIDItem || this.task.ItemId}') and (Title eq '${this.task.sysIDList || this.task.ListID}') and (ItemName eq 'Task')`;
-
-    let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
-    let options = new RequestOptions({ headers: headers });
-
-    return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
-        .toPromise()
-        .then( res => {
-          this.history = res.json().d.results[0] || {};
-
-          if(this.history && this.history.propertyIsEnumerable('TaskHistory') ){
-            this.taskHistory = JSON.parse(this.history.TaskHistory).map( task => {
-              task.EvanteDate = task.EvanteDate.substring(0,10).split('.').reverse().join('-') + task.EvanteDate.substring(10,task.EvanteDate.length);
-              return task;
-           });
-          }
-        })
-        .catch(error => {
-          console.error('<TaskItem> Loading History error!',error);
-          this.history = [];
-        })
-  }
-
-  private getConnectedDoc() : void {
+  private getConnectedDoc() : Promise<any> {
      let listGet = `${consts.siteUrl}/_api/Web/Lists(guid'${this.task.sysIDList || this.task.ListID}')/items(${this.task.sysIDItem || this.task.ItemId})`;
 
      let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
      let options = new RequestOptions({ headers: headers });
 
-     this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
+     return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
          .toPromise()
          .then(res =>{
             this.connectedItem = res.json().d;
@@ -421,7 +416,7 @@ export class TaskItem {
   }
 
   public openConnecedItem() : void {
-     this.selectedItem.set(this.connectedItem, this.task.sysIDList || this.task.ListID);
+    //  this.selectedItem.set(this.connectedItem, this.task.sysIDList || this.task.ListID);
      this.navCtrl.push(Item, {
       item: this.connectedItem,
       listGUID : this.task.sysIDList || this.task.ListID

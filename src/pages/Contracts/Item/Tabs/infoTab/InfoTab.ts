@@ -25,6 +25,7 @@ export class InfoTab {
       this.Except = {
           'FileLeafRef' : true,
           'Title' : true,
+          'Status' : true,
           'FolderChildCount' : true,
           'ItemChildCount' : true,
           'TaxCatchAll' : true,

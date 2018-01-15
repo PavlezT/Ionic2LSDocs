@@ -34,8 +34,8 @@ export class Route {
 
   getRoutes(routes) : void {
      this.routesList = routes.map( item => {
-       item.StartDate = item.StartDate? moment(item.StartDate).format(`DD.MM.YYYY [${this.loc.dic.Alert42}] HH:mm`) : null;
-       item.EndDate = item.EndDate? moment(item.EndDate).format(`DD.MM.YYYY [${this.loc.dic.Alert42}] HH:mm`) : null;
+       item.StartDate = item.StartDate? moment(item.StartDate+'Z').format(`DD.MM.YYYY [${this.loc.dic.Alert42}] HH:mm`) : null;
+       item.EndDate = item.EndDate? moment(item.EndDate+'Z').format(`DD.MM.YYYY [${this.loc.dic.Alert42}] HH:mm`) : null;
        return item;
      })
   }

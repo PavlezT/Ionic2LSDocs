@@ -17,7 +17,7 @@
    <ion-searchbar (ionInput)="searchItem($event)"></ion-searchbar>
   <ion-list >
     <button ion-item  *ngFor="let item of items" (click)="itemTapped($event, item)">
-      <h2>#{{item.Id}}  {{item.Title}}</h2>
+      <h2><span class="itemID">ID {{item.Id}}</span>  {{item.Title}}</h2>
       <div class="description" >
        <div class="descriptontext">{{loc.dic.Created}}:</div><span class="creator" >{{item.Created}}</span>
        <br>
