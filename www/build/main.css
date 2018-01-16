@@ -30891,6 +30891,12 @@ taskitem {
   opacity: 0.99 !important;
 }
 
+taskitem ion-header ion-navbar ion-buttons[start] {
+  -webkit-order: 1;
+  -ms-flex-order: 1;
+  order: 1;
+}
+
 taskitem ion-footer {
   padding: 0;
 }
@@ -30996,6 +31002,7 @@ taskitem .task .input-wrapper {
 
 taskitem .scrollMy {
   overflow-y: scroll;
+  z-index: -1;
 }
 
 taskitem div.marker {
@@ -31038,4 +31045,105 @@ taskitem .active {
 
 taskitem .inactive {
   display: none;
+}
+
+delegate {
+  opacity: 0.99 !important;
+}
+
+delegate ion-header ion-navbar ion-buttons[start] {
+  -webkit-order: 1;
+  -ms-flex-order: 1;
+  order: 1;
+}
+
+delegate ion-footer {
+  padding: 0;
+}
+
+delegate ion-footer ion-toolbar {
+  padding: 0;
+}
+
+delegate ion-footer ion-toolbar ion-grid {
+  padding: 0;
+}
+
+delegate ion-footer ion-toolbar ion-grid ion-col {
+  padding: 0;
+}
+
+delegate ion-footer ion-toolbar ion-grid ion-col button {
+  color: #444 !important;
+  width: 100%;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: 0.9em !important;
+}
+
+delegate ion-footer ion-toolbar ion-grid ion-col button ion-icon {
+  margin-right: 5px;
+}
+
+delegate .toolbar-title {
+  white-space: nowrap;
+  word-spacing: 10px;
+}
+
+delegate ion-icon {
+  font-size: 2em;
+}
+
+delegate ion-label {
+  padding-left: 10px;
+}
+
+delegate ion-label div.line {
+  margin-bottom: 1%;
+}
+
+delegate ion-label ion-icon {
+  width: 7%;
+  font-size: 1.5em;
+}
+
+delegate ion-avatar {
+  display: inline-block;
+  line-height: 1;
+  max-height: 26px;
+  max-width: 30px;
+  border-radius: 50%;
+}
+
+delegate ion-avatar img {
+  border-radius: 50px;
+}
+
+delegate .left {
+  display: inline-block;
+  vertical-align: text-bottom;
+  width: 30%;
+}
+
+delegate .right {
+  display: inline-block;
+  vertical-align: text-bottom;
+  width: 50%;
+}
+
+delegate .userTag {
+  display: inline-block;
+  border: 2px solid #444;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+delegate .userTag span {
+  vertical-align: super;
+  margin-right: 9px;
+  margin-left: 5px;
+}
+
+delegate .active {
+  display: block;
 }

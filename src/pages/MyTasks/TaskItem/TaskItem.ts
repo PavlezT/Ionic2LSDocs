@@ -1,10 +1,11 @@
 import { Component, ViewChild, Inject  } from '@angular/core';
-import { ViewController,LoadingController,Platform, ToastController, NavController,NavParams, Events } from 'ionic-angular';
+import { ViewController,ModalController,LoadingController,Platform, ToastController, NavController,NavParams, Events } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import * as moment from 'moment';
 
 import { Item } from '../../Contracts/Item/Item';
 import { History } from '../../Contracts/Item/Tabs/History/History';
+import { Delegate } from './Delegate/Delegate';
 
 import { ArraySortPipe } from '../../../utils/arraySort';
 import * as consts from '../../../utils/consts';
@@ -40,6 +41,7 @@ export class TaskItem {
   deadLine : string;
   assignetTo : {Email : string, Title: string};
   taskAuthore : {EMail : string, Title: string};
+  delegatable : boolean;
 
   @ViewChild('coments') coments;
   @ViewChild('myFooter') footer;
@@ -48,7 +50,12 @@ export class TaskItem {
 
   getTaskHistory = History.prototype.getHistory;
 
-  constructor(public platform: Platform,public navCtrl: NavController,@Inject(Images) public images: Images ,@Inject(Localization) public loc : Localization,@Inject(Loader) public loaderctrl: Loader,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams,@Inject(Http) public http : Http,@Inject(User) public user : User) {
+  constructor(public platform: Platform,public navCtrl: NavController,public modalCtrl: ModalController,
+    @Inject(Images) public images: Images ,@Inject(Localization) public loc : Localization,@Inject(Loader) public loaderctrl: Loader,
+    public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,
+    @Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams,
+    @Inject(Http) public http : Http,@Inject(User) public user : User) 
+    {
     this.siteUrl = consts.siteUrl;
     this.task = navParams.data.item;
     this.Status = navParams.data.item.OData__Status || 'Done';
@@ -58,6 +65,8 @@ export class TaskItem {
     this.deadLine = navParams.data.item.TaskDueDate_view || navParams.data.item.DueDate_view;
     this.assignetTo = navParams.data.item.AssignetToEmail ? {Email: navParams.data.item.AssignetToEmail, Title: navParams.data.item.AssignetToTitle } : {Email: navParams.data.item.ExecutorEmail ,Title: navParams.data.item.NameExecutor};
     this.taskAuthore = navParams.data.item.TaskAuthore || {EMail :navParams.data.item.AthoreEmail,Title : navParams.data.item.NameAuthore };
+
+    this.delegatable = this.Status != "Done" && this.task.sysTaskLevel == 1 && this.ContentType != 'LSTaskToRegistrate' && this.assignetTo.Email == this.user.getEmail() ? true : false;
 
     this.getConnectedDoc();
     this.getHistory()
@@ -89,7 +98,6 @@ export class TaskItem {
   }
 
   private recalcHistoryHeight() : void {
-    console.log('this.footer:',this.footer)
     if(this.footer)
       this.scrollHeight = this.footer.nativeElement.offsetTop-this.footer.nativeElement.offsetHeight-this.middlelabel.nativeElement.offsetTop-this.middlelabel.nativeElement.offsetHeight + "px";
     else 
@@ -438,6 +446,26 @@ export class TaskItem {
       item: this.connectedItem,
       listGUID : this.task.sysIDList || this.task.ListID
      });
+  }
+
+  public delegateOpen() : void {
+    let modal = this.modalCtrl.create(Delegate,{
+      item : this.task,
+      title : this.Title,
+      author : this.taskAuthore
+    },{
+      showBackdrop : true
+    });
+    modal.present();
+
+    modal.onDidDismiss(data => {
+      console.log(data);
+      if(data.delegated){
+        this.events.publish('task:checked');
+        this.events.publish('task:doneTask',this.task);
+        this.dismiss();
+      }
+    });
   }
 
   onFocus(){

@@ -1,0 +1,66 @@
+<ion-header>
+    <ion-navbar>
+      <ion-buttons start>
+        <button ion-button (click)="dismiss()">
+            <ion-icon name="close"></ion-icon>
+        </button>
+      </ion-buttons>
+      <ion-title>
+        <ion-slides>
+           <ion-slide>
+              {{loc.dic.EventDelegateTask}}
+           </ion-slide>
+        </ion-slides>
+      </ion-title>
+    </ion-navbar>
+  </ion-header>
+  
+  <ion-content>
+    <ion-label class="active">
+      <div class="line" >
+          <ion-icon name="pricetag"></ion-icon>
+          <div class="left">{{loc.dic.Task}}</div>
+          <div class="right">{{Title}}</div>
+      </div>
+      <div class="line" >
+       <ion-icon name="ios-return-left"></ion-icon>
+       <div class="left">{{loc.dic.HistoryTaskAuthor}}</div>
+       <div class="right">
+         <div class="userTag">
+           <ion-avatar item-left>
+             <img src="{{images.getImage(taskAuthore.EMail || 'undefined')}}" >
+           </ion-avatar>
+           <span>{{taskAuthore.Title}}</span>
+         </div>
+       </div>
+      </div>
+    </ion-label>
+  </ion-content>
+  
+  <ion-footer>
+    <ion-toolbar>
+      <ion-buttons full>
+        <ion-grid>
+          <ion-row>
+           <ion-col>
+              <button clear ion-button (click)="dismiss()">
+                 <ion-icon name="md-close"></ion-icon>
+                 <div>
+                    {{loc.dic.Cencel}}
+                 </div>
+              </button>
+            </ion-col>
+           <ion-col>
+              <button  clear ion-button (click)="delegateButtonClicked()">
+                 <ion-icon name="md-checkmark"></ion-icon>
+                 <div>
+                    {{loc.dic.Alert35}}
+                 </div>
+              </button>
+           </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-footer>
+  

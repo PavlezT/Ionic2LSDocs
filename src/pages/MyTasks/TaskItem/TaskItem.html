@@ -1,5 +1,10 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-navbar>
+    <ion-buttons start>
+      <button ion-button (click)="dismiss()">
+          <ion-icon name="close"></ion-icon>
+      </button>
+    </ion-buttons>
     <ion-title>
       <ion-slides>
          <ion-slide>
@@ -7,12 +12,12 @@
          </ion-slide>
       </ion-slides>
     </ion-title>
-    <ion-buttons start>
-      <button ion-button (click)="dismiss()">
-        <ion-icon name="close"></ion-icon>
+    <ion-buttons end *ngIf="delegatable" >
+      <button ion-button (click)="delegateOpen()">
+        <ion-icon name="person-add"></ion-icon>
       </button>
     </ion-buttons>
-  </ion-toolbar>
+  </ion-navbar>
 </ion-header>
 
 <ion-content>

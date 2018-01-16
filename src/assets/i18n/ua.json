@@ -504,7 +504,7 @@
     "EventCreateTask":"Призначення задач",
     "EventDoneTask":"Виконання задач",
     "EventAddTask":"Події з підзадачами",
-    "EventDelegateTask":"Делегування задач",
+    "EventDelegateTask":"Делегування задачі",
     "EventAutoCloseTask":"Автозавершення задач",
     "EventInWorkTask":"Взяти задачу в роботу",
     "EventByComment":"Події з коментарями",

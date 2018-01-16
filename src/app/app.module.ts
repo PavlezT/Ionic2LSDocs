@@ -24,6 +24,7 @@ import { LSActive } from '../pages/MyTasks/Tabs/LSActive/LSActive';
 import { LSLate } from '../pages/MyTasks/Tabs/LSLate/LSLate';
 import { LSEnded } from '../pages/MyTasks/Tabs/LSEnded/LSEnded';
 import { TaskItem } from '../pages/MyTasks/TaskItem/TaskItem';
+import { Delegate } from '../pages/MyTasks/TaskItem/Delegate/Delegate';
 //import { SuperTabsModule } from 'ionic2-super-tabs';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -42,7 +43,7 @@ import { Badge } from '@ionic-native/badge';
     MyApp,
     MyTasks,
     Contracts,
-    Item, TaskItem,
+    Item, TaskItem,Delegate,
     InfoTab, Documents, History, Route, ArraySortPipe,
     LSNew , LSActive ,LSLate , LSEnded
   ],
@@ -58,7 +59,7 @@ import { Badge } from '@ionic-native/badge';
     MyApp,
     MyTasks,
     Contracts,
-    Item, TaskItem,
+    Item, TaskItem, Delegate,
     InfoTab, Documents, History, Route,
     LSNew , LSActive ,LSLate , LSEnded
   ],

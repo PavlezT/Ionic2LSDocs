@@ -246,7 +246,7 @@ export class MyApp {
                 page.component == this.nav.getActive().component && this.openPage(page);
               }) && window.localStorage.removeItem('tempuserEmail');
             });
-            !data.URL && this.showToast("Fields should not be empty.") && this.showPrompt();
+            !data.URL && !this.showPrompt() && this.showToast("Fields should not be empty.") ;
           }
         }
       ]
@@ -255,7 +255,7 @@ export class MyApp {
     prompt.onDidDismiss((event) => { });
   }
 
-  private showToast(message: any){
+  private showToast(message: any) : void {
       this.toast = this.toastCtrl.create({
         message: (typeof message == 'string' )? message.substring(0,( message.indexOf('&#x') != -1? message.indexOf('&#x') : message.length)) : message.toString().substring(0,( message.toString().indexOf('&#x') != -1 ?message.toString().indexOf('&#x') : message.toString().length)) ,
         position: 'bottom',
