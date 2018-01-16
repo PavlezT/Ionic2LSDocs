@@ -60,8 +60,8 @@
   <button *ngIf="task.sysIDItem || task.ItemId"  [disabled]="!connectedItem" ion-button color="primary" (click)="openConnecedItem()" clear><ion-icon name="document"></ion-icon>{{loc.dic.RelateDoc}}</button>
 </ion-label>
 <ion-scroll #scrollMy [ngClass]="'scrollMy'" [style.height]="scrollHeight" scrollY="true">
-  <ion-list *ngIf="historyToggle" no-lines class="history" [ngClass]="historyToggle? 'active' : '' " style="z-index: -1;padding-bottom: 5px;">
-          <ion-item class="task" *ngFor="let task of taskHistory | arraySort:'-EvanteDate'" >
+  <ion-list nowrap *ngIf="historyToggle" no-lines class="history" [ngClass]="historyToggle? 'active' : '' " style="z-index: -1;padding-bottom: 5px;">
+          <ion-item nowrap class="task" *ngFor="let task of taskHistory | arraySort:'-EvanteDate'" >
               <h3>
                   <div class="marker"></div>
                   <span>{{task.EventTitle}}</span> <span>"{{task.TaskTitle}}"</span> {{loc.dic.Alert38}}

@@ -48,7 +48,6 @@ export class TaskItem {
 
   getTaskHistory = History.prototype.getHistory;
 
-
   constructor(public platform: Platform,public navCtrl: NavController,@Inject(Images) public images: Images ,@Inject(Localization) public loc : Localization,@Inject(Loader) public loaderctrl: Loader,public events: Events, public viewCtrl: ViewController,public loadingCtrl: LoadingController,public toastCtrl: ToastController,@Inject(Access) public access: Access,@Inject(SelectedItem) public selectedItem : SelectedItem, public navParams: NavParams,@Inject(Http) public http : Http,@Inject(User) public user : User) {
     this.siteUrl = consts.siteUrl;
     this.task = navParams.data.item;
@@ -60,14 +59,8 @@ export class TaskItem {
     this.assignetTo = navParams.data.item.AssignetToEmail ? {Email: navParams.data.item.AssignetToEmail, Title: navParams.data.item.AssignetToTitle } : {Email: navParams.data.item.ExecutorEmail ,Title: navParams.data.item.NameExecutor};
     this.taskAuthore = navParams.data.item.TaskAuthore || {EMail :navParams.data.item.AthoreEmail,Title : navParams.data.item.NameAuthore };
 
-    this.getConnectedDoc()
-      .then(()=>{
-        if(this.connectedItem){
-          selectedItem.set(this.connectedItem, this.task.sysIDList || this.task.ListID);
-          return selectedItem.getItemHistory();
-        }
-        return Promise.reject('There is not connected document');
-      })
+    this.getConnectedDoc();
+    this.getHistory()
       .then( history => this.getTaskHistory(history) )
       .catch(error => {
         console.log('<Get Connected doc and Hostory> error:',error);
@@ -80,10 +73,7 @@ export class TaskItem {
 
   ionViewDidLoad(){
     this.platform.registerBackButtonAction((e)=>{this.dismiss();return false;},100);
-    if(this.footer)
-      this.scrollHeight = this.footer.nativeElement.offsetTop-this.footer.nativeElement.offsetHeight-this.middlelabel.nativeElement.offsetTop-this.middlelabel.nativeElement.offsetHeight + "px";
-    else 
-      this.scrollHeight = this.middlelabel.nativeElement.offsetParent.offsetHeight-this.middlelabel.nativeElement.offsetTop-this.middlelabel.nativeElement.offsetHeight-56+"px";
+    this.recalcHistoryHeight();
   }
 
   ionViewDidEnter(){
@@ -96,6 +86,14 @@ export class TaskItem {
 
   dismiss(){
      this.viewCtrl.dismiss();
+  }
+
+  private recalcHistoryHeight() : void {
+    console.log('this.footer:',this.footer)
+    if(this.footer)
+      this.scrollHeight = this.footer.nativeElement.offsetTop-this.footer.nativeElement.offsetHeight-this.middlelabel.nativeElement.offsetTop-this.middlelabel.nativeElement.offsetHeight + "px";
+    else 
+      this.scrollHeight = this.middlelabel.nativeElement.offsetParent.offsetHeight-this.middlelabel.nativeElement.offsetTop-this.middlelabel.nativeElement.offsetHeight+"px";//-56
   }
 
   public toWorkTask() : void {
@@ -397,6 +395,23 @@ export class TaskItem {
          })
   }
 
+  private getHistory() : Promise<any> {
+    let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSHistory')/items?$filter=(ItemId eq '${this.task.sysIDItem || this.task.ItemId}') and (Title eq '${this.task.sysIDList || this.task.ListID}') and (ItemName eq 'Task')`;
+
+    let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
+    let options = new RequestOptions({ headers: headers });
+
+    return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
+        .toPromise()
+        .then( res => {
+          return res.json().d.results || [];
+        })
+        .catch(error => {
+          console.error('<TaskItem> Loading History error!',error);
+          return [];
+        })
+  }
+
   public showToast(message: any) : void {
       let toast = this.toastCtrl.create({
         message: (typeof message == 'string' )? message : message.toString().substring(0,( message.toString().indexOf('&#x') || message.toString().length)) ,
@@ -413,10 +428,12 @@ export class TaskItem {
       return;
     }
     this.historyToggle = true;
+
+    this.recalcHistoryHeight();
   }
 
   public openConnecedItem() : void {
-    //  this.selectedItem.set(this.connectedItem, this.task.sysIDList || this.task.ListID);
+     this.selectedItem.set(this.connectedItem, this.task.sysIDList || this.task.ListID);
      this.navCtrl.push(Item, {
       item: this.connectedItem,
       listGUID : this.task.sysIDList || this.task.ListID

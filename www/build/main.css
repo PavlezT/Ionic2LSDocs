@@ -30891,10 +30891,6 @@ taskitem {
   opacity: 0.99 !important;
 }
 
-taskitem .scroll-content {
-  overflow: visible !important;
-}
-
 taskitem ion-footer {
   padding: 0;
 }
@@ -30999,8 +30995,7 @@ taskitem .task .input-wrapper {
 }
 
 taskitem .scrollMy {
-  overflow: auto;
-  height: 70%;
+  overflow-y: scroll;
 }
 
 taskitem div.marker {
