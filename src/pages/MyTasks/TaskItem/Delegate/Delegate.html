@@ -35,6 +35,18 @@
        </div>
       </div>
     </ion-label>
+    <ion-searchbar (ionInput)="searchUser($event)"></ion-searchbar>
+    <ion-list *ngIf="startsearch">
+      <ion-item *ngFor="let user of ShowUsers">
+        <button ion-button>{{user.User1.Title}}</button>
+      </ion-item>
+      <ion-item *ngIf="ShowUsers && ShowUsers.length == 0">
+        <h3>User not found</h3>
+      </ion-item>
+    </ion-list>
+    <ion-label *ngIf="!startsearch">
+      Start typing to search
+    </ion-label>
   </ion-content>
   
   <ion-footer>

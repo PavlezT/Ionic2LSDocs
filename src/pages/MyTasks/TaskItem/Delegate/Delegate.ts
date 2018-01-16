@@ -23,7 +23,9 @@ export class Delegate {
    taskAuthore : {EMail : string, Title: string};
 
    delegated : boolean;
+   startsearch : boolean;
    Users : any;
+   ShowUsers : any;
 
   constructor(public platform: Platform, public viewCtrl: ViewController ,@Inject(Localization) public loc : Localization,
   @Inject(Loader) public loaderctrl: Loader,public events: Events,public toastCtrl: ToastController,@Inject(Access) public access: Access,
@@ -53,7 +55,9 @@ export class Delegate {
   }
 
   public getUsers() : Promise<any> {
-    let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSHistory')/items?$filter=(ItemId eq '${this.task.sysIDItem || this.task.ItemId}') and (Title eq '${this.task.sysIDList || this.task.ListID}') and (ItemName eq 'Task')`;
+    let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSUsers')/items?`
+    +'$select=ID,IDDepartment,JobTitle,UserManager/Title,User1/Title,User1/EMail,Deputy/Title,Deputy/EMail,DeputyId,AbsenceStart,AbsenceEnd'
+    +'&$expand=UserManager/Title,User1/Title,Deputy/Title,User1/EMail';
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
     let options = new RequestOptions({ headers: headers });
@@ -61,12 +65,30 @@ export class Delegate {
     return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
         .toPromise()
         .then( res => {
-          return res.json().d.results || [];
+          this.Users = res.json().d.results;
+          console.log('users:',this.Users);
         })
         .catch(error => {
           console.error('<TaskItem> Loading History error!',error);
           return [];
         })
+  }
+
+  public searchUser(event) : void {
+    let str = event.target.value;
+    
+    if(str && str.length >= 3){
+      this.startsearch = true;
+      this.ShowUsers = this.Users.filter(user => {
+        if(user.User1.EMail.toString().includes(str) || user.User1.Title.toString().includes(str))
+          return user;
+        return false;
+      })
+      console.log('showusers:',this.ShowUsers)
+    } else {
+      this.startsearch = false;
+    }
+
   }
 
   public delegateButtonClicked() : void {
