@@ -9,7 +9,10 @@
         "Wait":"Wait...",
         "Downloading":"Downloading...",
         "Empty":"Is empty",
-        "OperationError":"Operation failed. Error has occurred"
+        "OperationError":"Operation failed. Error has occurred",
+        "Delegate_not_found" : "User not found",
+        "StartTyping" : "Start typing to search",
+        "CheckUser" : "Select user first"
     },
     "MStep1":"User Directory",
     "MStep2":"Lists",

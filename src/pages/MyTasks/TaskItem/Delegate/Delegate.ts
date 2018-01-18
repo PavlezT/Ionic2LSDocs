@@ -24,6 +24,7 @@ export class Delegate {
 
    delegated : boolean;
    startsearch : boolean;
+   selectedUser : Object;
    Users : any;
    ShowUsers : any;
 
@@ -35,6 +36,7 @@ export class Delegate {
     this.Title = navParams.data.title;
     this.taskAuthore =  navParams.data.author;
     this.delegated = false;
+    this.selectedUser = null;
 
     access.getDigestValue().then(digest => this.digest = digest);
     access.getToken().then(token => this.access_token = token);
@@ -50,7 +52,7 @@ export class Delegate {
   }
 
   dismiss() {
-    let data = { delegated : this.delegated };
+    let data = { delegated : this.delegated, user : this.selectedUser };
     this.viewCtrl.dismiss(data);
   }
 
@@ -66,7 +68,9 @@ export class Delegate {
         .toPromise()
         .then( res => {
           this.Users = res.json().d.results;
-          console.log('users:',this.Users);
+          // for(var i = 0; i < 12 ; i++){
+          //   this.Users.push(this.Users[1]);
+          // }
         })
         .catch(error => {
           console.error('<TaskItem> Loading History error!',error);
@@ -76,25 +80,31 @@ export class Delegate {
 
   public searchUser(event) : void {
     let str = event.target.value;
-    
+    this.selectedUser = null;
+
     if(str && str.length >= 3){
       this.startsearch = true;
       this.ShowUsers = this.Users.filter(user => {
-        if(user.User1.EMail.toString().includes(str) || user.User1.Title.toString().includes(str))
+        if(user.User1.EMail.toString().toLowerCase().includes(str.toLowerCase()) || user.User1.Title.toString().toLowerCase().includes(str.toLowerCase()))
           return user;
         return false;
       })
-      console.log('showusers:',this.ShowUsers)
     } else {
       this.startsearch = false;
     }
 
   }
 
+  public userSelected(user) : void {
+    this.selectedUser = user;
+  }
+
   public delegateButtonClicked() : void {
+    if(!this.selectedUser)
+      return this.showToast(this.loc.dic.mobile.CheckUser);
+
     this.loaderctrl.presentLoading();
     this.delegated = true;
-    console.log('delegate');
 
     this.loaderctrl.stopLoading().then(()=>{this.dismiss();});
   }

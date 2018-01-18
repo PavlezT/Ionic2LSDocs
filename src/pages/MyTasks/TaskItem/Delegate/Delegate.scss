@@ -91,4 +91,30 @@ delegate {
         display:block;
     }
 
+    .item {
+        padding-left: 1px !important;
+    }
+
+    .selected {
+        .item-inner{
+            background-color: rgba(103, 146, 255, 0.5);
+        }
+    }
+
+    ion-label{
+        h2{
+            font-size: 1.6rem;
+        }
+    }
+
+    ion-list{
+        display: inline;
+        position: relative;
+        ion-scroll{
+            position: relative;
+            display: block;
+            height: 100%;
+        }
+    }
+
 }

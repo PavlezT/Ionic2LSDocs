@@ -37,15 +37,19 @@
     </ion-label>
     <ion-searchbar (ionInput)="searchUser($event)"></ion-searchbar>
     <ion-list *ngIf="startsearch">
-      <ion-item *ngFor="let user of ShowUsers">
-        <button ion-button>{{user.User1.Title}}</button>
-      </ion-item>
-      <ion-item *ngIf="ShowUsers && ShowUsers.length == 0">
-        <h3>User not found</h3>
-      </ion-item>
+      <!-- <ion-scroll scrollY="true"> -->
+        <ion-item *ngFor="let user of ShowUsers" [ngClass]="selectedUser == user? 'selected' : '' "  (tap)="userSelected(user)">
+          {{user.User1.Title}}
+        </ion-item>
+        <ion-item *ngIf="ShowUsers && ShowUsers.length == 0">
+          <ion-label>
+            <h2>{{loc.dic.mobile.Delegate_not_found}}</h2>
+          </ion-label>
+        </ion-item>
+      <!-- </ion-scroll> -->
     </ion-list>
     <ion-label *ngIf="!startsearch">
-      Start typing to search
+      <h2>{{loc.dic.mobile.StartTyping}}</h2>
     </ion-label>
   </ion-content>
   

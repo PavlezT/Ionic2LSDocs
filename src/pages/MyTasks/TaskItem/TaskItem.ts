@@ -43,7 +43,7 @@ export class TaskItem {
   taskAuthore : {EMail : string, Title: string};
   delegatable : boolean;
 
-  @ViewChild('coments') coments;
+  @ViewChild('comments') comments;
   @ViewChild('myFooter') footer;
   @ViewChild('middlelabel') middlelabel;
   scrollHeight : any;
@@ -132,7 +132,7 @@ export class TaskItem {
   }
 
   public cancelTask() : void {
-    if(this.coments.value.length > 0){
+    if(this.comments.value.toString().trim().length > 0){
       this.loaderctrl.presentLoading();
       if(this.ContentType == 'LSTaskAppruve' || this.ContentType == 'LSTaskAgreement')
         this.doneTask('Back');
@@ -172,7 +172,7 @@ export class TaskItem {
             "type": "SP.Data.LSTasksListItem"
         },
         OData__Status : 'Done',
-        OData__Comments : this.coments.value,
+        OData__Comments : this.comments.value.toString().trim(),
         TaskResults : taskResult
       }
       this.task.TaskResults = taskResult;
@@ -240,7 +240,7 @@ export class TaskItem {
             StartDateSort: moment.utc(this.task.StartDate).format("YYYYMMDD"),
             DueDateSort: moment.utc(this.task.TaskDueDate).format("YYYYMMDD"),
             EvanteDate: EvanteDate,
-            Comments: this.coments.value,
+            Comments: this.comments.value.toString().trim(),
             TaskType: this.ContentType,//this.task.TaskType,
             TaskResult: this.task.TaskResults,
             EndTask: '',
@@ -303,7 +303,7 @@ export class TaskItem {
               StartDate: StartDate,
               DueDate: DueDate,
               EvanteDate: EvanteDate,//2017-06-01 04:32:35
-              Comments: this.coments.value,
+              Comments: this.comments.value.toString().trim(),
               ExecutorEmail: this.user.getEmail(),
               AthoreEmail: this.taskAuthore.EMail,
               TaskID: this.task.Id

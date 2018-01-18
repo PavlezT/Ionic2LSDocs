@@ -52,6 +52,27 @@ ion-content, ion-list {
   height: 44px !important;
   min-height: 44px !important;
 }
+
+ion-app{
+  ion-alert.alert-md {
+    padding-top: 10px !important;
+    .alert-input-group{
+      padding-bottom: 1px !important;
+    }
+    .alert-button-group{
+      padding-top : 1px !important;
+      padding-bottom: 1px !important;
+    }
+    .alert-head {
+      padding-bottom: 1px !important;
+      padding-top : 14px !important;
+    }
+    .alert-message{
+      padding-bottom: 1px;
+    }
+  }
+}
+
 // App iOS Variables
 // --------------------------------------------------
 // iOS only Sass variables can go here

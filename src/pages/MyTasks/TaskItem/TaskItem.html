@@ -86,7 +86,7 @@
   </ion-list>
   <ion-item *ngIf="(Status != 'Done')" [ngClass]="historyToggle? 'inactive' : 'active'">
       <ion-label floating>{{loc.dic.Alert37}}</ion-label>
-      <ion-textarea #coments rows="6" (blur)="onBlur()" (focus)="onFocus()" ></ion-textarea>
+      <ion-textarea #comments rows="6" (blur)="onBlur()" (focus)="onFocus()" ></ion-textarea>
   </ion-item>
 </ion-scroll>
 </ion-content>

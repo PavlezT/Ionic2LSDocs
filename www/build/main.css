@@ -17,6 +17,28 @@ ion-content, ion-list {
   min-height: 44px !important;
 }
 
+ion-app ion-alert.alert-md {
+  padding-top: 10px !important;
+}
+
+ion-app ion-alert.alert-md .alert-input-group {
+  padding-bottom: 1px !important;
+}
+
+ion-app ion-alert.alert-md .alert-button-group {
+  padding-top: 1px !important;
+  padding-bottom: 1px !important;
+}
+
+ion-app ion-alert.alert-md .alert-head {
+  padding-bottom: 1px !important;
+  padding-top: 14px !important;
+}
+
+ion-app ion-alert.alert-md .alert-message {
+  padding-bottom: 1px;
+}
+
 /*! fileicon.css v1.0.0 | MIT License | github.com/picturepan2/fileicon.css */
 /* fileicon.basic */
 .file-icon {
@@ -31146,4 +31168,27 @@ delegate .userTag span {
 
 delegate .active {
   display: block;
+}
+
+delegate .item {
+  padding-left: 1px !important;
+}
+
+delegate .selected .item-inner {
+  background-color: rgba(103, 146, 255, 0.5);
+}
+
+delegate ion-label h2 {
+  font-size: 1.6rem;
+}
+
+delegate ion-list {
+  display: inline;
+  position: relative;
+}
+
+delegate ion-list ion-scroll {
+  position: relative;
+  display: block;
+  height: 100%;
 }
