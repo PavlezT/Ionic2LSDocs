@@ -452,14 +452,15 @@ export class TaskItem {
     let modal = this.modalCtrl.create(Delegate,{
       item : this.task,
       title : this.Title,
-      author : this.taskAuthore
+      contentType : this.ContentType,
+      author : this.taskAuthore,
+      updateTransitHistory : this.updateTransitHistory
     },{
       showBackdrop : true
     });
     modal.present();
 
     modal.onDidDismiss(data => {
-      console.log(data);
       if(data.delegated){
         this.events.publish('task:checked');
         this.events.publish('task:doneTask',this.task);
