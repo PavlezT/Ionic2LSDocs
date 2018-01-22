@@ -177,60 +177,63 @@ export class Delegate {
         EventTypeUser : this.contentType == 'LSSTaskAdd' ?  'EventCreateTask EventAddTask' : 'EventCreateTask',
      }];
 
-            var TaskAuthoreTitle = SP.FieldUserValue.fromUser(StateInRouteData[count].TaskAuthorEmail);
-            oListItem.set_item('TaskAuthore', TaskAuthoreTitle);
+    //         var TaskAuthoreTitle = SP.FieldUserValue.fromUser(StateInRouteData[count].TaskAuthorEmail);
+    //         oListItem.set_item('TaskAuthore', TaskAuthoreTitle);
 
-					 var AssignedTo = SP.FieldUserValue.fromUser(StateInRouteData[count].AssignetToEmail);
-           oListItem.set_item('AssignedTo', AssignedTo);
+		// 			 var AssignedTo = SP.FieldUserValue.fromUser(StateInRouteData[count].AssignetToEmail);
+    //        oListItem.set_item('AssignedTo', AssignedTo);
            
-					 if (!!StateInRouteData[count].AssignetToManager) {
-						  var AssignedManager = SP.FieldUserValue.fromUser(StateInRouteData[count].AssignetToManagerEMail);
-						  oListItem.set_item('AssignedManager', AssignedManager);
-					 }
+		// 			 if (!!StateInRouteData[count].AssignetToManager) {
+		// 				  var AssignedManager = SP.FieldUserValue.fromUser(StateInRouteData[count].AssignetToManagerEMail);
+		// 				  oListItem.set_item('AssignedManager', AssignedManager);
+		// 			 }
 
-           StateInRouteData[count].EventTypeDoc = 'Task';
-					 StateInRouteData[count].itemData = {
-						  ItemId: StateInRouteData[count].sysIDItem, //ИД связанного документта
-						  ListID: StateInRouteData[count].sysIDList, //ИД списка связанного документта
-						  ItemTitle: "-", //Название связанного документта
-						  ListTitle: "-", //Название списка связанного документта
-						  EventType: 'Task'
-					 };
-					 StateInRouteData[count].HistoryArray = [{
-						  EventType: StateInRouteData[count].EventTypeUser,
-						  Event: StateInRouteData[count].Event, //+ FindeStateType(Task[0]), //Тип действия
-						  NameExecutor: StateInRouteData[count].AssignetToTitle, //Имя исполнитель
-						  NameAuthore: StateInRouteData[count].TaskAuthore, //Имя автора
-						  TaskTitle: StateInRouteData[count].Title, //Заголовок задачи
-						  StartDate: StateInRouteData[count].ActionTime.format("DD.MM.YYYY HH:mm:ss"), //Дата начала
-						  DueDate: StateInRouteData[count].DueDate, //Дата завершения
-						  EvanteDate: StateInRouteData[count].ActionTime.format("YYYY-MM-DD HH:mm:ss"), //Дата события
-						  Comments: '',
-						  TaskID: StateInRouteData[count].TaskID,
-						  ExecutorEmail: StateInRouteData[count].AssignetToEmail,
-						  AthoreEmail: StateInRouteData[count].TaskAuthorEmail,
-						  ItemId: StateInRouteData[count].sysIDItem,
-						  ListID: StateInRouteData[count].sysIDList
-					 }];
-           StateInRouteData[count].HistoryType = 'HistoryDataForUser'
+    //        StateInRouteData[count].EventTypeDoc = 'Task';
+		// 			 StateInRouteData[count].itemData = {
+		// 				  ItemId: StateInRouteData[count].sysIDItem, //ИД связанного документта
+		// 				  ListID: StateInRouteData[count].sysIDList, //ИД списка связанного документта
+		// 				  ItemTitle: "-", //Название связанного документта
+		// 				  ListTitle: "-", //Название списка связанного документта
+		// 				  EventType: 'Task'
+		// 			 };
+		// 			 StateInRouteData[count].HistoryArray = [{
+		// 				  EventType: StateInRouteData[count].EventTypeUser,
+		// 				  Event: StateInRouteData[count].Event, //+ FindeStateType(Task[0]), //Тип действия
+		// 				  NameExecutor: StateInRouteData[count].AssignetToTitle, //Имя исполнитель
+		// 				  NameAuthore: StateInRouteData[count].TaskAuthore, //Имя автора
+		// 				  TaskTitle: StateInRouteData[count].Title, //Заголовок задачи
+		// 				  StartDate: StateInRouteData[count].ActionTime.format("DD.MM.YYYY HH:mm:ss"), //Дата начала
+		// 				  DueDate: StateInRouteData[count].DueDate, //Дата завершения
+		// 				  EvanteDate: StateInRouteData[count].ActionTime.format("YYYY-MM-DD HH:mm:ss"), //Дата события
+		// 				  Comments: '',
+		// 				  TaskID: StateInRouteData[count].TaskID,
+		// 				  ExecutorEmail: StateInRouteData[count].AssignetToEmail,
+		// 				  AthoreEmail: StateInRouteData[count].TaskAuthorEmail,
+		// 				  ItemId: StateInRouteData[count].sysIDItem,
+		// 				  ListID: StateInRouteData[count].sysIDList
+		// 			 }];
+    //        StateInRouteData[count].HistoryType = 'HistoryDataForUser'
     
-		if (this.contentType == 'LSResolutionTaskToDo') {
-						  LSOnlineTaskData.LSGetResolutionTask(StateInRouteData[count].sysIDItem, StateInRouteData[count].sysIDList, LSOnlineTaskData.CurentUserEmail, StateInRouteData[count].MainTaskID, StateInRouteData[count].MainTaskStatus, LSOnlineTaskData.CurentUserTitle, StateInRouteData[count].StateID);
-		}
-						  var DataTransfer = {
-								MainTaskID: StateInRouteData[count].MainTaskID,
-								Delegate: StateInRouteData[count].Delegate,
-								CurentUserEmail: LSOnlineTaskData.CurentUserEmai,
-								CurentUserEmail: LSOnlineTaskData.CurentUserEmail,
-								// TypeAction: StateInRouteData.TypeAction,
-								sysIDItem: StateInRouteData[count].sysIDItem,
-								sysIDList: StateInRouteData[count].sysIDList,
-								NewTaskID: StateInRouteData[count].TaskID,
-								StateID: StateInRouteData[count].StateID,
-								AssignetToEmail: StateInRouteData[count].AssignetToEmail
-						  };
+		// if (this.contentType == 'LSResolutionTaskToDo') {
+		// 				  LSOnlineTaskData.LSGetResolutionTask(StateInRouteData[count].sysIDItem, StateInRouteData[count].sysIDList, LSOnlineTaskData.CurentUserEmail, StateInRouteData[count].MainTaskID, StateInRouteData[count].MainTaskStatus, LSOnlineTaskData.CurentUserTitle, StateInRouteData[count].StateID);
+    // }
+    
+    //           StateInRouteData[count].TaskID = oListItem.get_id();
+		// 				  var DataTransfer = {
+		// 						MainTaskID: StateInRouteData[count].MainTaskID,
+		// 						Delegate: StateInRouteData[count].Delegate,
+		// 						CurentUserEmail: LSOnlineTaskData.CurentUserEmai,
+		// 						CurentUserEmail: LSOnlineTaskData.CurentUserEmail,
+		// 						// TypeAction: StateInRouteData.TypeAction,
+		// 						sysIDItem: StateInRouteData[count].sysIDItem,
+		// 						sysIDList: StateInRouteData[count].sysIDList,
+		// 						NewTaskID: StateInRouteData[count].TaskID,
+		// 						StateID: StateInRouteData[count].StateID,
+		// 						AssignetToEmail: StateInRouteData[count].AssignetToEmail
+		// 				  };
 						  
-						  LSOnlineTaskData.LSRelinkTasksEventAdd(DataTransfer);
+		// 				  promiseArray.push(LSOnlineTaskData.LSRelinkRezolutionTask(DataTransfer));
+		// 				  promiseArray.push(LSOnlineTaskData.LSRelinkAddTask(DataTransfer));
 
 
     return this.WriteTask(StateInRouteData)

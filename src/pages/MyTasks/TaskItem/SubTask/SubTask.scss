@@ -1,0 +1,120 @@
+subtask {
+    opacity: 0.99 !important;
+ //    .scroll-content {
+     //   overflow: visible !important;
+ //    }
+ 
+     ion-header{
+         ion-navbar{
+             ion-buttons[start]{
+                 -webkit-order: 1;
+                 -ms-flex-order: 1;
+                 order: 1;
+             }
+         }
+     }
+ 
+     ion-footer{
+       padding:0;
+       ion-toolbar{
+          padding:0;
+          ion-grid{
+             padding:0;
+             ion-col{
+                padding:0;
+                button{
+                   color: #444 !important;
+                   width: 100%;
+                   padding:0 !important;
+                   margin:0 !important;
+                   font-size: 0.9em !important;
+                   ion-icon {
+                       margin-right: 5px;
+                   }
+                }
+             }
+          }
+       }
+    }
+ 
+    .toolbar-title{
+       white-space: nowrap;//normal;
+       word-spacing: 10px;
+    }
+    ion-icon{
+        font-size: 2em;
+     }
+     ion-label{
+        padding-left:10px;
+        div.line{
+           margin-bottom:1%;
+        }
+        ion-icon {
+          width:7%;
+          font-size: 1.5em;
+        }
+     }
+  
+     ion-avatar {
+        display: inline-block;
+        line-height: 1;
+        max-height: 26px;
+        max-width: 30px;
+        border-radius: 50%;
+        img {
+           border-radius: 50px;
+        }
+     }
+     .left{
+          display: inline-block;
+          vertical-align: text-bottom;
+          width:30%;
+      }
+      .right{
+          display: inline-block;
+          vertical-align: text-bottom;
+          width:50%;
+      }
+      .userTag{
+         display: inline-block;
+         border:2px solid #444;
+         border-radius: 20px;
+         white-space: nowrap;
+         span {
+            vertical-align: super;
+            margin-right: 9px;
+            margin-left: 5px;
+         }
+      }
+
+    .active {
+        display:block;
+    }
+
+    .item {
+        padding-left: 1px !important;
+    }
+
+    .selected {
+        .item-inner{
+            background-color: rgba(103, 146, 255, 0.5);
+        }
+    }
+
+    ion-label{
+        h2{
+            font-size: 1.6rem;
+        }
+    }
+
+    ion-list{
+        display: inline;
+        position: relative;
+        ion-scroll{
+            position: relative;
+            display: block;
+            height: 100%;
+        }
+    }
+
+}

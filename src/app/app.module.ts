@@ -25,6 +25,7 @@ import { LSLate } from '../pages/MyTasks/Tabs/LSLate/LSLate';
 import { LSEnded } from '../pages/MyTasks/Tabs/LSEnded/LSEnded';
 import { TaskItem } from '../pages/MyTasks/TaskItem/TaskItem';
 import { Delegate } from '../pages/MyTasks/TaskItem/Delegate/Delegate';
+import { SubTask } from '../pages/MyTasks/TaskItem/SubTask/SubTask';
 //import { SuperTabsModule } from 'ionic2-super-tabs';
 
 import { StatusBar } from '@ionic-native/status-bar';
@@ -37,13 +38,14 @@ import { Transfer } from '@ionic-native/transfer';
 import { FileOpener } from '@ionic-native/file-opener';
 import { FilePath } from '@ionic-native/file-path';
 import { Badge } from '@ionic-native/badge';
+import { DatePicker } from '@ionic-native/date-picker';
 
 @NgModule({
   declarations: [
     MyApp,
     MyTasks,
     Contracts,
-    Item, TaskItem,Delegate,
+    Item, TaskItem,Delegate,SubTask,
     InfoTab, Documents, History, Route, ArraySortPipe,
     LSNew , LSActive ,LSLate , LSEnded
   ],
@@ -59,12 +61,12 @@ import { Badge } from '@ionic-native/badge';
     MyApp,
     MyTasks,
     Contracts,
-    Item, TaskItem, Delegate,
+    Item, TaskItem, Delegate,SubTask,
     InfoTab, Documents, History, Route,
     LSNew , LSActive ,LSLate , LSEnded
   ],
   providers: [
-      StatusBar,FileOpener,FilePath,Badge,
+      StatusBar,FileOpener,FilePath,Badge,DatePicker,
       SplashScreen,Network,NativeStorage,File,Device,Transfer,
       {provide: ErrorHandler, useClass: IonicErrorHandler},
       {provide: Auth , useClass: Auth},

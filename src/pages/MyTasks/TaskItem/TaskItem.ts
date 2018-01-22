@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import { Item } from '../../Contracts/Item/Item';
 import { History } from '../../Contracts/Item/Tabs/History/History';
 import { Delegate } from './Delegate/Delegate';
+import { SubTask } from './SubTask/SubTask';
 
 import { ArraySortPipe } from '../../../utils/arraySort';
 import * as consts from '../../../utils/consts';
@@ -26,6 +27,7 @@ export class TaskItem {
   loader : any;
 
   historyToggle : boolean = false;
+  subtaskToggle : boolean = false;
   typingComment : boolean = false;
   history : any;
   taskHistory : any;
@@ -195,7 +197,7 @@ export class TaskItem {
   }
 
   private writeToHistoryAfterTaskDone() : Promise<any> {
-        let EvanteDate = moment.utc().format("YYYY-MM-DD HH:mm:ss");
+        let EvanteDate = moment().format("YYYY-MM-DD HH:mm:ss");
         let StartDate = moment.utc(this.task.startDate).format("DD.MM.YYYY HH:mm:ss");
         let DueDate = moment.utc(this.task.TaskDueDate).format("DD.MM.YYYY")
 
@@ -431,6 +433,7 @@ export class TaskItem {
   }
 
   public showHistory() : void{
+    this.subtaskToggle = false;
     if(this.historyToggle){
       this.historyToggle = false;
       return;
@@ -438,6 +441,15 @@ export class TaskItem {
     this.historyToggle = true;
 
     this.recalcHistoryHeight();
+  }
+
+  public showTasks() : void {
+    this.historyToggle = false;
+    if(this.subtaskToggle){
+      this.subtaskToggle = false;
+      return;
+    }
+    this.subtaskToggle = true;
   }
 
   public openConnecedItem() : void {
@@ -465,6 +477,26 @@ export class TaskItem {
         this.events.publish('task:checked');
         this.events.publish('task:doneTask',this.task);
         this.dismiss();
+      }
+    });
+  }
+
+  public openSubTask() : void {
+    let modal = this.modalCtrl.create(SubTask,{
+      item : this.task,
+      title : this.Title,
+      contentType : this.ContentType,
+      author : this.taskAuthore,
+      updateTransitHistory : this.updateTransitHistory
+    },{
+      showBackdrop : true
+    });
+    modal.present();
+
+    modal.onDidDismiss(data => {
+      if(data.taskcreated){
+        this.events.publish('task:checked');
+        //add subtask to list
       }
     });
   }

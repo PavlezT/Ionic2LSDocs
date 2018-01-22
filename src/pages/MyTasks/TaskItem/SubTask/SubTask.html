@@ -1,0 +1,77 @@
+<ion-header>
+    <ion-navbar>
+      <ion-buttons start>
+        <button ion-button (tap)="dismiss()">
+            <ion-icon name="close"></ion-icon>
+        </button>
+      </ion-buttons>
+      <ion-title>
+        <ion-slides>
+           <ion-slide>
+              {{loc.dic.Alert34}}
+           </ion-slide>
+        </ion-slides>
+      </ion-title>
+    </ion-navbar>
+  </ion-header>
+  
+  <ion-content>
+    <ion-label class="active">
+      <div class="line" >
+          <ion-icon name="pricetag"></ion-icon>
+          <div class="left">{{loc.dic.Task}}</div>
+          <div class="right">{{Title}}</div>
+      </div>
+    </ion-label>
+    <ion-item item-left>
+        <ion-label floating>{{loc.dic.Alert22}}</ion-label>
+        <ion-input #subtaskname  rows="3"></ion-input>
+    </ion-item>
+    <button ion-button icon-only (tap)="showDatePicker()" >
+      <ion-icon name="calendar"></ion-icon>
+    </button>
+    <ion-searchbar (ionInput)="searchUser($event)" [placeholder]="loc.dic.Alert2"></ion-searchbar>
+    <ion-list *ngIf="startsearch">
+      <!-- <ion-scroll scrollY="true"> -->
+        <ion-item *ngFor="let user of ShowUsers" [ngClass]="selectedUser == user? 'selected' : '' "  (tap)="userSelected(user)">
+          {{user.User1.Title}}
+        </ion-item>
+        <ion-item *ngIf="ShowUsers && ShowUsers.length == 0">
+          <ion-label>
+            <h2>{{loc.dic.mobile.Delegate_not_found}}</h2>
+          </ion-label>
+        </ion-item>
+      <!-- </ion-scroll> -->
+    </ion-list>
+    <ion-label *ngIf="!startsearch">
+      <h2>{{loc.dic.mobile.StartTyping}}</h2>
+    </ion-label>
+  </ion-content>
+  
+  <ion-footer>
+    <ion-toolbar>
+      <ion-buttons full>
+        <ion-grid>
+          <ion-row>
+           <ion-col>
+              <button clear ion-button (tap)="dismiss()">
+                 <ion-icon name="md-close"></ion-icon>
+                 <div>
+                    {{loc.dic.Cencel}}
+                 </div>
+              </button>
+            </ion-col>
+           <ion-col>
+              <button  clear ion-button (tap)="createButtonClicked()">
+                 <ion-icon name="md-checkmark"></ion-icon>
+                 <div>
+                    {{loc.dic.Alert43}}
+                 </div>
+              </button>
+           </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-footer>
+  
