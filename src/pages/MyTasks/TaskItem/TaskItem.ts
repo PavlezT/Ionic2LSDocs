@@ -32,6 +32,7 @@ export class TaskItem {
   history : any;
   taskHistory : any;
   connectedItem : any;
+  SubTasks : Array<any>;
   digest : string;
   access_token : string;
 
@@ -77,6 +78,7 @@ export class TaskItem {
         console.log('<Get Connected doc and Hostory> error:',error);
         this.history = [];
       })
+    this.getSubtasks();
 
     access.getDigestValue().then(digest => this.digest = digest);
     access.getToken().then(token => this.access_token = token);
@@ -422,6 +424,30 @@ export class TaskItem {
         })
   }
 
+  private getSubtasks() : Promise<any> {
+    let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?`
+      +`$select=sysIDItem,ID,sysIDList,Title,StartDate,sysTaskLevel,TaskResults,sysIDMainTask,sysIDParentMainTask,`
+      +`TaskDueDate,OData__Status,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail`
+      +`&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail`
+      +`&$filter=(sysIDMainTask eq '${this.task.Id}') and (sysTaskLevel eq '2')`;
+
+    let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
+    let options = new RequestOptions({ headers: headers });
+
+    return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
+        .toPromise()
+        .then( res => {
+          this.SubTasks = res.json().d.results.map(item=>{
+            item.DueDate_view = moment.utc(item.TaskDueDate).format("dd, DD MMMM");
+            return item;
+          }) || [];
+        })
+        .catch(error => {
+          console.error('<TaskItem> Loading History error!',error);
+          this.SubTasks = [];
+        })
+  }
+
   public showToast(message: any) : void {
       let toast = this.toastCtrl.create({
         message: (typeof message == 'string' )? message : message.toString().substring(0,( message.toString().indexOf('&#x') || message.toString().length)) ,
@@ -495,8 +521,15 @@ export class TaskItem {
 
     modal.onDidDismiss(data => {
       if(data.taskcreated){
-        this.events.publish('task:checked');
-        //add subtask to list
+        this.SubTasks.push({
+          AssignedTo :  data.user.assignTo,
+          TaskAuthore : {
+            EMail : this.user.getEmail(),
+            Title : this.user.getUserName()
+          },
+          Title : data.title,
+          DueDate_view : moment(data.date).format("dd, DD MMMM")
+        });
       }
     });
   }

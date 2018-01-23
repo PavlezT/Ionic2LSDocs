@@ -148,4 +148,35 @@ taskitem {
     .inactive{
       display:none;
    }
+
+   .subtask_item{
+       ion-avatar{
+           margin-right: 6px !important;
+       }
+       ion-label{
+           padding-left: 0px;
+           margin: 4px 0px 4px 0 !important;
+           div {
+               font-size: 1.3rem;
+               span{
+                   color:grey;
+               }
+               .left{
+                    width: 45%;
+                    text-align: left;
+               }
+               .right{
+                    width: 45%;
+                    text-align: right;
+                    float: right;
+               }
+               label {
+                    font-weight: 500;
+                    font-size: 1.6rem;
+                    color: black;
+               }
+           }
+           
+       }
+   }
 }

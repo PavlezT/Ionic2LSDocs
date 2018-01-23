@@ -31069,6 +31069,40 @@ taskitem .inactive {
   display: none;
 }
 
+taskitem .subtask_item ion-avatar {
+  margin-right: 6px !important;
+}
+
+taskitem .subtask_item ion-label {
+  padding-left: 0px;
+  margin: 4px 0px 4px 0 !important;
+}
+
+taskitem .subtask_item ion-label div {
+  font-size: 1.3rem;
+}
+
+taskitem .subtask_item ion-label div span {
+  color: grey;
+}
+
+taskitem .subtask_item ion-label div .left {
+  width: 45%;
+  text-align: left;
+}
+
+taskitem .subtask_item ion-label div .right {
+  width: 45%;
+  text-align: right;
+  float: right;
+}
+
+taskitem .subtask_item ion-label div label {
+  font-weight: 500;
+  font-size: 1.6rem;
+  color: black;
+}
+
 delegate {
   opacity: 0.99 !important;
 }
@@ -31315,4 +31349,13 @@ subtask ion-list ion-scroll {
   position: relative;
   display: block;
   height: 100%;
+}
+
+subtask .top_row {
+  padding: 10px;
+}
+
+subtask .top_row .item {
+  width: 80%;
+  display: inline-block !important;
 }

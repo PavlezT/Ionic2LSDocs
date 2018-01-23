@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewChild } from '@angular/core';
 import { Platform, ToastController, ViewController, NavParams, Events } from 'ionic-angular';
 import { Http, Headers, RequestOptions  } from '@angular/http';
 import { DatePicker } from '@ionic-native/date-picker';
@@ -18,6 +18,8 @@ import { Localization } from '../../../../utils/localization';
 
 export class SubTask {
 
+   @ViewChild('subtaskname') subTaskName : any;
+
    access_token : string;
    digest : string;
    task : any;
@@ -28,6 +30,7 @@ export class SubTask {
    taskcreated : boolean;
    startsearch : boolean;
    selectedUser : any;
+   selectedDate : any;
    Users : any;
    ShowUsers : any;
 
@@ -44,6 +47,7 @@ export class SubTask {
     this.taskAuthore =  navParams.data.author;
     this.taskcreated = false;
     this.selectedUser = null;
+    this.selectedDate = null;
 
     this.updateTransitHistory = navParams.data.updateTransitHistory;
 
@@ -61,7 +65,7 @@ export class SubTask {
   }
 
   dismiss() {
-    let data = { taskcreated : this.taskcreated, user : this.selectedUser };
+    let data = { taskcreated : this.taskcreated, user : this.selectedUser, date : this.selectedDate, title : this.subTaskName.value.trim() };
     this.viewCtrl.dismiss(data);
   }
 
@@ -105,142 +109,118 @@ export class SubTask {
     this.selectedUser = user;
   }
 
-  public createButtonClicked() : void {
+  public createButtonClicked() : any {
     if(!this.selectedUser)
       return this.showToast(this.loc.dic.mobile.CheckUser);
-    if( this.selectedUser.User1.EMail == this.user.getEmail())
-      return this.showToast(this.loc.dic.Alert98);
+    if( !(this.subTaskName.value && this.subTaskName.value.trim().length > 0) )
+      return this.showToast(this.loc.dic.Alert22);
+    if( !(this.selectedDate && this.selectedDate >= (new Date((new Date(Date.now())).toDateString())) ))
+      return this.showToast(this.loc.dic.Alert13);
 
     this.loaderctrl.presentLoading();
     this.taskcreated = true;
 
     this.selectedUser.assignTo = {
-      title : this.selectedUser.User1.Title,
-      email : this.selectedUser.User1.EMail
+      Title : this.selectedUser.User1.Title,
+      EMail : this.selectedUser.User1.EMail
     }
 
     if ((this.selectedUser.AbsenceStart) || (this.selectedUser.AbsenceEnd)){
       var isDeputyUse = moment().isBetween(moment(this.selectedUser.AbsenceStart, 'DD.MM.YYYY'), moment(this.selectedUser.AbsenceEnd, 'DD.MM.YYYY'), 'day', '[]');
-      if(isDeputyUse) {
-        this.selectedUser.assignTo.title = this.selectedUser.Deputy.Title;
-        this.selectedUser.assignTo.email = this.selectedUser.Deputy.EMail;
+      if(isDeputyUse && this.selectedUser.Deputy && this.selectedUser.Deputy.EMail) {
+        this.selectedUser.assignTo.Title = this.selectedUser.Deputy.Title;
+        this.selectedUser.assignTo.EMail = this.selectedUser.Deputy.EMail;
       }
     }
 
-    // this.DelegateTask()
-    //   .then(()=>{
-    //     return this.loaderctrl.stopLoading()
-    //   })
-    //   .then(()=>{
-    //     this.dismiss();
-    //   })
-    //   .catch(error => {
-    //     this.loaderctrl.stopLoading();
-    //     this.taskcreated = false;
-    //     this.showToast(this.loc.dic.mobile.OperationError);
-    //   })
+     this.addSubTask()
+      .then(()=>{
+        this.dismiss();
+        return this.loaderctrl.stopLoading();
+      })
+      .catch(error => {
+        this.loaderctrl.stopLoading();
+        this.taskcreated = false;
+        this.showToast(this.loc.dic.mobile.OperationError);
+      })
   }
 
-  public DelegateTask() : Promise<any> {
-     var RouteForCreate = [];
-     var EstimatePOST = moment(this.task.TaskDueDate).format('L');
-     var DueDate = EstimatePOST.split('/');
-     
-     var StateInRouteData = [{
-        ContentTypeId: this.task.ContentTypeId,
-        sysIDItem: this.task.sysIDItem,
-        sysIDList: this.task.sysIDList,
-        sysIDMainTask: 0,
-        Title: this.task.Title,
-        sysIDParentMainTask: 0,
-        StateID: this.task.StateID,
-        sysTaskLevel: 1,
-        TaskDescription: '',
-        TaskDueDate: EstimatePOST,
-        EstimatePlan: this.task.EstimatePlan == 'null'? 0 : this.task.EstimatePlan,
-        TaskAuthore: this.user.getUserName() ,
-        AssignetToTitle: this.selectedUser.assignTo.title,
-        AssignetToEmail: this.selectedUser.assignTo.email,
-        MainTaskStatus: this.task.OData__Status,
-        OData__Status : 'Not Started',
-        MainTaskID: this.task.ID,
-        Delegate: 'Delegate',
-        TaskAuthorEmail: this.user.getEmail(),
-        CommitteeId: this.task.CommitteeId,
-        AssignetToManager : this.selectedUser.UserManager.Title,
-				AssignetToManagerEMail : this.selectedUser.UserManager.EMail,
-        DepartmentOfUser : this.selectedUser.ol_Department,
-        ActionTime : moment().toString(),
-        DueDate : DueDate[1] + '.' + DueDate[0] + '.' + DueDate[2],
-        Event : this.contentType == 'LSSTaskAdd' ? this.loc.dic.Alert68 :  this.loc.dic.Alert57,
-        EventTypeUser : this.contentType == 'LSSTaskAdd' ?  'EventCreateTask EventAddTask' : 'EventCreateTask',
-     }];
+  public addSubTask() : Promise<any> {
+    var taskDueDate = this.selectedDate.toLocaleDateString().split('.'); // 04/09/2021 //9 квітня 
 
-    //         var TaskAuthoreTitle = SP.FieldUserValue.fromUser(StateInRouteData[count].TaskAuthorEmail);
-    //         oListItem.set_item('TaskAuthore', TaskAuthoreTitle);
+    var StateInRouteData = [{
+      // ContentTypeId: {
+      //   $11_1 : LSOnlineTaskData.LSTaskContentId['LSSTaskAdd']
+      // },
+      ContentTypeId : LSOnlineTaskData.LSTaskContentId['LSSTaskAdd'], //////////////////////////////////////
+      sysIDItem: this.task.sysIDItem,
+      sysIDList: this.task.sysIDList,
+      sysIDMainTask : this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask,
+      Title: this.subTaskName.value.trim(),
+      sysIDParentMainTask: this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask,
+      StateID: this.task.StateID,
+      sysTaskLevel: (parseInt(this.task.sysTaskLevel || '0') +1 ),
+      TaskDescription: '',
+      TaskDueDate: taskDueDate[1] + '/' + taskDueDate[0] + '/' + taskDueDate[2],
+      EstimatePlan: '',
+      TaskAuthore: this.user.getUserName(),
+      TaskAuthorEmail: this.user.getEmail(),
+      AssignetToTitle: this.selectedUser.assignTo.Title,
+      AssignetToEmail: this.selectedUser.assignTo.EMail,
+      AssignedTo : {
+        ///////////////////////////////////////////////////////////
+      },
+      AssignetToManager : this.selectedUser.UserManager.Title,
+      AssignetToManagerEMail : this.selectedUser.UserManager.EMail,
+      DepartmentOfUser : this.selectedUser.ol_Department,
+      OData__Status : 'Not Started',
+      EventTypeDoc : 'Task',
+      itemData : {
+        ItemId: this.task.sysIDItem,
+        ListID: this.task.sysIDList,
+        ItemTitle: "-", 
+        ListTitle: "-", 
+        EventType: 'Task'
+      },
+      HistoryArray : [{
+        EventType : 'EventCreateTask EventAddTask',
+        Event: this.loc.dic.Alert68,
+        NameExecutor : this.selectedUser.assignTo.Title,
+        NameAuthore : this.user.getUserName(),
+        TaskTitle : this.subTaskName.value.trim(),
+        StartDate :  moment().format("DD.MM.YYYY HH:mm:ss"),
+        DueDate: this.selectedDate.toLocaleDateString(),
+        EvanteDate: moment().format("YYYY-MM-DD HH:mm:ss"),
+        Comments: '',
+        TaskID: StateInRouteData[0].TaskID,///////////////////////////////////////
+        ExecutorEmail: this.selectedUser.assignTo.EMail,
+        AthoreEmail: this.user.getEmail(),
+        ItemId: this.task.sysIDItem,
+        ListID: this.task.sysIDList
+      }]
+    }];
 
-		// 			 var AssignedTo = SP.FieldUserValue.fromUser(StateInRouteData[count].AssignetToEmail);
-    //        oListItem.set_item('AssignedTo', AssignedTo);
-           
-		// 			 if (!!StateInRouteData[count].AssignetToManager) {
-		// 				  var AssignedManager = SP.FieldUserValue.fromUser(StateInRouteData[count].AssignetToManagerEMail);
-		// 				  oListItem.set_item('AssignedManager', AssignedManager);
-		// 			 }
-
-    //        StateInRouteData[count].EventTypeDoc = 'Task';
-		// 			 StateInRouteData[count].itemData = {
-		// 				  ItemId: StateInRouteData[count].sysIDItem, //ИД связанного документта
-		// 				  ListID: StateInRouteData[count].sysIDList, //ИД списка связанного документта
-		// 				  ItemTitle: "-", //Название связанного документта
-		// 				  ListTitle: "-", //Название списка связанного документта
-		// 				  EventType: 'Task'
-		// 			 };
-		// 			 StateInRouteData[count].HistoryArray = [{
-		// 				  EventType: StateInRouteData[count].EventTypeUser,
-		// 				  Event: StateInRouteData[count].Event, //+ FindeStateType(Task[0]), //Тип действия
-		// 				  NameExecutor: StateInRouteData[count].AssignetToTitle, //Имя исполнитель
-		// 				  NameAuthore: StateInRouteData[count].TaskAuthore, //Имя автора
-		// 				  TaskTitle: StateInRouteData[count].Title, //Заголовок задачи
-		// 				  StartDate: StateInRouteData[count].ActionTime.format("DD.MM.YYYY HH:mm:ss"), //Дата начала
-		// 				  DueDate: StateInRouteData[count].DueDate, //Дата завершения
-		// 				  EvanteDate: StateInRouteData[count].ActionTime.format("YYYY-MM-DD HH:mm:ss"), //Дата события
-		// 				  Comments: '',
-		// 				  TaskID: StateInRouteData[count].TaskID,
-		// 				  ExecutorEmail: StateInRouteData[count].AssignetToEmail,
-		// 				  AthoreEmail: StateInRouteData[count].TaskAuthorEmail,
-		// 				  ItemId: StateInRouteData[count].sysIDItem,
-		// 				  ListID: StateInRouteData[count].sysIDList
-		// 			 }];
-    //        StateInRouteData[count].HistoryType = 'HistoryDataForUser'
-    
-		// if (this.contentType == 'LSResolutionTaskToDo') {
-		// 				  LSOnlineTaskData.LSGetResolutionTask(StateInRouteData[count].sysIDItem, StateInRouteData[count].sysIDList, LSOnlineTaskData.CurentUserEmail, StateInRouteData[count].MainTaskID, StateInRouteData[count].MainTaskStatus, LSOnlineTaskData.CurentUserTitle, StateInRouteData[count].StateID);
-    // }
-    
-    //           StateInRouteData[count].TaskID = oListItem.get_id();
-		// 				  var DataTransfer = {
-		// 						MainTaskID: StateInRouteData[count].MainTaskID,
-		// 						Delegate: StateInRouteData[count].Delegate,
-		// 						CurentUserEmail: LSOnlineTaskData.CurentUserEmai,
-		// 						CurentUserEmail: LSOnlineTaskData.CurentUserEmail,
-		// 						// TypeAction: StateInRouteData.TypeAction,
-		// 						sysIDItem: StateInRouteData[count].sysIDItem,
-		// 						sysIDList: StateInRouteData[count].sysIDList,
-		// 						NewTaskID: StateInRouteData[count].TaskID,
-		// 						StateID: StateInRouteData[count].StateID,
-		// 						AssignetToEmail: StateInRouteData[count].AssignetToEmail
-		// 				  };
-						  
-		// 				  promiseArray.push(LSOnlineTaskData.LSRelinkRezolutionTask(DataTransfer));
-		// 				  promiseArray.push(LSOnlineTaskData.LSRelinkAddTask(DataTransfer));
-
+    TaskID = oListItem.get_id();		 
+					 
+					 var AssignedTo = SP.FieldUserValue.fromUser(StateInRouteData[0].AssignetToEmail);
+					 oListItem.set_item('AssignedTo', AssignedTo);
+					 if (!!StateInRouteData[0].AssignetToManager) {
+						  var AssignedManager = SP.FieldUserValue.fromUser(StateInRouteData[count].AssignetToManagerEMail);
+						  oListItem.set_item('AssignedManager', AssignedManager);
+					 }
+					 
+					 
+					 if (this.contentType == 'LSResolutionTaskToDo') {
+						    LSOnlineTaskData.LSGetResolutionTask(StateInRouteData[count].sysIDItem, StateInRouteData[count].sysIDList, LSOnlineTaskData.CurentUserEmail, StateInRouteData[count].MainTaskID, StateInRouteData[count].MainTaskStatus, LSOnlineTaskData.CurentUserTitle, StateInRouteData[count].StateID);
+					 }
+					 
 
     return this.WriteTask(StateInRouteData)
       .then(() => {
         return Promise.all([this.updateTransitHistory(StateInRouteData),this.updateTransitHistory(StateInRouteData,'TaskAndDocHistory')]);
       })
-      .then(()=>{
-        //SEND TO TaskItem to Done Task // this.doneTask('Done');
+      .catch(error => {
+
       })
   }
 
@@ -261,8 +241,8 @@ export class SubTask {
       titleText : this.loc.dic.Alert21,
       androidTheme : this.datePicker.ANDROID_THEMES.THEME_DEVICE_DEFAULT_LIGHT
     }).then(
-      date => console.log('Got date: ', date),
-      err => console.log('Error occurred while getting date: ', err)
+      date =>{ this.selectedDate = new Date(date); },
+      err => { }
     );
   }
 

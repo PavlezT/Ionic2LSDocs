@@ -35,7 +35,7 @@ export class User{
             this.user = res[0].json().d;
             this.email = this.user.Email;
             this.Id = this.user.Id;
-            
+          
             res[1].json().d.UserProfileProperties.results.some(item =>{
               if(item.Key ==('SPS-MUILanguages')){
                 this.locale = item.Value.substring(item.Value.indexOf('-')+1,item.Value.length).toLowerCase();

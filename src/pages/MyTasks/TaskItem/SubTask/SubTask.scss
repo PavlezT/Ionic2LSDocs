@@ -117,4 +117,12 @@ subtask {
         }
     }
 
+    .top_row{
+        padding : 10px;
+        .item{
+            width: 80%;
+            display: inline-block !important;
+        }
+    }
+
 }

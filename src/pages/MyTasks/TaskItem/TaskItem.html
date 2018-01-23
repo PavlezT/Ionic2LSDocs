@@ -95,6 +95,33 @@
           {{loc.dic.Alert34}}
         </ion-label>
     </ion-item>
+    <ion-item class="subtask_item" *ngFor="let subtask of SubTasks">
+      <ion-avatar item-left>
+        <img src="{{images.getImage(subtask.TaskAuthore.EMail || 'undefined')}}" >
+      </ion-avatar>
+      <ion-label>
+        <div>
+            <span class="left">
+              <!-- <ion-icon name="ios-return-left"></ion-icon> -->
+              {{subtask.TaskAuthore.Title}}
+            </span>
+            <span class="right">
+              <!-- <ion-icon name="ios-return-right"></ion-icon> -->
+              {{subtask.AssignedTo.Title}}
+            </span>
+        </div>
+        <div>
+            <span class="left"><label>{{subtask.Title}}</label></span>
+            <span class="right">
+              <!-- <ion-icon name="ios-timer-outline"></ion-icon> -->
+              {{subtask.DueDate_view}}
+            </span>
+        </div>
+      </ion-label>
+      <ion-avatar item-right>
+          <img src="{{images.getImage(subtask.AssignedTo.EMail || 'undefined')}}" >
+      </ion-avatar>
+    </ion-item>
   </ion-list>
 </ion-scroll>
 </ion-content>

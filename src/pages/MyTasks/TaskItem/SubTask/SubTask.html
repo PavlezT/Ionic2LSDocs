@@ -22,14 +22,21 @@
           <div class="left">{{loc.dic.Task}}</div>
           <div class="right">{{Title}}</div>
       </div>
+      <div class="line" *ngIf="selectedDate" >
+        <ion-icon name="calendar"></ion-icon>
+        <div class="left">{{loc.dic.HistoryTaskStart}}</div>
+        <div class="right">{{selectedDate.toLocaleDateString()}}</div>
+      </div>
     </ion-label>
-    <ion-item item-left>
-        <ion-label floating>{{loc.dic.Alert22}}</ion-label>
-        <ion-input #subtaskname  rows="3"></ion-input>
-    </ion-item>
-    <button ion-button icon-only (tap)="showDatePicker()" >
-      <ion-icon name="calendar"></ion-icon>
-    </button>
+    <ion-row class="top_row">
+      <ion-item item-left>
+          <ion-label stacked>{{loc.dic.Alert22}}</ion-label>
+          <ion-input #subtaskname type="text" rows="3" placeholder="..."></ion-input>
+      </ion-item>
+      <button ion-button icon-only large (tap)="showDatePicker()" >
+        <ion-icon name="calendar"></ion-icon>
+      </button>
+    </ion-row>
     <ion-searchbar (ionInput)="searchUser($event)" [placeholder]="loc.dic.Alert2"></ion-searchbar>
     <ion-list *ngIf="startsearch">
       <!-- <ion-scroll scrollY="true"> -->
