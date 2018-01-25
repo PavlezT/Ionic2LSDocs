@@ -12,7 +12,8 @@
         "OperationError":"Operation failed. Error has occurred",
         "Delegate_not_found" : "User not found",
         "StartTyping" : "Start typing to search",
-        "CheckUser" : "Select user first"
+        "CheckUser" : "Select user first",
+        "ErrorLoadingUsers" : "An error occurred while loading users. Retry later."
     },
     "MStep1":"User Directory",
     "MStep2":"Lists",

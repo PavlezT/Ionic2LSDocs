@@ -71,7 +71,7 @@ export class SubTask {
 
   public getUsers() : Promise<any> {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSUsers')/items?`
-    +'$select=ID,IDDepartment,ol_Department,JobTitle,UserManager/Title,UserManager/EMail,User1/Title,User1/EMail,Deputy/Title,Deputy/EMail,DeputyId,AbsenceStart,AbsenceEnd'
+    +'$select=ID,IDDepartment,ol_Department,JobTitle,UserManager/Id,UserManager/Title,UserManager/EMail,User1/Id,User1/Title,User1/EMail,Deputy/Title,Deputy/EMail,DeputyId,AbsenceStart,AbsenceEnd'
     +'&$expand=UserManager,Deputy,User1';
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
@@ -84,6 +84,7 @@ export class SubTask {
         })
         .catch(error => {
           console.error('<TaskItem> Loading History error!',error);
+          this.showToast(this.loc.dic.mobile.ErrorLoadingUsers);
           return [];
         })
   }
@@ -124,7 +125,7 @@ export class SubTask {
       Title : this.selectedUser.User1.Title,
       EMail : this.selectedUser.User1.EMail
     }
-
+    
     if ((this.selectedUser.AbsenceStart) || (this.selectedUser.AbsenceEnd)){
       var isDeputyUse = moment().isBetween(moment(this.selectedUser.AbsenceStart, 'DD.MM.YYYY'), moment(this.selectedUser.AbsenceEnd, 'DD.MM.YYYY'), 'day', '[]');
       if(isDeputyUse && this.selectedUser.Deputy && this.selectedUser.Deputy.EMail) {
@@ -132,7 +133,7 @@ export class SubTask {
         this.selectedUser.assignTo.EMail = this.selectedUser.Deputy.EMail;
       }
     }
-
+  
      this.addSubTask()
       .then(()=>{
         this.dismiss();
@@ -146,82 +147,93 @@ export class SubTask {
   }
 
   public addSubTask() : Promise<any> {
-    var taskDueDate = this.selectedDate.toLocaleDateString().split('.'); // 04/09/2021 //9 квітня 
-
-    var StateInRouteData = [{
-      // ContentTypeId: {
-      //   $11_1 : LSOnlineTaskData.LSTaskContentId['LSSTaskAdd']
-      // },
-      ContentTypeId : LSOnlineTaskData.LSTaskContentId['LSSTaskAdd'], //////////////////////////////////////
+    console.log('start:',this.task);
+    var StateInRouteData = {
+      '__metadata':{
+        type : "SP.Data.LSTasksListItem"
+      },
       sysIDItem: this.task.sysIDItem,
       sysIDList: this.task.sysIDList,
-      sysIDMainTask : this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask,
-      Title: this.subTaskName.value.trim(),
-      sysIDParentMainTask: this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask,
+      sysIDMainTask : (this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask).toString(),
+      sysIDParentMainTask: (this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask).toString(),
+      Title: this.subTaskName.value.trim(),      
       StateID: this.task.StateID,
-      sysTaskLevel: (parseInt(this.task.sysTaskLevel || '0') +1 ),
-      TaskDescription: '',
-      TaskDueDate: taskDueDate[1] + '/' + taskDueDate[0] + '/' + taskDueDate[2],
-      EstimatePlan: '',
-      TaskAuthore: this.user.getUserName(),
+      sysTaskLevel: (parseInt(this.task.sysTaskLevel || '0') +1 ).toString(),
+      TaskDescription: null,
+      TaskDueDate: this.selectedDate.format('YYYY-MM-DD[T]HH:mm:ss[Z]'),
+      EstimatePlan: null,
+      TaskAuthoreId: this.user.getId(),
       TaskAuthorEmail: this.user.getEmail(),
       AssignetToTitle: this.selectedUser.assignTo.Title,
       AssignetToEmail: this.selectedUser.assignTo.EMail,
-      AssignedTo : {
-        ///////////////////////////////////////////////////////////
-      },
-      AssignetToManager : this.selectedUser.UserManager.Title,
-      AssignetToManagerEMail : this.selectedUser.UserManager.EMail,
+      AssignedToId : this.selectedUser.User1.Id,
+      AssignedManagerId : this.selectedUser.UserManager.Id,
+      ////AssignetToManager : this.selectedUser.UserManager.Title,
+      ////AssignetToManagerEMail : this.selectedUser.UserManager.EMail,
       DepartmentOfUser : this.selectedUser.ol_Department,
       OData__Status : 'Not Started',
-      EventTypeDoc : 'Task',
-      itemData : {
-        ItemId: this.task.sysIDItem,
-        ListID: this.task.sysIDList,
-        ItemTitle: "-", 
-        ListTitle: "-", 
-        EventType: 'Task'
-      },
-      HistoryArray : [{
-        EventType : 'EventCreateTask EventAddTask',
-        Event: this.loc.dic.Alert68,
-        NameExecutor : this.selectedUser.assignTo.Title,
-        NameAuthore : this.user.getUserName(),
-        TaskTitle : this.subTaskName.value.trim(),
-        StartDate :  moment().format("DD.MM.YYYY HH:mm:ss"),
-        DueDate: this.selectedDate.toLocaleDateString(),
-        EvanteDate: moment().format("YYYY-MM-DD HH:mm:ss"),
-        Comments: '',
-        TaskID: StateInRouteData[0].TaskID,///////////////////////////////////////
-        ExecutorEmail: this.selectedUser.assignTo.EMail,
-        AthoreEmail: this.user.getEmail(),
-        ItemId: this.task.sysIDItem,
-        ListID: this.task.sysIDList
-      }]
+      ////EventTypeDoc : 'Task'
+      EventTypeUser : 'EventCreateTask EventAddTask',
+      HistoryType : 'HistoryDataForUser'
+    };
+    console.log('first object')
+    let itemData = {
+      ItemId: this.task.sysIDItem,
+      ListID: this.task.sysIDList,
+      ItemTitle: "-", 
+      ListTitle: "-", 
+      EventType: 'Task'
+    };
+    console.log('second object')
+    var HistoryArray = [{
+      EventType : 'EventCreateTask EventAddTask',
+      Event: this.loc.dic.Alert68,
+      NameExecutor : this.selectedUser.assignTo.Title,
+      NameAuthore : this.user.getUserName(),
+      TaskTitle : this.subTaskName.value.trim(),
+      StartDate :  moment().format("DD.MM.YYYY HH:mm:ss"),
+      DueDate: this.selectedDate.toLocaleDateString(),
+      EvanteDate: moment().format("YYYY-MM-DD HH:mm:ss"),
+      Comments: '',
+      ExecutorEmail: this.selectedUser.assignTo.EMail,
+      AthoreEmail: this.user.getEmail(),
+      ItemId: this.task.sysIDItem,
+      ListID: this.task.sysIDList
     }];
-
-    TaskID = oListItem.get_id();		 
-					 
-					 var AssignedTo = SP.FieldUserValue.fromUser(StateInRouteData[0].AssignetToEmail);
-					 oListItem.set_item('AssignedTo', AssignedTo);
-					 if (!!StateInRouteData[0].AssignetToManager) {
-						  var AssignedManager = SP.FieldUserValue.fromUser(StateInRouteData[count].AssignetToManagerEMail);
-						  oListItem.set_item('AssignedManager', AssignedManager);
-					 }
-					 
-					 
-					 if (this.contentType == 'LSResolutionTaskToDo') {
-						    LSOnlineTaskData.LSGetResolutionTask(StateInRouteData[count].sysIDItem, StateInRouteData[count].sysIDList, LSOnlineTaskData.CurentUserEmail, StateInRouteData[count].MainTaskID, StateInRouteData[count].MainTaskStatus, LSOnlineTaskData.CurentUserTitle, StateInRouteData[count].StateID);
-					 }
-					 
-
-    return this.WriteTask(StateInRouteData)
-      .then(() => {
+    console.log('third object')
+    return this.getContentType('LSSTaskAdd')
+      .then((contentType) =>{
+        StateInRouteData['ContentTypeId'] = contentType.Id.StringValue;
+        return this.WriteTask(StateInRouteData);
+      })
+      .then((createdTask : any) => {
+        HistoryArray[0]['TaskID'] = createdTask.json().d.Id;
+        StateInRouteData['itemData'] = itemData;
+        StateInRouteData['HistoryArray'] = HistoryArray;
         return Promise.all([this.updateTransitHistory(StateInRouteData),this.updateTransitHistory(StateInRouteData,'TaskAndDocHistory')]);
       })
-      .catch(error => {
-
+      .then(()=>{
+        console.log('After all:',StateInRouteData);
+        // if (this.contentType == 'LSResolutionTaskToDo') {
+        //   LSOnlineTaskData.LSGetResolutionTask(StateInRouteData[count].sysIDItem, StateInRouteData[count].sysIDList, LSOnlineTaskData.CurentUserEmail, StateInRouteData[count].MainTaskID, StateInRouteData[count].MainTaskStatus, LSOnlineTaskData.CurentUserTitle, StateInRouteData[count].StateID);
+        // }
       })
+  }
+
+  public getContentType(name) : Promise<any>{
+    let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/ContentTypes?$select=Name,Id&$filter=(Name eq '${name}')`;
+
+    let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
+    let options = new RequestOptions({ headers: headers });
+
+    return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
+        .toPromise()
+        .then( res => {
+          return res.json().d.results[0];
+        })
+        .catch(error => {
+          throw new Error('Erorr getting contentType: '+name);
+        })
   }
 
   public WriteTask(body) : Promise<any> {

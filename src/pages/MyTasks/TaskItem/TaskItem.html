@@ -12,11 +12,11 @@
          </ion-slide>
       </ion-slides>
     </ion-title>
-    <ion-buttons end *ngIf="delegatable" >
+    <!-- <ion-buttons end *ngIf="delegatable" >
       <button ion-button (click)="delegateOpen()">
         <ion-icon name="person-add"></ion-icon>
       </button>
-    </ion-buttons>
+    </ion-buttons> -->
   </ion-navbar>
 </ion-header>
 
@@ -93,6 +93,11 @@
         <ion-label>
           <ion-icon name="add"></ion-icon>
           {{loc.dic.Alert34}}
+        </ion-label>
+    </ion-item>
+    <ion-item *ngIf="!SubTasks">
+        <ion-label>
+          {{loc.dic.mobile.Downloading}}
         </ion-label>
     </ion-item>
     <ion-item class="subtask_item" *ngFor="let subtask of SubTasks">

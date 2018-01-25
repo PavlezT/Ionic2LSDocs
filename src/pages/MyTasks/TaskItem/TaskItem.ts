@@ -509,7 +509,7 @@ export class TaskItem {
 
   public openSubTask() : void {
     let modal = this.modalCtrl.create(SubTask,{
-      item : this.task,
+      task : this.task,
       title : this.Title,
       contentType : this.ContentType,
       author : this.taskAuthore,
