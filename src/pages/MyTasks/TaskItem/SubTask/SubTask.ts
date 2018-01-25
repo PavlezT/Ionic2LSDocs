@@ -201,7 +201,7 @@ export class SubTask {
       ListID: this.task.sysIDList
     }];
     
-    return this.getContentType(this.contentType == 'LSResolutionTaskToDo' ? 'LSResolutionTaskToDo' : 'LSSTaskAdd')
+    return this.getContentType((this.contentType == 'LSSTaskAdd' ? 'LSSTaskAdd' : 'LSResolutionTaskToDo'))
       .then((contentType) =>{
         StateInRouteData['ContentTypeId'] = contentType.Id.StringValue;
         return this.WriteTask(StateInRouteData);

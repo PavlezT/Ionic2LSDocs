@@ -428,11 +428,11 @@ export class TaskItem {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?`
       +`$select=sysIDItem,ID,sysIDList,Title,StartDate,sysTaskLevel,TaskResults,sysIDMainTask,sysIDParentMainTask,`
       +`TaskDueDate,OData__Status,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail`;
-
+    console.log('this.contentType:',this.ContentType);
     listGet+= (this.ContentType == "LSResolutionTaskToDo" ? 
       (
         `&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail,ContentType`
-        +`&$filter=(sysIDItem eq '${this.task.sysIDItem}') and (sysIDList eq '${this.task.sysIDList}') and (ContentType eq 'LSResolutionTaskToDo') and (TaskAuthor/EMail eq '${encodeURI(this.taskAuthore.EMail)}') and (StateID eq '${this.task.StateID}')`
+        +`&$filter=(sysIDItem eq '${this.task.sysIDItem}') and (sysIDList eq '${this.task.sysIDList}') and (ContentType eq 'LSResolutionTaskToDo') and (TaskAuthore/EMail eq '${(this.taskAuthore.EMail)}') and (StateID eq '${this.task.StateID}')`
       ) :
       (
         `&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail`
