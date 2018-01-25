@@ -10,6 +10,7 @@ import { Access } from '../../../../utils/access';
 import { Loader } from '../../../../utils/loader';
 import { Images } from '../../../../utils/images';
 import { Localization } from '../../../../utils/localization';
+import { ContentType } from '@angular/http/src/enums';
 
 @Component({
   selector: 'subtask',
@@ -71,7 +72,7 @@ export class SubTask {
 
   public getUsers() : Promise<any> {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSUsers')/items?`
-    +'$select=ID,IDDepartment,ol_Department,JobTitle,UserManager/Id,UserManager/Title,UserManager/EMail,User1/Id,User1/Title,User1/EMail,Deputy/Title,Deputy/EMail,DeputyId,AbsenceStart,AbsenceEnd'
+    +'$select=Id,IDDepartment,ol_Department,JobTitle,UserManager/Id,UserManager/Title,UserManager/EMail,User1/Id,User1/Title,User1/EMail,Deputy/Id,Deputy/Title,Deputy/EMail,DeputyId,AbsenceStart,AbsenceEnd'
     +'&$expand=UserManager,Deputy,User1';
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
@@ -123,7 +124,8 @@ export class SubTask {
 
     this.selectedUser.assignTo = {
       Title : this.selectedUser.User1.Title,
-      EMail : this.selectedUser.User1.EMail
+      EMail : this.selectedUser.User1.EMail,
+      Id : this.selectedUser.User1.Id
     }
     
     if ((this.selectedUser.AbsenceStart) || (this.selectedUser.AbsenceEnd)){
@@ -131,6 +133,7 @@ export class SubTask {
       if(isDeputyUse && this.selectedUser.Deputy && this.selectedUser.Deputy.EMail) {
         this.selectedUser.assignTo.Title = this.selectedUser.Deputy.Title;
         this.selectedUser.assignTo.EMail = this.selectedUser.Deputy.EMail;
+        this.selectedUser.assignTo.Id = this.selectedUser.Deputy.Id;
       }
     }
   
@@ -147,36 +150,33 @@ export class SubTask {
   }
 
   public addSubTask() : Promise<any> {
-    console.log('start:',this.task);
     var StateInRouteData = {
       '__metadata':{
         type : "SP.Data.LSTasksListItem"
       },
       sysIDItem: this.task.sysIDItem,
       sysIDList: this.task.sysIDList,
-      sysIDMainTask : (this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask).toString(),
-      sysIDParentMainTask: (this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask).toString(),
-      Title: this.subTaskName.value.trim(),      
+      sysIDMainTask : (this.contentType == 'LSResolutionTaskToDo' ? (this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask) : 0 ).toString(),
+      sysIDParentMainTask: (this.contentType == 'LSResolutionTaskToDo' ? (this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask) : 0 ).toString(),
+      Title: this.subTaskName.value.trim().replace(':', ' '),      
       StateID: this.task.StateID,
       sysTaskLevel: (parseInt(this.task.sysTaskLevel || '0') +1 ).toString(),
       TaskDescription: null,
-      TaskDueDate: this.selectedDate.format('YYYY-MM-DD[T]HH:mm:ss[Z]'),
+      TaskDueDate: moment(this.selectedDate).format('YYYY-MM-DD[T]HH:mm:ss[Z]'),
       EstimatePlan: null,
       TaskAuthoreId: this.user.getId(),
       TaskAuthorEmail: this.user.getEmail(),
       AssignetToTitle: this.selectedUser.assignTo.Title,
       AssignetToEmail: this.selectedUser.assignTo.EMail,
-      AssignedToId : this.selectedUser.User1.Id,
+      AssignedToId : this.selectedUser.assignTo.Id,
       AssignedManagerId : this.selectedUser.UserManager.Id,
       ////AssignetToManager : this.selectedUser.UserManager.Title,
       ////AssignetToManagerEMail : this.selectedUser.UserManager.EMail,
       DepartmentOfUser : this.selectedUser.ol_Department,
       OData__Status : 'Not Started',
       ////EventTypeDoc : 'Task'
-      EventTypeUser : 'EventCreateTask EventAddTask',
-      HistoryType : 'HistoryDataForUser'
     };
-    console.log('first object')
+    
     let itemData = {
       ItemId: this.task.sysIDItem,
       ListID: this.task.sysIDList,
@@ -184,9 +184,9 @@ export class SubTask {
       ListTitle: "-", 
       EventType: 'Task'
     };
-    console.log('second object')
+    
     var HistoryArray = [{
-      EventType : 'EventCreateTask EventAddTask',
+      EventType :  (this.contentType == 'LSSTaskAdd' ? 'EventCreateTask EventAddTask' : 'EventCreateTask'),
       Event: this.loc.dic.Alert68,
       NameExecutor : this.selectedUser.assignTo.Title,
       NameAuthore : this.user.getUserName(),
@@ -200,14 +200,16 @@ export class SubTask {
       ItemId: this.task.sysIDItem,
       ListID: this.task.sysIDList
     }];
-    console.log('third object')
-    return this.getContentType('LSSTaskAdd')
+    
+    return this.getContentType(this.contentType == 'LSResolutionTaskToDo' ? 'LSResolutionTaskToDo' : 'LSSTaskAdd')
       .then((contentType) =>{
         StateInRouteData['ContentTypeId'] = contentType.Id.StringValue;
         return this.WriteTask(StateInRouteData);
       })
       .then((createdTask : any) => {
         HistoryArray[0]['TaskID'] = createdTask.json().d.Id;
+        StateInRouteData['EventTypeUser'] = (this.contentType == 'LSSTaskAdd' ? 'EventCreateTask EventAddTask' : 'EventCreateTask');
+        StateInRouteData['HistoryType'] = 'HistoryDataForUser';
         StateInRouteData['itemData'] = itemData;
         StateInRouteData['HistoryArray'] = HistoryArray;
         return Promise.all([this.updateTransitHistory(StateInRouteData),this.updateTransitHistory(StateInRouteData,'TaskAndDocHistory')]);
@@ -215,7 +217,7 @@ export class SubTask {
       .then(()=>{
         console.log('After all:',StateInRouteData);
         // if (this.contentType == 'LSResolutionTaskToDo') {
-        //   LSOnlineTaskData.LSGetResolutionTask(StateInRouteData[count].sysIDItem, StateInRouteData[count].sysIDList, LSOnlineTaskData.CurentUserEmail, StateInRouteData[count].MainTaskID, StateInRouteData[count].MainTaskStatus, LSOnlineTaskData.CurentUserTitle, StateInRouteData[count].StateID);
+        //   this.getResolutionTask(StateInRouteData[count].sysIDItem, StateInRouteData[count].sysIDList, LSOnlineTaskData.CurentUserEmail, StateInRouteData[count].MainTaskID, StateInRouteData[count].MainTaskStatus, LSOnlineTaskData.CurentUserTitle, StateInRouteData[count].StateID);
         // }
       })
   }

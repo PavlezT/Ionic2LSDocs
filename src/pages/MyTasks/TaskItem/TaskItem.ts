@@ -427,9 +427,17 @@ export class TaskItem {
   private getSubtasks() : Promise<any> {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?`
       +`$select=sysIDItem,ID,sysIDList,Title,StartDate,sysTaskLevel,TaskResults,sysIDMainTask,sysIDParentMainTask,`
-      +`TaskDueDate,OData__Status,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail`
-      +`&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail`
-      +`&$filter=(sysIDMainTask eq '${this.task.Id}') and (sysTaskLevel eq '2')`;
+      +`TaskDueDate,OData__Status,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail`;
+
+    listGet+= (this.ContentType == "LSResolutionTaskToDo" ? 
+      (
+        `&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail,ContentType`
+        +`&$filter=(sysIDItem eq '${this.task.sysIDItem}') and (sysIDList eq '${this.task.sysIDList}') and (ContentType eq 'LSResolutionTaskToDo') and (TaskAuthor/EMail eq '${encodeURI(this.taskAuthore.EMail)}') and (StateID eq '${this.task.StateID}')`
+      ) :
+      (
+        `&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail`
+        +`&$filter=(sysIDMainTask eq '${this.task.Id}') and (sysTaskLevel eq '${this.task.sysTaskLevel+1}')`) 
+      );
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
     let options = new RequestOptions({ headers: headers });

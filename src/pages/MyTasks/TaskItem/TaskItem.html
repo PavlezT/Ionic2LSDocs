@@ -92,7 +92,7 @@
     <ion-item (click)="openSubTask()">
         <ion-label>
           <ion-icon name="add"></ion-icon>
-          {{loc.dic.Alert34}}
+          {{ContentType == 'LSTaskResolution' ? loc.dic.NewRezolution : loc.dic.Alert34}}
         </ion-label>
     </ion-item>
     <ion-item *ngIf="!SubTasks">
