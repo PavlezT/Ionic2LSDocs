@@ -428,7 +428,7 @@ export class TaskItem {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?`
       +`$select=sysIDItem,ID,sysIDList,Title,StartDate,sysTaskLevel,TaskResults,sysIDMainTask,sysIDParentMainTask,`
       +`TaskDueDate,OData__Status,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail`;
-    console.log('this.contentType:',this.ContentType);
+    
     listGet+= (this.ContentType == "LSTaskResolution" ? 
       (
         `&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail,ContentType`
@@ -436,8 +436,8 @@ export class TaskItem {
       ) :
       (
         `&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail`
-        +`&$filter=(sysIDMainTask eq '${this.task.Id}') and (sysTaskLevel eq '${this.task.sysTaskLevel+1}')`) 
-      );
+        +`&$filter=(sysIDMainTask eq '${this.task.Id}') and (sysTaskLevel eq '${this.task.sysTaskLevel+1}')`
+      ));
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
     let options = new RequestOptions({ headers: headers });

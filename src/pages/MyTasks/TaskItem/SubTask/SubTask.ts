@@ -170,11 +170,8 @@ export class SubTask {
       AssignetToEmail: this.selectedUser.assignTo.EMail,
       AssignedToId : this.selectedUser.assignTo.Id,
       AssignedManagerId : this.selectedUser.UserManager.Id,
-      ////AssignetToManager : this.selectedUser.UserManager.Title,
-      ////AssignetToManagerEMail : this.selectedUser.UserManager.EMail,
       DepartmentOfUser : this.selectedUser.ol_Department,
       OData__Status : 'Not Started',
-      ////EventTypeDoc : 'Task'
     };
     
     let itemData = {
@@ -186,7 +183,7 @@ export class SubTask {
     };
     
     var HistoryArray = [{
-      EventType :  (this.contentType == 'LSSTaskAdd' ? 'EventCreateTask EventAddTask' : 'EventCreateTask'),
+      EventType :  (this.contentType != 'LSTaskResolution' ? 'EventCreateTask EventAddTask' : 'EventCreateTask'),
       Event: this.loc.dic.Alert68,
       NameExecutor : this.selectedUser.assignTo.Title,
       NameAuthore : this.user.getUserName(),
@@ -201,24 +198,18 @@ export class SubTask {
       ListID: this.task.sysIDList
     }];
     
-    return this.getContentType((this.contentType == 'LSSTaskAdd' ? 'LSSTaskAdd' : 'LSResolutionTaskToDo'))
+    return this.getContentType((this.contentType == 'LSTaskResolution' ? 'LSResolutionTaskToDo' : 'LSSTaskAdd' ))
       .then((contentType) =>{
         StateInRouteData['ContentTypeId'] = contentType.Id.StringValue;
         return this.WriteTask(StateInRouteData);
       })
       .then((createdTask : any) => {
         HistoryArray[0]['TaskID'] = createdTask.json().d.Id;
-        StateInRouteData['EventTypeUser'] = (this.contentType == 'LSSTaskAdd' ? 'EventCreateTask EventAddTask' : 'EventCreateTask');
+        StateInRouteData['EventTypeUser'] = (this.contentType != 'LSTaskResolution' ? 'EventCreateTask EventAddTask' : 'EventCreateTask');
         StateInRouteData['HistoryType'] = 'HistoryDataForUser';
         StateInRouteData['itemData'] = itemData;
         StateInRouteData['HistoryArray'] = HistoryArray;
         return Promise.all([this.updateTransitHistory(StateInRouteData),this.updateTransitHistory(StateInRouteData,'TaskAndDocHistory')]);
-      })
-      .then(()=>{
-        console.log('After all:',StateInRouteData);
-        // if (this.contentType == 'LSResolutionTaskToDo') {
-        //   this.getResolutionTask(StateInRouteData[count].sysIDItem, StateInRouteData[count].sysIDList, LSOnlineTaskData.CurentUserEmail, StateInRouteData[count].MainTaskID, StateInRouteData[count].MainTaskStatus, LSOnlineTaskData.CurentUserTitle, StateInRouteData[count].StateID);
-        // }
       })
   }
 
