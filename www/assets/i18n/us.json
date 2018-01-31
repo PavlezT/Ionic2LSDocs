@@ -13,7 +13,8 @@
         "Delegate_not_found" : "User not found",
         "StartTyping" : "Start typing to search",
         "CheckUser" : "Select user first",
-        "ErrorLoadingUsers" : "An error occurred while loading users. Retry later."
+        "ErrorLoadingUsers" : "An error occurred while loading users. Retry later.",
+        "DateNotFound" : "Select due date"
     },
     "MStep1":"User Directory",
     "MStep2":"Lists",

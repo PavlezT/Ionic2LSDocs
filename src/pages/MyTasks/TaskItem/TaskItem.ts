@@ -436,7 +436,7 @@ export class TaskItem {
       ) :
       (
         `&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail`
-        +`&$filter=(sysIDMainTask eq '${this.task.Id}') and (sysTaskLevel eq '${this.task.sysTaskLevel+1}')`
+        +`&$filter=(sysIDMainTask eq '${this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask }') and (sysTaskLevel eq '${parseInt(this.task.sysTaskLevel)+1}')`
       ));
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});

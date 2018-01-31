@@ -116,7 +116,9 @@ export class SubTask {
       return this.showToast(this.loc.dic.mobile.CheckUser);
     if( !(this.subTaskName.value && this.subTaskName.value.trim().length > 0) )
       return this.showToast(this.loc.dic.Alert22);
-    if( !(this.selectedDate && this.selectedDate >= (new Date((new Date(Date.now())).toDateString())) ))
+    if( !(this.selectedDate) )
+      return this.showToast(this.loc.dic.mobile.DateNotFound);
+    if( !(this.selectedDate >= (new Date((new Date(Date.now())).toDateString())) ))
       return this.showToast(this.loc.dic.Alert13);
 
     this.loaderctrl.presentLoading();
@@ -156,8 +158,8 @@ export class SubTask {
       },
       sysIDItem: this.task.sysIDItem,
       sysIDList: this.task.sysIDList,
-      sysIDMainTask : (this.contentType == 'LSTaskResolution' ? (this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask) : 0 ).toString(),
-      sysIDParentMainTask: (this.contentType == 'LSTaskResolution' ? (this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask) : 0 ).toString(),
+      sysIDMainTask : (this.contentType == 'LSTaskResolution' ? 0 : (this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask)).toString(),
+      sysIDParentMainTask: (this.contentType == 'LSTaskResolution' ? 0 : (this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask)).toString(),
       Title: this.subTaskName.value.trim().replace(':', ' '),      
       StateID: this.task.StateID,
       sysTaskLevel: (parseInt(this.task.sysTaskLevel || '0') +1 ).toString(),
@@ -246,7 +248,7 @@ export class SubTask {
       titleText : this.loc.dic.Alert21,
       androidTheme : this.datePicker.ANDROID_THEMES.THEME_DEVICE_DEFAULT_LIGHT
     }).then(
-      date =>{ this.selectedDate = new Date(date); },
+      date =>{ if(date)this.selectedDate = new Date(date); },
       err => { }
     );
   }
