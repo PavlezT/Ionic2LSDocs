@@ -29,10 +29,12 @@ export class TaskItem {
   historyToggle : boolean = false;
   subtaskToggle : boolean = false;
   typingComment : boolean = false;
+  subResToggle : boolean = false;
   history : any;
   taskHistory : any;
   connectedItem : any;
   SubTasks : Array<any>;
+  SubRes : Array<any>;
   digest : string;
   access_token : string;
 
@@ -79,6 +81,7 @@ export class TaskItem {
         this.history = [];
       })
     this.getSubtasks();
+    this.getSubtasks(this.ContentType);
 
     access.getDigestValue().then(digest => this.digest = digest);
     access.getToken().then(token => this.access_token = token);
@@ -424,12 +427,12 @@ export class TaskItem {
         })
   }
 
-  private getSubtasks() : Promise<any> {
+  private getSubtasks(contentType ? : string) : Promise<any> {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?`
       +`$select=sysIDItem,ID,sysIDList,Title,StartDate,sysTaskLevel,TaskResults,sysIDMainTask,sysIDParentMainTask,`
       +`TaskDueDate,OData__Status,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail`;
     
-    listGet+= (this.ContentType == "LSTaskResolution" ? 
+    listGet+= (contentType == "LSTaskResolution" ? 
       (
         `&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail,ContentType`
         +`&$filter=(sysIDItem eq '${this.task.sysIDItem}') and (sysIDList eq '${this.task.sysIDList}') and (ContentType eq 'LSResolutionTaskToDo') and (TaskAuthore/EMail eq '${(this.taskAuthore.EMail)}') and (StateID eq '${this.task.StateID}')`
@@ -445,10 +448,16 @@ export class TaskItem {
     return this.http.get(listGet,options).timeout(consts.timeoutDelay).retry(consts.retryCount)
         .toPromise()
         .then( res => {
-          this.SubTasks = res.json().d.results.map(item=>{
+          let tasks = res.json().d.results.filter(item=>{
             item.DueDate_view = moment.utc(item.TaskDueDate).format("dd, DD MMMM");
+            if (this.task.Id != item.sysIDParentMainTask)
+              return false;
             return item;
           }) || [];
+          if(contentType == "LSTaskResolution")
+            this.SubRes = tasks;
+          else
+            this.SubTasks = tasks;
         })
         .catch(error => {
           console.error('<TaskItem> Loading History error!',error);
@@ -477,13 +486,24 @@ export class TaskItem {
     this.recalcHistoryHeight();
   }
 
-  public showTasks() : void {
+  public showTasks(contetType ? : string) : void {
     this.historyToggle = false;
-    if(this.subtaskToggle){
-      this.subtaskToggle = false;
-      return;
+    if(contetType != 'LSTaskResolution'){
+      if(this.subtaskToggle){
+        this.subtaskToggle = false;
+        return;
+      } else {
+        this.subtaskToggle = true;
+        this.subResToggle = false;
+      }
+    } else {
+      if(this.subResToggle)
+        this.subResToggle = false;
+      else 
+        this.subResToggle = true;
+        this.subtaskToggle = false;
     }
-    this.subtaskToggle = true;
+    
   }
 
   public openConnecedItem() : void {
@@ -515,11 +535,11 @@ export class TaskItem {
     });
   }
 
-  public openSubTask() : void {
+  public openSubTask(contentType ? : string) : void {
     let modal = this.modalCtrl.create(SubTask,{
       task : this.task,
       title : this.Title,
-      contentType : this.ContentType,
+      contentType : contentType ? contentType : this.ContentType,
       author : this.taskAuthore,
       updateTransitHistory : this.updateTransitHistory
     },{

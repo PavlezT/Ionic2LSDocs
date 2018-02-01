@@ -60,6 +60,7 @@
     </div>
 </ion-label>
 <ion-label #middlelabel class="middlelabel" >
+  <button ion-button color="primary" clear *ngIf="(Status != 'Done') && ContentType == 'LSTaskResolution' " (click)="showTasks('LSTaskResolution')" ><ion-icon name="list"></ion-icon></button>
   <button ion-button color="primary" clear *ngIf="(Status != 'Done')" (click)="showTasks()" ><ion-icon name="list"></ion-icon></button>
   <button ion-button color="primary" (click)="showHistory()" clear><ion-icon name="calendar"></ion-icon></button>
   <button *ngIf="task.sysIDItem || task.ItemId"  [disabled]="!connectedItem" ion-button color="primary" (click)="openConnecedItem()" clear><ion-icon name="document"></ion-icon>{{loc.dic.RelateDoc}}</button>
@@ -84,7 +85,7 @@
             <h2>{{loc.dic.mobile.Downloading}}</h2>
           </ion-item>
   </ion-list>
-  <ion-item *ngIf="(Status != 'Done')" [ngClass]="(historyToggle || subtaskToggle)? 'inactive' : 'active'">
+  <ion-item *ngIf="(Status != 'Done')" [ngClass]="(historyToggle || subtaskToggle || subResToggle )? 'inactive' : 'active'">
       <ion-label floating>{{loc.dic.Alert37}}</ion-label>
       <ion-textarea #comments rows="6" (blur)="onBlur()" (focus)="onFocus()" ></ion-textarea>
   </ion-item>
@@ -92,7 +93,7 @@
     <ion-item (click)="openSubTask()">
         <ion-label>
           <ion-icon name="add"></ion-icon>
-          {{ContentType == 'LSTaskResolution' ? loc.dic.NewRezolution : loc.dic.Alert34}}
+          {{loc.dic.Alert34}}
         </ion-label>
     </ion-item>
     <ion-item *ngIf="!SubTasks">
@@ -119,6 +120,43 @@
             <span class="left"><label>{{subtask.Title}}</label></span>
             <span class="right">
               <!-- <ion-icon name="ios-timer-outline"></ion-icon> -->
+              {{subtask.DueDate_view}}
+            </span>
+        </div>
+      </ion-label>
+      <ion-avatar item-right>
+          <img src="{{images.getImage(subtask.AssignedTo.EMail || 'undefined')}}" >
+      </ion-avatar>
+    </ion-item>
+  </ion-list>
+  <ion-list *ngIf="(Status != 'Done') && subResToggle" nowrap>
+    <ion-item (click)="openSubTask('LSTaskResolution')">
+        <ion-label>
+          <ion-icon name="add"></ion-icon>
+          {{loc.dic.NewRezolution}}
+        </ion-label>
+    </ion-item>
+    <ion-item *ngIf="!SubRes">
+        <ion-label>
+          {{loc.dic.mobile.Downloading}}
+        </ion-label>
+    </ion-item>
+    <ion-item class="subtask_item" *ngFor="let subtask of SubRes">
+      <ion-avatar item-left>
+        <img src="{{images.getImage(subtask.TaskAuthore.EMail || 'undefined')}}" >
+      </ion-avatar>
+      <ion-label>
+        <div>
+            <span class="left">
+              {{subtask.TaskAuthore.Title}}
+            </span>
+            <span class="right">
+              {{subtask.AssignedTo.Title}}
+            </span>
+        </div>
+        <div>
+            <span class="left"><label>{{subtask.Title}}</label></span>
+            <span class="right">
               {{subtask.DueDate_view}}
             </span>
         </div>
