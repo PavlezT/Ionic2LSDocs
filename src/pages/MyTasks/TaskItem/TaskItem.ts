@@ -430,17 +430,14 @@ export class TaskItem {
   private getSubtasks(contentType ? : string) : Promise<any> {
     let listGet = `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?`
       +`$select=sysIDItem,ID,sysIDList,Title,StartDate,sysTaskLevel,TaskResults,sysIDMainTask,sysIDParentMainTask,`
-      +`TaskDueDate,OData__Status,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail`;
+      +`TaskDueDate,OData__Status,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail,ContentType/Name`
+      +`&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail,ContentType`;
     
-    listGet+= (contentType == "LSTaskResolution" ? 
-      (
-        `&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail,ContentType`
-        +`&$filter=(sysIDItem eq '${this.task.sysIDItem}') and (sysIDList eq '${this.task.sysIDList}') and (ContentType eq 'LSResolutionTaskToDo') and (TaskAuthore/EMail eq '${(this.taskAuthore.EMail)}') and (StateID eq '${this.task.StateID}')`
-      ) :
-      (
-        `&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail`
-        +`&$filter=(sysIDMainTask eq '${this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask }') and (sysTaskLevel eq '${parseInt(this.task.sysTaskLevel)+1}')`
-      ));
+    listGet+= (contentType && contentType == "LSTaskResolution" ? 
+      `&$filter=(sysIDItem eq '${this.task.sysIDItem}') and (sysIDList eq '${this.task.sysIDList}') and (ContentType eq 'LSResolutionTaskToDo') and (TaskAuthore/EMail eq '${(this.taskAuthore.EMail)}') and (StateID eq '${this.task.StateID}')`
+      : 
+      `&$filter=(ContentType ne 'LSResolutionTaskToDo') and (sysIDMainTask eq '${this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask }') and (sysTaskLevel eq '${parseInt(this.task.sysTaskLevel)+1}')`
+      );
 
     let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
     let options = new RequestOptions({ headers: headers });
@@ -450,11 +447,11 @@ export class TaskItem {
         .then( res => {
           let tasks = res.json().d.results.filter(item=>{
             item.DueDate_view = moment.utc(item.TaskDueDate).format("dd, DD MMMM");
-            if (this.task.Id != item.sysIDParentMainTask)
+            if(this.task.Id != item.sysIDParentMainTask && (contentType != "LSTaskResolution") )
               return false;
             return item;
           }) || [];
-          if(contentType == "LSTaskResolution")
+          if(contentType && contentType == "LSTaskResolution")
             this.SubRes = tasks;
           else
             this.SubTasks = tasks;
@@ -462,6 +459,7 @@ export class TaskItem {
         .catch(error => {
           console.error('<TaskItem> Loading History error!',error);
           this.SubTasks = [];
+          this.SubRes = [];
         })
   }
 
@@ -549,7 +547,7 @@ export class TaskItem {
 
     modal.onDidDismiss(data => {
       if(data.taskcreated){
-        this.SubTasks.push({
+        let subtask = {
           AssignedTo :  data.user.assignTo,
           TaskAuthore : {
             EMail : this.user.getEmail(),
@@ -557,7 +555,12 @@ export class TaskItem {
           },
           Title : data.title,
           DueDate_view : moment(data.date).format("dd, DD MMMM")
-        });
+        };
+
+        if(contentType && contentType == 'LSTaskResolution')
+          this.SubRes.push(subtask);
+        else
+          this.SubTasks.push(subtask);
       }
     });
   }

@@ -10,7 +10,6 @@ import { Access } from '../../../../utils/access';
 import { Loader } from '../../../../utils/loader';
 import { Images } from '../../../../utils/images';
 import { Localization } from '../../../../utils/localization';
-import { ContentType } from '@angular/http/src/enums';
 
 @Component({
   selector: 'subtask',

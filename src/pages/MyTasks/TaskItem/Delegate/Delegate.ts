@@ -143,7 +143,7 @@ export class Delegate {
   }
 
   public DelegateTask() : Promise<any> {
-     var RouteForCreate = [];
+    //  var RouteForCreate = [];
      var EstimatePOST = moment(this.task.TaskDueDate).format('L');
      var DueDate = EstimatePOST.split('/');
      

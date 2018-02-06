@@ -90,7 +90,7 @@
       <ion-textarea #comments rows="6" (blur)="onBlur()" (focus)="onFocus()" ></ion-textarea>
   </ion-item>
   <ion-list *ngIf="(Status != 'Done') && subtaskToggle" nowrap>
-    <ion-item (click)="openSubTask()">
+    <ion-item (click)="openSubTask('OtherTask')">
         <ion-label>
           <ion-icon name="add"></ion-icon>
           {{loc.dic.Alert34}}
