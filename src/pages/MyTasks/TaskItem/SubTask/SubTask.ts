@@ -25,7 +25,6 @@ export class SubTask {
    task : any;
    Title : string;
    contentType : string;
-   taskAuthore : {EMail : string, Title: string};
 
    taskcreated : boolean;
    startsearch : boolean;
@@ -37,14 +36,13 @@ export class SubTask {
    updateTransitHistory : any;
 
   constructor(public platform: Platform, public viewCtrl: ViewController ,@Inject(Localization) public loc : Localization,
-  @Inject(Loader) public loaderctrl: Loader,public events: Events,public toastCtrl: ToastController,@Inject(Access) public access: Access,
+   @Inject(Loader) public loaderctrl: Loader,public events: Events,public toastCtrl: ToastController,@Inject(Access) public access: Access,
    public navParams: NavParams,@Inject(Http) public http : Http,@Inject(User) public user : User,  @Inject(Images) public images: Images,
    private datePicker: DatePicker )
    {
     this.task = navParams.data.task;
     this.Title = navParams.data.title;
     this.contentType = navParams.data.contentType;
-    this.taskAuthore =  navParams.data.author;
     this.taskcreated = false;
     this.selectedUser = null;
     this.selectedDate = null;

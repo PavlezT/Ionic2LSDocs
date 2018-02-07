@@ -286,9 +286,9 @@ export class TaskItem {
   }
 
   private writeToHistoryAfterTaskGet() : Promise<any> {
-          let EvanteDate = moment.utc().format("YYYY-MM-DD HH:mm:ss");//2017-06-01 04:32:35
-          let StartDate = moment.utc(this.task.StartDate).format("DD.MM.YYYY HH:mm:ss");
-          let DueDate = moment.utc(this.task.TaskDueDate).format("DD.MM.YYYY");
+          let EvanteDate = moment().format("YYYY-MM-DD HH:mm:ss");//2017-06-01 04:32:35
+          let StartDate = moment(this.task.StartDate).format("DD.MM.YYYY HH:mm:ss");
+          let DueDate = moment(this.task.TaskDueDate).format("DD.MM.YYYY");
 
           let StateInRouteData = {
             sysIDList : this.task.sysIDList,
@@ -329,7 +329,12 @@ export class TaskItem {
   }
 
   private сheckResolution() : Promise<any>{
-      let url =  `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?$select=sysIDItem,ID,sysIDList,ContentTypeId,Title,TaskDescription,StartDate,sysTaskLevel,TaskResults,sysIDParentMainTask,TaskDueDate,TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail&$expand=TaskAuthore,AssignedTo,ContentType&$filter=(sysIDItem eq '${this.task.sysIDItem}') and (sysIDList eq '${this.task.sysIDList}') and (ContentType eq 'LSResolutionTaskToDo') and (TaskAuthore/Title eq '${encodeURI(this.taskAuthore.Title)}')`;
+      let url =  `${consts.siteUrl}/_api/Web/Lists/GetByTitle('LSTasks')/items?`
+        +`$select=sysIDItem,ID,sysIDList,ContentTypeId,Title,TaskDescription,StartDate,sysTaskLevel,TaskResults,sysIDParentMainTask,TaskDueDate,`
+        +`TaskAuthore/Title,TaskAuthore/EMail,AssignedToId,AssignedTo/Title,AssignedTo/EMail`
+        +`&$expand=TaskAuthore,AssignedTo,ContentType`
+        +`&$filter=(sysIDItem eq '${this.task.sysIDItem}') and (sysIDList eq '${this.task.sysIDList}') `
+        +`and (ContentType eq 'LSResolutionTaskToDo') and (TaskAuthore/Title eq '${encodeURI(this.assignetTo.Title)}')`;
 
       let headers = new Headers({'Accept': 'application/json;odata=verbose','Authorization':`Basic ${btoa(window.localStorage.getItem('username')+':'+window.localStorage.getItem('password'))}`});
       let options = new RequestOptions({ headers: headers });
@@ -434,7 +439,7 @@ export class TaskItem {
       +`&$expand=TaskAuthore/Title,TaskAuthore/EMail,AssignedTo/Title,AssignedTo/EMail,ContentType`;
     
     listGet+= (contentType && contentType == "LSTaskResolution" ? 
-      `&$filter=(sysIDItem eq '${this.task.sysIDItem}') and (sysIDList eq '${this.task.sysIDList}') and (ContentType eq 'LSResolutionTaskToDo') and (TaskAuthore/EMail eq '${(this.taskAuthore.EMail)}') and (StateID eq '${this.task.StateID}')`
+      `&$filter=(sysIDItem eq '${this.task.sysIDItem}') and (sysIDList eq '${this.task.sysIDList}') and (ContentType eq 'LSResolutionTaskToDo') and (TaskAuthore/EMail eq '${(this.assignetTo.Email)}') and (StateID eq '${this.task.StateID}')`
       : 
       `&$filter=(ContentType ne 'LSResolutionTaskToDo') and (sysIDMainTask eq '${this.task.sysIDMainTask == 0 ? this.task.Id : this.task.sysIDMainTask }') and (sysTaskLevel eq '${parseInt(this.task.sysTaskLevel)+1}')`
       );
@@ -538,7 +543,6 @@ export class TaskItem {
       task : this.task,
       title : this.Title,
       contentType : contentType ? contentType : this.ContentType,
-      author : this.taskAuthore,
       updateTransitHistory : this.updateTransitHistory
     },{
       showBackdrop : true
